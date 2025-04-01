@@ -1,0 +1,55 @@
+<Ui>
+  <Font name="DeathListFont" font="Interface\AddOns\HardcoreUnlocked\Media\UbuntuMono-R.ttf" virtual="true">
+    <FontHeight>
+      <AbsValue val="12"/>
+    </FontHeight>
+  </Font>
+
+  <Font name="HardcoreFont" font="Interface\AddOns\HardcoreUnlocked\Media\BreatheFire.ttf" virtual="true">
+
+	<Color r="0.98" g="0.86" b="0" a="1"/> -- 252, 222, 0
+	<FontHeight val="32"/>
+	<Shadow>
+    	<Offset x="-2" y="-2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="-2" y="2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="2" y="-2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="2" y="2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+  </Font>
+
+  <?comment msg="This provides dynamic style templating, via ALERT_STYLES" ?>
+  <Frame name="Hardcore_Alert_Frame" parent="UIParent" hidden="true" toplevel="true">
+		<Size x="400" y="610" />
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP" y="-150" /> <?comment msg="This controls the position of the entire frame, relative to UI Parent" ?>
+		</Anchors>
+		<Layers>
+			<Layer>
+				<Texture name="Hardcore_Alert_Icon" file="Interface\AddOns\HardcoreUnlocked\Media\logo-emblem.blp">
+					<Size x="400" y="200" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="Hardcore_Alert_Frame" relativePoint="TOP" y="50" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="Hardcore_Alert_Text" inherits="HardcoreFont" justifyH="CENTER" justifyV="TOP">
+					<Size x="360" y="350" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="Hardcore_Alert_Icon" relativePoint="TOP" y="-140" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+  </Frame>
+</Ui>
