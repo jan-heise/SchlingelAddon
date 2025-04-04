@@ -1327,6 +1327,17 @@ function Hardcore:PLAYER_ALIVE()
 end
 
 function Hardcore:PLAYER_DEAD()
+	local isInBattlefield = false
+	for i = 1, GetMaxBattlefieldID() do
+		local battleFieldStatus = GetBattlefieldStatus(i)
+		if battleFieldStatus == "active" then
+			isInBattlefield = true
+			break
+		end
+	end
+	if isInBattlefield then
+		return
+	end
 	-- Screenshot
 	C_Timer.After(PICTURE_DELAY, function()
 		Screenshot()
@@ -1434,6 +1445,18 @@ function Hardcore:PLAYER_UNGHOST()
 	if UnitIsDeadOrGhost("player") == 1 then
 		return
 	end -- prevent message on ghost login or zone
+
+	local isInBattlefield = false
+	for i = 1, GetMaxBattlefieldID() do
+		local battleFieldStatus = GetBattlefieldStatus(i)
+		if battleFieldStatus == "active" then
+			isInBattlefield = true
+			break
+		end
+	end
+	if isInBattlefield then
+		return
+	end
 
 	if hc_self_block_flag then
 		return

@@ -1,10 +1,10 @@
-## Interface: 11506
+## Interface: 11507
 ## Title: Schlingel Addon
 ## Notes: Supports Classic Hardcore
 ## Author: The Classic Hardcore team, Yazpad for unlocked modifications, DerHauge and Cricksu for schlingel modifications
 ## X-License: GNU GPLv3
 ## X-Category: Leveling,Guild
-## Version: schlingel_1.0.6
+## Version: 1.0.7
 
 
 ## DefaultState: enabled
