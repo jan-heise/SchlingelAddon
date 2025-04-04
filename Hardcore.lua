@@ -1503,7 +1503,7 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 	end)
 
 	-- send a message to the guild if the player's level is divisible by 10
-	local landmarkLevel = (level % 10) == 0
+	local landmarkLevel = (level % 10) == 0 or level == 45 or level == 55
 	if landmarkLevel then
 		local playerName = UnitName("player")
 		local localizedClass = UnitClass("player")
