@@ -579,7 +579,7 @@ local function createEntry(checksum)
 	-- Cap list size, otherwise loading time will increase
 	if
 		hardcore_settings["death_log_entries"]
-			and #hardcore_settings["death_log_entries"] > HardcoreUnlocked_Settings.deathlog_max_entries
+		and #hardcore_settings["death_log_entries"] > HardcoreUnlocked_Settings.deathlog_max_entries
 		or HC_DEATH_LOG_MAX
 	then -- TODO parameterize
 		table.remove(hardcore_settings["death_log_entries"], 1)
@@ -605,7 +605,7 @@ local function shouldCreateEntry(checksum)
 	if
 		hardcore_settings.death_log_types == nil
 		or hardcore_settings.death_log_types == "faction_wide"
-			and isValidEntry(death_ping_lru_cache_tbl[checksum]["player_data"])
+		and isValidEntry(death_ping_lru_cache_tbl[checksum]["player_data"])
 	then
 		if
 			death_ping_lru_cache_tbl[checksum]["peer_report"]
@@ -616,9 +616,9 @@ local function shouldCreateEntry(checksum)
 			if debug then
 				print(
 					"not enough peers for "
-						.. checksum
-						.. ": "
-						.. (death_ping_lru_cache_tbl[checksum]["peer_report"] or "0")
+					.. checksum
+					.. ": "
+					.. (death_ping_lru_cache_tbl[checksum]["peer_report"] or "0")
 				)
 			end
 		end
@@ -958,6 +958,95 @@ function DeathFrameDropdown(frame, level, menuList)
 		death_log_frame:Minimize()
 	end
 
+	local function QueryGuildWho(guildName)
+		-- Sicherstellen, dass ein Gildenname übergeben wurde
+		if not guildName or guildName == "" then
+			print("[Schlingel] Kein Gildenname angegeben.")
+			return
+		end
+
+		-- WHO-Abfrage senden
+		local whoString = string.format('g-"%s"', guildName)
+		C_FriendList.SendWho(whoString)
+
+		C_Timer.After(0.5, function()
+			if FriendsFrame:IsShown() then
+				HideUIPanel(FriendsFrame)
+			end
+		end)
+
+		-- Temporären Event-Handler erstellen
+		local frame = CreateFrame("Frame")
+		frame:RegisterEvent("WHO_LIST_UPDATE")
+		frame:SetScript("OnEvent", function(self, event, ...)
+			if event == "WHO_LIST_UPDATE" then
+				local numResults = C_FriendList.GetNumWhoResults()
+				if numResults == 0 then
+					print(string.format("[Schlingel] Keine Ergebnisse für Gilde '%s' gefunden.", guildName))
+					self:UnregisterEvent("WHO_LIST_UPDATE")
+					return
+				end
+				--print(string.format("[Schlingel] WHO-Ergebnisse für Gilde '%s':", guildName))
+
+				local addonPrefix = "HardcoreAddon"
+				local playerName = UnitName("player")
+				local playerLevel = UnitLevel("player")
+				local message = string.format("GUILD_REQUEST:%s:%d", playerName, playerLevel)
+
+				local currentIndex = 1
+				local maxWhoResults = C_FriendList.GetNumWhoResults()
+				local requestWasForwarded = false
+
+				-- Event-Frame zur Registrierung von Addon-Nachrichten
+				local eventFrame = CreateFrame("Frame")
+				eventFrame:RegisterEvent("CHAT_MSG_ADDON")
+				eventFrame:SetScript("OnEvent", function(_, event, prefix, msg, _, sender)
+					if event == "CHAT_MSG_ADDON" and prefix == addonPrefix then
+						if msg == "REQUEST_FORWARDED" then
+							requestWasForwarded = true
+						end
+					end
+				end)
+
+				-- Funktion, um rekursiv durch die Who-Ergebnisse zu gehen
+				local function SendNextRequest()
+					-- Wenn wir eine Bestätigung bekommen haben, abbrechen
+					if requestWasForwarded then
+						print("[Schlingel Addon]: Anfrage gesendet")
+						return
+					end
+
+					-- Wenn keine weiteren Ergebnisse übrig sind
+					if currentIndex > maxWhoResults then
+						print("[Schlingel Addon]: Anfrage konnte nicht gesendet werden")
+						print("[Schlingel Addon]: Bitte über Discord melden")
+						return
+					end
+
+					local info = C_FriendList.GetWhoInfo(currentIndex)
+					if info then
+						C_ChatInfo.SendAddonMessage(addonPrefix, message, "WHISPER", info.fullName)
+					end
+
+					currentIndex = currentIndex + 1
+
+					-- Warte 0.5s, dann sende an den nächsten
+					C_Timer.After(0.5, SendNextRequest)
+				end
+
+				-- Start der Anfragekette
+				SendNextRequest()
+
+				-- Deregistrieren, damit der Handler nicht aktiv bleibt
+				self:UnregisterEvent("WHO_LIST_UPDATE")
+			end
+		end)
+	end
+
+	local function sendGuildRequest()
+		QueryGuildWho('Schlingel Inc')
+	end
+
 	local function maximize()
 		death_log_frame:Maximize()
 	end
@@ -974,6 +1063,11 @@ function DeathFrameDropdown(frame, level, menuList)
 	end
 
 	if level == 1 then
+		if not IsInGuild() then
+			info.text, info.hasArrow, info.func = "Gildeneinladung anfragen", false, sendGuildRequest
+			UIDropDownMenu_AddButton(info)
+		end
+
 		if death_log_frame:IsMinimized() then
 			info.text, info.hasArrow, info.func = "Maximize", false, maximize
 			UIDropDownMenu_AddButton(info)
