@@ -958,6 +958,56 @@ function DeathFrameDropdown(frame, level, menuList)
 		death_log_frame:Minimize()
 	end
 
+	local function QueryGuildWho(guildName)
+		-- Sicherstellen, dass ein Gildenname übergeben wurde
+		if not guildName or guildName == "" then
+			print("[Schlingel] Kein Gildenname angegeben.")
+			return
+		end
+
+		-- WHO-Abfrage senden
+		local whoString = string.format('g-"%s"', guildName)
+		C_FriendList.SendWho(whoString)
+
+		C_Timer.After(0.5, function()
+			if FriendsFrame:IsShown() then
+				HideUIPanel(FriendsFrame)
+			end
+		end)
+
+		-- Temporären Event-Handler erstellen
+		local frame = CreateFrame("Frame")
+		frame:RegisterEvent("WHO_LIST_UPDATE")
+		frame:SetScript("OnEvent", function(self, event, ...)
+			if event == "WHO_LIST_UPDATE" then
+				local numResults = C_FriendList.GetNumWhoResults()
+				if numResults == 0 then
+					print(string.format("[Schlingel] Keine Ergebnisse für Gilde '%s' gefunden.", guildName))
+					self:UnregisterEvent("WHO_LIST_UPDATE")
+					return
+				end
+				print(string.format("[Schlingel] WHO-Ergebnisse für Gilde '%s':", guildName))
+				local info = C_FriendList.GetWhoInfo(1)
+				print(string.format("%s (Level %d %s) – %s",
+					info.fullName, info.level, info.classStr, info.area))
+					local addonPrefix = "HardcoreAddon"
+					local playerName = UnitName("player")
+                	local playerLevel = UnitLevel("player")
+                	local message = string.format("GUILD_REQUEST:%s:%d", playerName, playerLevel)
+					-- C_ChatInfo.SendAddonMessage(addonPrefix, message, "WHISPER", info.fullName)
+					C_ChatInfo.SendAddonMessage(addonPrefix, message, "WHISPER", 'Kurtibrown')
+					print("[Schlingel Addon]: Gildenanfrage gesendet")
+
+				-- Deregistrieren, damit der Handler nicht aktiv bleibt
+				self:UnregisterEvent("WHO_LIST_UPDATE")
+			end
+		end)
+	end
+
+	local function sendGuildRequest()
+		QueryGuildWho('Schlingel Inc')
+	end
+
 	local function maximize()
 		death_log_frame:Maximize()
 	end
@@ -979,6 +1029,11 @@ function DeathFrameDropdown(frame, level, menuList)
 			UIDropDownMenu_AddButton(info)
 		else
 			info.text, info.hasArrow, info.func = "Minimize", false, minimize
+			UIDropDownMenu_AddButton(info)
+		end
+
+		if not IsInGuild() then
+			info.text, info.hasArrow, info.func = "Gildeneinladung anfragen", false, sendGuildRequest
 			UIDropDownMenu_AddButton(info)
 		end
 
