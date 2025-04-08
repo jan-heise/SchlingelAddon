@@ -1387,7 +1387,7 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	-- Send broadcast alert messages to guild and greenwall
-	if (rank ~= nil and rank == "Ewiger Schlingel") then
+	if (rank ~= nil and rank == "EwigerSchlingel") then
 		messageFormat = messageFormatWithRank
 	end
 	local messageString = messageFormat:format(name, level, zone)
