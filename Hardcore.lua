@@ -161,22 +161,22 @@ local COMM_FIELD_DELIM = "|"
 local COMM_SUBFIELD_DELIM = "~"
 local COMM_RECORD_DELIM = "^"
 local COMM_COMMANDS = {
-	"PULSE", -- 1
-	"ADD", -- 2 depreciated, we can only handle receiving
-	"DEAD", -- 3 new death command
-	"CHARACTER_INFO", -- 4  new death command
+	"PULSE",                  -- 1
+	"ADD",                    -- 2 depreciated, we can only handle receiving
+	"DEAD",                   -- 3 new death command
+	"CHARACTER_INFO",         -- 4  new death command
 	"REQUEST_CHARACTER_INFO", -- 5 new death command
-	"SACRIFICE", -- 6 new sacrifice command
-	"REQUEST_PCT", -- 7 request a party change token
-	"APPLY_PCT", -- 8 request a party change
+	"SACRIFICE",              -- 6 new sacrifice command
+	"REQUEST_PCT",            -- 7 request a party change token
+	"APPLY_PCT",              -- 8 request a party change
 	"SEND_ACHIEVEMENT_APPEAL", -- 9 send appeal for achievement
-	"XGUILD_DEAD_RELAY", -- 10 Send death message a player in another guild to relay
-	"XGUILD_DEAD", -- 11 Send death message to other guild
-	"XGUILD_CHAT_RELAY", -- 12 Send chat message a player in another guild to relay
-	"XGUILD_CHAT", -- 13 Send chat message to other guild
-	"NOTIFY_RANKING", -- 14
-	"DTPULSE", -- 15 dungeon tracker active pulse; if this changes, also change in Dungeons.lua / DTSendPulse!
-	"REQUEST_RECOVERY_TIME", -- 16 Used to request recovery segments if detected DC
+	"XGUILD_DEAD_RELAY",      -- 10 Send death message a player in another guild to relay
+	"XGUILD_DEAD",            -- 11 Send death message to other guild
+	"XGUILD_CHAT_RELAY",      -- 12 Send chat message a player in another guild to relay
+	"XGUILD_CHAT",            -- 13 Send chat message to other guild
+	"NOTIFY_RANKING",         -- 14
+	"DTPULSE",                -- 15 dungeon tracker active pulse; if this changes, also change in Dungeons.lua / DTSendPulse!
+	"REQUEST_RECOVERY_TIME",  -- 16 Used to request recovery segments if detected DC
 	"REQUEST_RECOVERY_TIME_ACK", -- 17 Recovery request ack
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
@@ -203,12 +203,12 @@ local recent_msg = {}
 local Last_Attack_Source = nil
 DeathLog_Last_Attack_Source = nil
 local PICTURE_DELAY = 0.65
-local HIDE_RTP_CHAT_MSG_BUFFER = 0 -- number of messages in queue
+local HIDE_RTP_CHAT_MSG_BUFFER = 0     -- number of messages in queue
 local HIDE_RTP_CHAT_MSG_BUFFER_MAX = 2 -- number of maximum messages to wait for
 local STARTED_BUBBLE_HEARTH_INFO = nil
 local RECEIVED_FIRST_PLAYED_TIME_MSG = false
-local PLAYED_TIME_GAP_THRESH = 600 -- seconds
-local PLAYED_TIME_PERC_THRESH = 98 -- [0, 100] (2 minutes every 2 hours)
+local PLAYED_TIME_GAP_THRESH = 600         -- seconds
+local PLAYED_TIME_PERC_THRESH = 98         -- [0, 100] (2 minutes every 2 hours)
 local PLAYED_TIME_MIN_PLAYED_THRESH = 7200 -- seconds (2 hours)
 local TIME_TRACK_PULSE = 1
 local TIME_PLAYED_PULSE = 60
@@ -256,7 +256,7 @@ local ALERT_STYLES = {
 		text = Hardcore_Alert_Text, -- text layer
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
-		delay = COMM_DELAY, -- int seconds
+		delay = COMM_DELAY,     -- int seconds
 		alertSound = 8959,
 	},
 	death = {
@@ -394,8 +394,8 @@ function SuccessFunction(achievement_name)
 
 	Hardcore:Print(
 		"Achieved "
-			.. _G.passive_achievements[achievement_name].title
-			.. "! Make sure to /reload when convenient to save your progress."
+		.. _G.passive_achievements[achievement_name].title
+		.. "! Make sure to /reload when convenient to save your progress."
 	)
 end
 
@@ -499,7 +499,7 @@ local function SlashHandler(msg, editbox)
 			gpronoun_option = substring
 		end
 		Hardcore:SetGlobalPronoun(gpronoun_option)
-	-- Alert debug code
+		-- Alert debug code
 	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
 		for substring in args:gmatch("%S+") do
@@ -850,28 +850,28 @@ SLASH_HARDCOREUNLOCKED1, SLASH_HARDCOREUNLOCKED2, SLASH_HARDCOREUNLOCKED3 = "/ha
 SlashCmdList["HARDCOREUNLOCKED"] = SlashHandler
 
 local saved_variable_meta = {
-	{ key = "guid", initial_data = UnitGUID("player") },
-	{ key = "time_tracked", initial_data = 0 },
-	{ key = "time_played", initial_data = 0 },
-	{ key = "accumulated_time_diff", initial_data = 0 },
+	{ key = "guid",                      initial_data = UnitGUID("player") },
+	{ key = "time_tracked",              initial_data = 0 },
+	{ key = "time_played",               initial_data = 0 },
+	{ key = "accumulated_time_diff",     initial_data = 0 },
 	{ key = "tracked_played_percentage", initial_data = 0 },
-	{ key = "deaths", initial_data = {} },
-	{ key = "bubble_hearth_incidents", initial_data = {} },
-	{ key = "dt", initial_data = {} },
-	{ key = "played_time_gap_warnings", initial_data = {} },
-	{ key = "trade_partners", initial_data = {} },
-	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
-	{ key = "achievements", initial_data = {} },
-	{ key = "passive_achievements", initial_data = {} },
-	{ key = "party_mode", initial_data = "Solo" },
-	{ key = "team", initial_data = {} },
-	{ key = "first_recorded", initial_data = -1 },
-	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
-	{ key = "sacrificed_at", initial_data = "" },
-	{ key = "converted_successfully", initial_data = false },
-	{ key = "converted_time", initial_data = "" },
-	{ key = "game_version", initial_data = "" },
-	{ key = "hardcore_player_name", initial_data = "" },
+	{ key = "deaths",                    initial_data = {} },
+	{ key = "bubble_hearth_incidents",   initial_data = {} },
+	{ key = "dt",                        initial_data = {} },
+	{ key = "played_time_gap_warnings",  initial_data = {} },
+	{ key = "trade_partners",            initial_data = {} },
+	{ key = "grief_warning_conditions",  initial_data = GRIEF_WARNING_BOTH_FACTIONS },
+	{ key = "achievements",              initial_data = {} },
+	{ key = "passive_achievements",      initial_data = {} },
+	{ key = "party_mode",                initial_data = "Solo" },
+	{ key = "team",                      initial_data = {} },
+	{ key = "first_recorded",            initial_data = -1 },
+	{ key = "grief_warning_conditions",  initial_data = GRIEF_WARNING_BOTH_FACTIONS },
+	{ key = "sacrificed_at",             initial_data = "" },
+	{ key = "converted_successfully",    initial_data = false },
+	{ key = "converted_time",            initial_data = "" },
+	{ key = "game_version",              initial_data = "" },
+	{ key = "hardcore_player_name",      initial_data = "" },
 }
 
 local settings_saved_variable_meta = {
@@ -1128,7 +1128,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	if HardcoreUnlocked_Character.game_version == "" or HardcoreUnlocked_Character.game_version == "Era" then
 		if _G["HardcoreBuildLabel"] == nil then
-		-- pass
+			-- pass
 		elseif _G["HardcoreBuildLabel"] == "Classic" then
 			C_Timer.After(5.0, function()
 				if inSOM() then
@@ -1354,6 +1354,7 @@ function Hardcore:PLAYER_DEAD()
 		playerGreet = GENDER_GREETING[3]
 	end
 	local name = UnitName("player")
+	local _, rank = GetGuildInfo("player")
 	local _, _, classID = UnitClass("player")
 	local class = CLASSES[classID]
 	local level = UnitLevel("player")
@@ -1364,7 +1365,8 @@ function Hardcore:PLAYER_DEAD()
 		mapID = C_Map.GetBestMapForUnit("player")
 		zone = C_Map.GetMapInfo(mapID).name
 	end
-	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"
+	local messageFormat = "%s ist mit Level %d in %s gestorben. Schande!"
+	local messageFormatWithRank = "Ewiger Schlingel %s ist mit Level %d in %s gestorben. Schande!"
 
 	-- Update deaths
 	if
@@ -1385,9 +1387,12 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	-- Send broadcast alert messages to guild and greenwall
-	local messageString = messageFormat:format(playerGreet, name, class, level, zone)
+	if (rank ~= nil and rank == "Ewiger Schlingel") then
+		messageFormat = messageFormatWithRank
+	end
+	local messageString = messageFormat:format(name, level, zone)
 	if not (Last_Attack_Source == nil) then
-		messageString = string.format("%s to a %s", messageString, Last_Attack_Source)
+		messageString = string.format("%s Gestorben an %s", messageString, Last_Attack_Source)
 		Last_Attack_Source = nil
 	end
 
@@ -1396,7 +1401,7 @@ function Hardcore:PLAYER_DEAD()
 		local playerPronoun = HardcoreUnlocked_Character.custom_pronoun
 			or HardcoreUnlocked_Settings.global_custom_pronoun
 			or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
-		messageString = string.format('%s. %s last words were "%s"', messageString, playerPronoun, recent_msg["text"])
+		messageString = string.format('%s. Die letzten Worte: "%s"', messageString, recent_msg["text"])
 	end
 
 	-- Send broadcast text messages to guild and greenwall
@@ -1463,7 +1468,7 @@ function Hardcore:PLAYER_UNGHOST()
 	end
 	local playerName, _ = UnitName("player")
 
-	local message = playerName .. " has resurrected!"
+	local message = playerName .. " wurde wiederbelebt!"
 
 	-- check if resurrection is authorized
 	if authorized_resurrection then
@@ -1499,7 +1504,7 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 	-- take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
 	-- C_Timer.After(PICTURE_DELAY, function()
-		-- Screenshot()
+	-- Screenshot()
 	-- end)
 
 	-- send a message to the guild if the player's level is divisible by 10
@@ -1576,11 +1581,11 @@ function Hardcore:TIME_PLAYED_MSG(...)
 				-- show message to user with calculated time between levels
 				Hardcore:Print(
 					"Level "
-						.. (recent - 1)
-						.. "-"
-						.. recent
-						.. " time played: "
-						.. SecondsToTime(totalTimePlayed - v["playedtime"])
+					.. (recent - 1)
+					.. "-"
+					.. recent
+					.. " time played: "
+					.. SecondsToTime(totalTimePlayed - v["playedtime"])
 				)
 			end
 		end
@@ -2100,13 +2105,15 @@ function Hardcore:Add(data, sender, command)
 					end)
 					if mapID then
 						local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
-						zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
+						zone = mapData and mapData.name or
+							zone              -- If player is in an instance, will have to get zone from guild roster.
 					end
 					local min_level = tonumber(HardcoreUnlocked_Settings.minimum_show_death_alert_lvl) or 0
 					if level < tonumber(min_level) then
 						return
 					end
-					level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
+					level = level > 0 and level < 61 and level or
+						guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
 					local messageFormat = "%s the %s%s|r has died at level %d in %s"
 					local messageString = messageFormat:format(
 						name:gsub("%-.*", ""),
@@ -2321,9 +2328,12 @@ function Hardcore:SendCharacterData(dest)
 		local commMessage = COMM_COMMANDS[4] .. COMM_COMMAND_DELIM
 		commMessage = commMessage .. GetAddOnMetadata("HardcoreUnlocked", "Version") .. COMM_FIELD_DELIM -- Add Version
 		if HardcoreUnlocked_Character.first_recorded ~= nil and HardcoreUnlocked_Character.first_recorded ~= -1 then
-			commMessage = commMessage .. HardcoreUnlocked_Character.first_recorded .. COMM_FIELD_DELIM -- Add creation time
+			commMessage = commMessage ..
+				HardcoreUnlocked_Character.first_recorded ..
+				COMM_FIELD_DELIM -- Add creation time
 		else
-			commMessage = commMessage .. "-1" .. COMM_FIELD_DELIM -- Add unknown creation time
+			commMessage = commMessage ..
+				"-1" .. COMM_FIELD_DELIM -- Add unknown creation time
 		end
 
 		for i, v in ipairs(HardcoreUnlocked_Character.achievements) do
@@ -2333,7 +2343,9 @@ function Hardcore:SendCharacterData(dest)
 		commMessage = commMessage .. COMM_FIELD_DELIM .. COMM_FIELD_DELIM
 
 		if HardcoreUnlocked_Character.party_mode ~= nil then
-			commMessage = commMessage .. HardcoreUnlocked_Character.party_mode .. COMM_FIELD_DELIM -- Add unknown creation time
+			commMessage = commMessage ..
+				HardcoreUnlocked_Character.party_mode ..
+				COMM_FIELD_DELIM                           -- Add unknown creation time
 		else
 			commMessage = commMessage .. "?" .. COMM_SUBFIELD_DELIM -- Add unknown creation time
 		end
@@ -2347,7 +2359,9 @@ function Hardcore:SendCharacterData(dest)
 
 		commMessage = commMessage .. COMM_FIELD_DELIM
 
-		commMessage = commMessage .. (HardcoreUnlocked_Character.hardcore_player_name or "") .. COMM_FIELD_DELIM -- Add Version
+		commMessage = commMessage ..
+			(HardcoreUnlocked_Character.hardcore_player_name or "") ..
+			COMM_FIELD_DELIM -- Add Version
 
 		for i, v in ipairs(HardcoreUnlocked_Character.passive_achievements) do
 			commMessage = commMessage .. _G.pa_id[v] .. COMM_SUBFIELD_DELIM -- Add unknown creation time
