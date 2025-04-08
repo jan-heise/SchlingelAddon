@@ -4,7 +4,7 @@
 ## Author: The Classic Hardcore team, Yazpad for unlocked modifications, DerHauge and Cricksu for schlingel modifications
 ## X-License: GNU GPLv3
 ## X-Category: Leveling,Guild
-## Version: 1.1.0
+## Version: 1.1.1
 
 
 ## DefaultState: enabled
