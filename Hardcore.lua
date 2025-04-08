@@ -1513,7 +1513,7 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 		local playerName = UnitName("player")
 		local localizedClass = UnitClass("player")
 
-		local messageFormat = "%s the %s has reached level %s!"
+		local messageFormat = "%s the %s hat Level %s erreicht! Ehre!"
 		local messageString = string.format(messageFormat, playerName, localizedClass, level)
 		SendChatMessage(messageString, "GUILD", nil, nil)
 	end
@@ -3120,7 +3120,7 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message
 			"|c0000FFFF|Hitem:myAddonName:" .. sender .. ":" .. rules .. "|h[HC Ruleset]|h|r"
 		)
 	end
-	local sixty_name, sixty_class = string.match(message, "(%w+) the (%w+) has reached level 60!")
+	local sixty_name, sixty_class = string.match(message, "(%w+) the (%w+) hat Level 60 erriecht! Ehre!")
 	if sixty_name and sixty_class then
 		HCU_showLegendaryFrame(sixty_name, sixty_class)
 	end
