@@ -1413,7 +1413,9 @@ function Hardcore:PLAYER_DEAD()
 
 	SendChatMessage(messageString, "GUILD")
 	Hardcore:Print(messageString)
-	print(string.format("Das war dein %s. Tod, SCHANDE!", Character_Deaths))
+	
+	--commented to prevent the player from reading deaths will be logged.
+	--print(string.format("Das war dein %s. Tod, SCHANDE!", Character_Deaths))
 
 	-- Send addon alert notice
 	local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
