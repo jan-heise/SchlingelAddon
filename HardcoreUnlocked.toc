@@ -9,7 +9,7 @@
 
 ## DefaultState: enabled
 ## SavedVariables: HardcoreUnlocked_Settings, Backup_Character_Data
-## SavedVariablesPerCharacter: HardcoreUnlocked_Character
+## SavedVariablesPerCharacter: HardcoreUnlocked_Character, Character_Deaths
 
 embeds.xml
 
