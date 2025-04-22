@@ -1,5 +1,8 @@
 -- Initialisierung des Addons
 function SchlingelInc:OnLoad()
+    -- Initialisierung der Regeln
+    SchlingelInc.Rules:Initialize()
+
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
 
