@@ -1,0 +1,8 @@
+## Interface: 11507
+## Title: Schlingel Inc
+## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
+## Author: Cricksu
+## Version: 2.0.0
+
+Global.lua
+Main.lua
