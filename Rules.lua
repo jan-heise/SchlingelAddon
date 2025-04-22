@@ -13,17 +13,32 @@ function SchlingelInc.Rules.ProhibitAuctionhouseUsage()
     CloseAuctionHouse() -- Schließt das Auktionshaus
 end
 
+-- Regel: Handeln mit Spielern außerhalb der Gilde verbieten
+function SchlingelInc.Rules:ProhibitTradeWithNonGuildMembers()
+    local tradePartner = UnitName("NPC") -- Name des Handelspartners
+    if tradePartner then
+        local isInGuild = SchlingelInc:IsPlayerInGuild(GetGuildInfo("NPC"))
+        if not isInGuild then
+            SchlingelInc:Print("Handeln mit Spielern außerhalb der Gilde ist verboten!")
+            CancelTrade() -- Schließt das Handelsfenster sofort
+        end
+    end
+end
+
 -- Initialisierung der Regeln
 function SchlingelInc.Rules:Initialize()
     local frame = CreateFrame("Frame")
     frame:RegisterEvent("MAIL_SHOW")          -- Event für Briefkasten öffnen
     frame:RegisterEvent("AUCTION_HOUSE_SHOW") -- Event für Auktionshaus öffnen
+    frame:RegisterEvent("TRADE_SHOW")         -- Event für Handel öffnen
 
     frame:SetScript("OnEvent", function(_, event)
         if event == "MAIL_SHOW" then
-            SchlingelInc.Rules.ProhibitMailboxUsage()
+            self:ProhibitMailboxUsage()
         elseif event == "AUCTION_HOUSE_SHOW" then
-            SchlingelInc.Rules.ProhibitAuctionhouseUsage()
+            self:ProhibitAuctionhouseUsage()
+        elseif event == "TRADE_SHOW" then
+            self:ProhibitTradeWithNonGuildMembers()
         end
     end)
 end
