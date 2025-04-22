@@ -4,12 +4,12 @@
 ## Author: The Classic Hardcore team, Yazpad for unlocked modifications, DerHauge and Cricksu for schlingel modifications
 ## X-License: GNU GPLv3
 ## X-Category: Leveling,Guild
-## Version: 1.1.1
+## Version: 1.1.2
 
 
 ## DefaultState: enabled
 ## SavedVariables: HardcoreUnlocked_Settings, Backup_Character_Data
-## SavedVariablesPerCharacter: HardcoreUnlocked_Character
+## SavedVariablesPerCharacter: HardcoreUnlocked_Character, Character_Deaths
 
 embeds.xml
 

@@ -94,6 +94,8 @@ HardcoreUnlocked_Character = {
 
 Backup_Character_Data = {}
 
+Character_Deaths = 0
+
 --[[ Local variables ]]
 --
 _G.hc_online_player_ranks = {}
@@ -1365,6 +1367,7 @@ function Hardcore:PLAYER_DEAD()
 		mapID = C_Map.GetBestMapForUnit("player")
 		zone = C_Map.GetMapInfo(mapID).name
 	end
+	Character_Deaths = Character_Deaths + 1
 	local messageFormat = "%s ist mit Level %d in %s gestorben. Schande!"
 	local messageFormatWithRank = "Ewiger Schlingel %s ist mit Level %d in %s gestorben. Schande!"
 
@@ -1410,6 +1413,9 @@ function Hardcore:PLAYER_DEAD()
 
 	SendChatMessage(messageString, "GUILD")
 	Hardcore:Print(messageString)
+	
+	--commented to prevent the player from reading deaths will be logged.
+	--print(string.format("Das war dein %s. Tod, SCHANDE!", Character_Deaths))
 
 	-- Send addon alert notice
 	local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
