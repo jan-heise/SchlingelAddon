@@ -237,7 +237,6 @@ function SchlingelInc:CreatePvPWarningFrame()
     -- Haupttext
     local text = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     text:SetPoint("TOP", pvpFrame, "TOP", 0, -20)
-    text:SetText("PvP-Ziel erkannt!")
     text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 
     -- Zielname
