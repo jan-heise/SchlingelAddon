@@ -172,8 +172,17 @@ end
 function SchlingelInc:CheckTargetPvP()
     local unit = "target"
 
-    -- and UnitIsPlayer(unit) wäre als Zusatz nur für Spieler. Wachen der anderen Fraktion sollten trotzdem den Alert triggern.
-    if UnitExists(unit) and UnitIsPVP(unit) then
+    if not UnitExists(unit) then return end
+
+        -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
+        local targetFaction = UnitFactionGroup(unit)
+        local playerFaction = UnitFactionGroup("player")
+        if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
+            --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
+            return
+        end
+        
+    if UnitIsPVP(unit) then
         local name = UnitName(unit)
         local now = GetTime()
         local lastAlert = SchlingelInc.lastPvPAlert and SchlingelInc.lastPvPAlert[name] or 0
@@ -192,8 +201,8 @@ function SchlingelInc:CheckTargetPvP()
             SchlingelInc.pvpWarningFrame:Show()
             SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
 
-            -- Fade out nach 3 seconds
-            C_Timer.After(3, function()
+            -- Fade out nach 1 Sekunde
+            C_Timer.After(1, function()
                 UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
                 C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
             end)
