@@ -111,3 +111,51 @@ frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
         end
     end
 end)
+
+-- Version Check Hilfsfunktion
+function SchlingelInc:CheckAddonVersion()
+    local highestSeenVersion = SchlingelInc.version
+
+    SchlingelInc:Print("Überprüfe Addon Version...")
+    -- Frame to handle version events
+    local versionFrame = CreateFrame("Frame")
+    versionFrame:RegisterEvent("CHAT_MSG_ADDON")
+    C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix)
+
+    -- Listen for version messages
+    versionFrame:SetScript("OnEvent", function(_, event, msgPrefix, message, _, sender)
+        if event == "CHAT_MSG_ADDON" and msgPrefix == SchlingelInc.prefix then
+            local receivedVersion = message:match("^VERSION:(.+)$")
+            if receivedVersion then
+                if SchlingelInc:CompareVersions(receivedVersion, highestSeenVersion) > 0 then
+                    highestSeenVersion = receivedVersion
+                    SchlingelInc:Print("Eine neuere Addon-Version wurde entdeckt: " .. receivedVersion .. ". Bitte aktualisiere dein Addon!")
+                
+                else
+                    SchlingelInc:Print("Addon ist auf dem neusten Stand. Sclingel Schlingel Schlingel!")
+                end
+            end
+        end
+    end)
+
+    -- Send own version
+    if IsInGuild() then
+        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. myVersion, "GUILD")
+    end
+
+end
+
+-- Hilfsfunktion zum Versionsabgleich
+function SchlingelInc:CompareVersions(v1, v2)
+    local function parse(v)
+        local major, minor, patch = string.match(v, "(%d+)%.(%d+)%.?(%d*)")
+        return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0)
+    end
+
+    local a1, a2, a3 = parse(v1)
+    local b1, b2, b3 = parse(v2)
+
+    if a1 ~= b1 then return a1 - b1 end
+    if a2 ~= b2 then return a2 - b2 end
+    return a3 - b3
+end
