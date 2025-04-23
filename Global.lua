@@ -116,7 +116,6 @@ end)
 function SchlingelInc:CheckAddonVersion()
     local highestSeenVersion = SchlingelInc.version
 
-    SchlingelInc:Print("Überprüfe Addon Version...")
     -- Frame to handle version events
     local versionFrame = CreateFrame("Frame")
     versionFrame:RegisterEvent("CHAT_MSG_ADDON")
@@ -129,10 +128,7 @@ function SchlingelInc:CheckAddonVersion()
             if receivedVersion then
                 if SchlingelInc:CompareVersions(receivedVersion, highestSeenVersion) > 0 then
                     highestSeenVersion = receivedVersion
-                    SchlingelInc:Print("Eine neuere Addon-Version wurde entdeckt: " .. receivedVersion .. ". Bitte aktualisiere dein Addon!")
-                
-                else
-                    SchlingelInc:Print("Addon ist auf dem neusten Stand. Sclingel Schlingel Schlingel!")
+                    SchlingelInc:Print("Eine neuere Addon-Version wurde entdeckt: " .. highestSeenVersion .. ". Bitte aktualisiere dein Addon!")
                 end
             end
         end
@@ -140,7 +136,7 @@ function SchlingelInc:CheckAddonVersion()
 
     -- Send own version
     if IsInGuild() then
-        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. myVersion, "GUILD")
+        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
 
 end
