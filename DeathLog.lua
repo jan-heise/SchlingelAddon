@@ -1063,8 +1063,11 @@ function DeathFrameDropdown(frame, level, menuList)
 	end
 
 	if level == 1 then
-		if not IsInGuild() then
+		if not IsInGuild() and UnitLevel("player") == 1 then
 			info.text, info.hasArrow, info.func = "Gildeneinladung anfragen", false, sendGuildRequest
+			UIDropDownMenu_AddButton(info)
+		else
+			info.text, info.hasArrow, info.func = "Gildenbeitritt nicht möglich", false, nil
 			UIDropDownMenu_AddButton(info)
 		end
 
