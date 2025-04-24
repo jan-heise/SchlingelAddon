@@ -23,13 +23,17 @@ function SchlingelInc:CreateInfoWindow()
     title:SetPoint("TOP", 0, -20)
     title:SetText("Schlingel Inc – Info")
 
-    -- Inhaltstext
-    local infoText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    infoText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -75)
-    infoText:SetText(
-        "• Regeln der Gilde:\n\n1. Mailbox verboten\n2. Auktionshaus verboten.\n3. Gruppenpflicht mit Gilde\n4. Handeln nur mit Gilde"
-        .. "\n\n• Discord: \n  " .. SchlingelInc.discordLink
-)
+    -- Regeltexte
+    local ruleText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    ruleText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -75)
+    ruleText:SetText(
+        "• Regeln der Gilde:\n\n1. Mailbox verboten\n2. Auktionshaus verboten.\n3. Gruppenpflicht mit Gilde\n4. Handeln nur mit Gilde")
+
+    -- Discord Link
+    local discordText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    discordText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -175)
+    discordText:SetText( "• Discord: \n  " .. SchlingelInc.discordLink)
+
     -- Schließen-Button
     local closeBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", InfoFrame, "TOPRIGHT", -10, -10)
