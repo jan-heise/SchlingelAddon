@@ -13,8 +13,8 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
         end
     end,
 
-    OnEnter = function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    OnEnter = function(SchlingelInc)
+        GameTooltip:SetOwner(SchlingelInc, "ANCHOR_RIGHT")
         GameTooltip:AddLine("Schlingel Inc", 1, 0.7, 0.9)
         GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
         GameTooltip:Show()
@@ -28,23 +28,22 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
 -- Initialisierung des Minimap Icons
 function SchlingelInc:InitMinimapIcon()
     if not DBIcon or not minimapLDB then
-        self:Print("MiniMap Icon konnte nicht erstellt werden.")
         return
     end
 
     -- Stelle sicher, dass das Icon nur einmal registriert wird
-    if not self.minimapRegistered then
-        self.db = self.db or {}
-        self.db.minimap = self.db.minimap or { hide = false }
+    if not SchlingelInc.minimapRegistered then
+        SchlingelInc.db = SchlingelInc.db or {}
+        SchlingelInc.db.minimap = SchlingelInc.db.minimap or { hide = false }
 
-        DBIcon:Register("SchlingelInc", minimapLDB, self.db.minimap)
-        self.minimapRegistered = true
+        DBIcon:Register("SchlingelInc", minimapLDB, SchlingelInc.db.minimap)
+        SchlingelInc.minimapRegistered = true
     end
 end
 
 -- Erstellt ein einfaches Info-Fenster mit Texten
 function SchlingelInc:CreateInfoWindow()
-    if self.infoWindow then return end
+    if SchlingelInc.infoWindow then return end
 
     local f = CreateFrame("Frame", "SchlingelIncInfoFrame", UIParent, "BackdropTemplate")
     f:SetSize(400, 250)
@@ -78,15 +77,15 @@ function SchlingelInc:CreateInfoWindow()
     local closeBtn = CreateFrame("Button", nil, f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -5, -5)
 
-    self.infoWindow = f
+    SchlingelInc.infoWindow = f
 end
 
 -- Öffnet/Schließt das Info-Fenster
 function SchlingelInc:ToggleInfoWindow()
-    self:CreateInfoWindow()
-    if self.infoWindow:IsShown() then
-        self.infoWindow:Hide()
+    SchlingelInc:CreateInfoWindow()
+    if SchlingelInc.infoWindow:IsShown() then
+        SchlingelInc.infoWindow:Hide()
     else
-        self.infoWindow:Show()
+        SchlingelInc.infoWindow:Show()
     end
 end
