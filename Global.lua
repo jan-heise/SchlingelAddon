@@ -18,7 +18,6 @@ SchlingelInc.version = GetAddOnMetadata("SchlingelInc", "Version") or "Unbekannt
 
 SchlingelInc.allowedGuilds = {
     "Schlingel Inc",
-    "Schlingel Twink"
     "Schlingel Inc II"
 }
 
@@ -141,6 +140,8 @@ function SchlingelInc:CheckAddonVersion()
             if receivedVersion then
                 if SchlingelInc:CompareVersions(receivedVersion, highestSeenVersion) > 0 then
                     highestSeenVersion = receivedVersion
+                    SchlingelInc:Print("Eine neuere Addon-Version wurde entdeckt: " ..
+                        highestSeenVersion .. ". Bitte aktualisiere dein Addon!")
                 end
             end
         end
