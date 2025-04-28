@@ -19,9 +19,7 @@ function SchlingelInc.LevelUps:Initialize()
             for _, lvl in pairs(SchlingelInc.LevelUps.Milestones) do
                 if level == lvl then
                     local player = UnitName("player")
-
                     local Message = player .. " hat Level " .. level .. " erreicht! Schlingel! Schlingel! Schlingel!"
-                    SchlingelInc:Print(Message)
                     SendChatMessage(Message, "GUILD")
                 end
             end
