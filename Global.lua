@@ -19,6 +19,7 @@ SchlingelInc.version = GetAddOnMetadata("SchlingelInc", "Version") or "Unbekannt
 SchlingelInc.allowedGuilds = {
     "Schlingel Inc",
     "Schlingel Twink"
+    "Schlingel Inc II"
 }
 
 -- Tabelle für PvP-Alert Timestamps
@@ -140,7 +141,6 @@ function SchlingelInc:CheckAddonVersion()
             if receivedVersion then
                 if SchlingelInc:CompareVersions(receivedVersion, highestSeenVersion) > 0 then
                     highestSeenVersion = receivedVersion
-                    SchlingelInc:Print("Eine neuere Addon-Version wurde entdeckt: " .. highestSeenVersion .. ". Bitte aktualisiere dein Addon!")
                 end
             end
         end
@@ -150,7 +150,6 @@ function SchlingelInc:CheckAddonVersion()
     if IsInGuild() then
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
-
 end
 
 -- Hilfsfunktion zum Versionsabgleich
@@ -174,14 +173,14 @@ function SchlingelInc:CheckTargetPvP()
 
     if not UnitExists(unit) then return end
 
-        -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
-        local targetFaction = UnitFactionGroup(unit)
-        local playerFaction = UnitFactionGroup("player")
-        if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
-            --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
-            return
-        end
-        
+    -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
+    local targetFaction = UnitFactionGroup(unit)
+    local playerFaction = UnitFactionGroup("player")
+    if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
+        --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
+        return
+    end
+
     if UnitIsPVP(unit) then
         local name = UnitName(unit)
         local now = GetTime()
@@ -210,7 +209,6 @@ function SchlingelInc:CheckTargetPvP()
     end
 end
 
-
 -- Pop Up für die PvP Warnung
 function SchlingelInc:CreatePvPWarningFrame()
     if SchlingelInc.pvpWarningFrame then return end
@@ -221,11 +219,13 @@ function SchlingelInc:CreatePvPWarningFrame()
     pvpFrame:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 16, edgeSize = 16,
+        tile = true,
+        tileSize = 16,
+        edgeSize = 16,
         insets = { left = 8, right = 8, top = 8, bottom = 8 }
     })
     pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1) -- Schlingel-Farbe (rosa)
-    pvpFrame:SetBackdropColor(0, 0, 0, 0.30) -- Transparenter Hintergrund
+    pvpFrame:SetBackdropColor(0, 0, 0, 0.30)          -- Transparenter Hintergrund
 
     pvpFrame:SetMovable(true)
     pvpFrame:EnableMouse(true)
@@ -275,4 +275,3 @@ function SchlingelInc:RumbleFrame(frame)
         end
     end)
 end
-
