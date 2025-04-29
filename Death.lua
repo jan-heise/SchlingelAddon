@@ -1,3 +1,9 @@
+-- Variable zum Speichern der letzten Nachricht
+LastChatMessage = ""
+
+-- Variable zum Speichern des letzten Gegners
+LastAttackSource = ""
+
 if not CharacterDeaths then
     CharacterDeaths = 0
 end
@@ -7,13 +13,11 @@ DeathFrame:RegisterEvent("PLAYER_DEAD")
 
 -- Event-Handler
 DeathFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "PLAYER_DEAD" then
-        
+
 	-- Vorbereiten der genutzten Variablen für die GildenNachricht
 	local name = UnitName("player")
 	local _, rank = GetGuildInfo("player")
-	local _, _, classID = UnitClass("player")
-	local class = CLASSES[classID]
+	local class = UnitClass("player")
 	local level = UnitLevel("player")
 	local zone, mapID
 	if IsInInstance() then
@@ -24,21 +28,23 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 	end
 
 	-- Formatiert die Broadcast Nachricht
-    local messageFormat = "%s ist mit Level %d in %s gestorben. Schande!"
-	local messageFormatWithRank = "Ewiger Schlingel %s ist mit Level %d in %s gestorben. Schande!"
+    local messageFormat = "%s der %s ist mit Level %s in %s gestorben. Schande!"
+	local messageFormatWithRank = "Ewiger Schlingel %s, der %s ist mit Level %s in %s gestorben. Schande!"
 	if (rank ~= nil and rank == "EwigerSchlingel") then
 		messageFormat = messageFormatWithRank
 	end
-	local messageString = messageFormat:format(name, level, zone)
-	if not (Last_Attack_Source == nil) then
-		messageString = string.format("%s Gestorben an %s", messageString, Last_Attack_Source)
+	local messageString = messageFormat:format(name, class, level, zone)
+
+	if LastAttackSource and LastAttackSource ~= "" then
+		messageString = string.format("%s Gestorben an %s", messageString, LastAttackSource)
 		Last_Attack_Source = nil
 	end
 
 	-- Letzte Worte
-	if not (recent_msg["text"] == nil) then
-		messageString = string.format('%s. Die letzten Worte: "%s"', messageString, recent_msg["text"])
+	if LastChatMessage and LastChatMessage ~= "" then
+		messageString = string.format('%s. Die letzten Worte: "%s"', messageString, LastChatMessage)
 	end
+	SchlingelInc:Print(LastChatMessage)
 
 	-- -- Send broadcast text messages to guild and greenwall
 	-- selfDeathAlert(DeathLog_Last_Attack_Source)
@@ -48,7 +54,6 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 
     CharacterDeaths = CharacterDeaths + 1
 	SchlingelInc:Print(messageString)
-    end
 end)
 
 -- Slash-Befehl definieren
@@ -63,7 +68,7 @@ SlashCmdList["DEATHSET"] = function(msg)
     end
 
     -- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann.
-    if CharacterDeaths ~= nil then
+    if CharacterDeaths ~= 0 then
         SchlingelInc:Print("Tod-Counter ist bereits gesetzt auf: " .. CharacterDeaths)
         return
     end
@@ -71,3 +76,40 @@ SlashCmdList["DEATHSET"] = function(msg)
     CharacterDeaths = inputValue
     SchlingelInc:Print("Tod-Counter wurde initial auf " .. CharacterDeaths .. " gesetzt.")
 end
+
+
+-- ChatFrame und ChatHandler für letzte Worte
+local ChatTrackerFrame = CreateFrame("Frame")
+
+-- Relevante Chat-Events registrieren
+ChatTrackerFrame:RegisterEvent("CHAT_MSG_SAY")
+ChatTrackerFrame:RegisterEvent("CHAT_MSG_GUILD")
+ChatTrackerFrame:RegisterEvent("CHAT_MSG_PARTY")
+ChatTrackerFrame:RegisterEvent("CHAT_MSG_RAID")
+
+-- Eigener Spielername (inkl. Realm bei Bedarf)
+local playerName = UnitName("player")
+
+ChatTrackerFrame:SetScript("OnEvent", function(self, event, msg, sender, ...)
+    -- Nur speichern, wenn der Sender der eigene Spieler ist
+    if sender == playerName or sender:match("^" .. playerName .. "%-") then
+        LastChatMessage = msg
+    end
+end)
+
+
+
+-- CombatFrame für den letzten Angreifer
+local CombatLogFrame = CreateFrame("Frame")
+CombatLogFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+
+CombatLogFrame:SetScript("OnEvent", function()
+    local _, event, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellID, spellName, _, amount = CombatLogGetCurrentEventInfo()
+
+    if destGUID == UnitGUID("player") then
+        if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or event == "SPELL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE" then
+            -- Speichere letzte Angriffsquelle
+            LastAttackSource = sourceName or "Unbekannt"
+        end
+    end
+end)
