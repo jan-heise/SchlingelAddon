@@ -14,4 +14,5 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Global.lua
 Main.lua
 Rules.lua
+LevelUp.lua
 Interface.lua
