@@ -5,6 +5,7 @@ function SchlingelInc:OnLoad()
     -- Initialisierung der LevelUps
     SchlingelInc.LevelUps:Initialize()
     SchlingelInc:CheckAddonVersion()
+    SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
 
@@ -15,4 +16,8 @@ frame:SetScript("OnEvent", function(_, event, addonName)
     if addonName == "SchlingelInc" then
         SchlingelInc:OnLoad()
     end
+end)
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function()
+    SchlingelInc:InitMinimapIcon()
 end)

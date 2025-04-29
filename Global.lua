@@ -21,8 +21,15 @@ SchlingelInc.allowedGuilds = {
     "Schlingel Twink"
 }
 
+-- Tabelle für PvP-Alert Timestamps
+SchlingelInc.lastPvPAlert = {}
+
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("CHAT_MSG_ADDON")
+
+-- Frame für die PvP Interaktion
+local pvpFrame = CreateFrame("Frame")
+pvpFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 
 -- Print-Funktion
 function SchlingelInc:Print(message)
@@ -112,6 +119,11 @@ frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
     end
 end)
 
+-- Event beim Zielwechsel abgreifen und PvP Helfer Funktion rufen
+pvpFrame:SetScript("OnEvent", function()
+    SchlingelInc:CheckTargetPvP()
+end)
+
 -- Version Check Hilfsfunktion
 function SchlingelInc:CheckAddonVersion()
     local highestSeenVersion = SchlingelInc.version
@@ -154,4 +166,158 @@ function SchlingelInc:CompareVersions(v1, v2)
     if a1 ~= b1 then return a1 - b1 end
     if a2 ~= b2 then return a2 - b2 end
     return a3 - b3
+end
+
+-- Überprüfe ob das Ziel ein PvP Flag hat
+function SchlingelInc:CheckTargetPvP()
+    local unit = "target"
+
+    if not UnitExists(unit) then return end
+
+        -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
+        local targetFaction = UnitFactionGroup(unit)
+        local playerFaction = UnitFactionGroup("player")
+        if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
+            --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
+            return
+        end
+        
+    if UnitIsPVP(unit) then
+        local name = UnitName(unit)
+        local now = GetTime()
+        local lastAlert = SchlingelInc.lastPvPAlert and SchlingelInc.lastPvPAlert[name] or 0
+
+        if not SchlingelInc.lastPvPAlert then
+            SchlingelInc.lastPvPAlert = {}
+        end
+
+        if (now - lastAlert) > 10 then
+            SchlingelInc.lastPvPAlert[name] = now
+
+            -- Popup generierung und zeigen
+            SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
+            SchlingelInc.pvpWarningName:SetText(name .. " ist PvP-aktiv!")
+            SchlingelInc.pvpWarningFrame:SetAlpha(1)
+            SchlingelInc.pvpWarningFrame:Show()
+            SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
+
+            -- Fade out nach 1 Sekunde
+            C_Timer.After(1, function()
+                UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
+                C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
+            end)
+        end
+    end
+end
+
+
+-- Pop Up für die PvP Warnung
+function SchlingelInc:CreatePvPWarningFrame()
+    if SchlingelInc.pvpWarningFrame then return end
+
+    local pvpFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    pvpFrame:SetSize(320, 110)
+    pvpFrame:SetPoint("CENTER")
+    pvpFrame:SetBackdrop({
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 8, right = 8, top = 8, bottom = 8 }
+    })
+    pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1) -- Schlingel-Farbe (rosa)
+    pvpFrame:SetBackdropColor(0, 0, 0, 0.30) -- Transparenter Hintergrund
+
+    pvpFrame:SetMovable(true)
+    pvpFrame:EnableMouse(true)
+    pvpFrame:RegisterForDrag("LeftButton")
+    pvpFrame:SetScript("OnDragStart", pvpFrame.StartMoving)
+    pvpFrame:SetScript("OnDragStop", pvpFrame.StopMovingOrSizing)
+    pvpFrame:Hide()
+
+    -- Haupttext
+    local text = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+    text:SetPoint("TOP", pvpFrame, "TOP", 0, -20)
+    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
+
+    -- Zielname
+    local nameText = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    nameText:SetPoint("BOTTOM", pvpFrame, "BOTTOM", 0, 25)
+    nameText:SetFont("Fonts\\FRIZQT__.TTF", 14)
+    nameText:SetTextColor(1, 0.82, 0) -- Gelblicher Farbton für Namen
+
+    -- Speichern
+    SchlingelInc.pvpWarningFrame = pvpFrame
+    SchlingelInc.pvpWarningText = text
+    SchlingelInc.pvpWarningName = nameText
+end
+
+-- Kurze Rumble-Animation beim Erscheinen
+function SchlingelInc:RumbleFrame(frame)
+    if not frame then return end
+
+    local rumbleTime = 0.3
+    local interval = 0.03
+    local totalTicks = math.floor(rumbleTime / interval)
+    local tick = 0
+
+    C_Timer.NewTicker(interval, function()
+        if not frame:IsShown() then
+            return
+        end
+
+        tick = tick + 1
+        local offsetX = math.random(-4, 4)
+        local offsetY = math.random(-4, 4)
+        frame:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
+
+        if tick >= totalTicks then
+            frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        end
+    end)
+end
+
+
+-- Ab hier MiniMap Icon
+
+local LDB = LibStub("LibDataBroker-1.1")
+local DBIcon = LibStub("LibDBIcon-1.0")
+
+-- Datenobjekt für das Minimap Icon
+local minimapLDB = LDB:NewDataObject("SchlingelInc", {
+    type = "data source",
+    text = "Schlingel Inc",
+    icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga",
+
+    OnClick = function(_, button)
+        if button == "LeftButton" then
+            SchlingelInc:ToggleInfoWindow()
+        end
+    end,
+
+    OnEnter = function(SchlingelInc)
+        GameTooltip:SetOwner(SchlingelInc, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Schlingel Inc", 1, 0.7, 0.9)
+        GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
+        GameTooltip:Show()
+    end,
+
+    OnLeave = function()
+        GameTooltip:Hide()
+    end
+})
+
+-- Initialisierung des Minimap Icons
+function SchlingelInc:InitMinimapIcon()
+    if not DBIcon or not minimapLDB then
+        return
+    end
+
+    -- Stelle sicher, dass das Icon nur einmal registriert wird
+    if not SchlingelInc.minimapRegistered then
+        SchlingelInc.db = SchlingelInc.db or {}
+        SchlingelInc.db.minimap = SchlingelInc.db.minimap or { hide = false }
+
+        DBIcon:Register("SchlingelInc", minimapLDB, SchlingelInc.db.minimap)
+        SchlingelInc.minimapRegistered = true
+    end
 end
