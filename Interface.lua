@@ -1,4 +1,3 @@
--- Erstellt ein einfaches Info-Fenster mit Texten
 function SchlingelInc:CreateInfoWindow()
     if SchlingelInc.infoWindow then return end
 
@@ -32,11 +31,50 @@ function SchlingelInc:CreateInfoWindow()
     -- Discord Link
     local discordText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     discordText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -175)
-    discordText:SetText( "• Discord: \n  " .. SchlingelInc.discordLink)
+    discordText:SetText("• Discord: \n  " .. SchlingelInc.discordLink)
 
     -- Schließen-Button
     local closeBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", InfoFrame, "TOPRIGHT", -10, -10)
+
+    -- Button zum Verlassen der Kanäle (looped)
+    local leaveChannelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
+    leaveChannelsBtn:SetSize(200, 30)
+    leaveChannelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 100, 10)
+    leaveChannelsBtn:SetText("Verlasse Alle Kanäle")
+    leaveChannelsBtn:SetScript("OnClick", function()
+        local channelsToLeave = {
+            "Allgemein", "General",
+            "Handel", "Trade",
+            "LokaleVerteidigung", "LocalDefense",
+            "SucheNachGruppe", "LookingForGroup",
+            "WeltVerteidigung", "WorldDefense"
+        }
+    
+        for i = 1, 10 do
+            local id, name = GetChannelName(i)
+            if name then
+                for _, unwanted in ipairs(channelsToLeave) do
+                    if string.find(name:lower(), unwanted:lower()) then
+                        LeaveChannelByName(name)
+                        SchlingelInc:Print("Schlingel Inc: Verlasse Kanal '" .. name .. "'")
+                        break
+                    end
+                end
+            end
+        end
+    end)
+
+    -- Schalte die Fenster für beide Sprachen
+    local function SetButtonTextLanguage()
+        if GetLocale() == "deDE" then
+            leaveChannelsBtn:SetText("Verlasse Alle Kanäle")
+        else
+            leaveChannelsBtn:SetText("Leave All Channels")
+        end
+    end
+
+    SetButtonTextLanguage()
 
     SchlingelInc.infoWindow = InfoFrame
 end
