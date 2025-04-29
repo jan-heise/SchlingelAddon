@@ -1,9 +1,17 @@
+-- global für die Regel texte im Interface
+Rulestext = {
+    "Die Nutzung des Briefkastens ist verboten!",
+    "Die Nutzung des Auktionshauses ist verboten!",
+    "Gruppen mit Spielern außerhalb der Gilden sind verboten!",
+    "Handeln mit Spielern außerhalb der Gilden ist verboten!"
+}
+
 function SchlingelInc:CreateInfoWindow()
     if SchlingelInc.infoWindow then return end
 
     local InfoFrame = CreateFrame("Frame", "SchlingelIncInfoFrame", UIParent, "BackdropTemplate")
-    InfoFrame:SetSize(400, 250)
-    InfoFrame:SetPoint("CENTER")
+    InfoFrame:SetSize(500, 350)
+    InfoFrame:SetPoint("RIGHT", -50, 25)
     InfoFrame:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
@@ -17,21 +25,31 @@ function SchlingelInc:CreateInfoWindow()
     InfoFrame:SetScript("OnDragStop", InfoFrame.StopMovingOrSizing)
     InfoFrame:Hide()
 
+
+    -- Ab hier Textfelder
+
     -- Überschrift
     local title = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
     title:SetPoint("TOP", 0, -20)
-    title:SetText("Schlingel Inc – Info")
+    title:SetText("Schlingel Inc")
 
     -- Regeltexte
     local ruleText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    ruleText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -75)
-    ruleText:SetText(
-        "• Regeln der Gilde:\n\n1. Mailbox verboten\n2. Auktionshaus verboten.\n3. Gruppenpflicht mit Gilde\n4. Handeln nur mit Gilde")
+    ruleText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -50)
+    ruleText:SetText("Regeln der Gilden:\n\n\n")
+    for index, value in ipairs(Rulestext) do
+        ruleText:SetText(ruleText:GetText() .. value .. "\n\n")
+    end
+    ruleText:SetJustifyH("LEFT")
 
     -- Discord Link
     local discordText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    discordText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 110, -175)
-    discordText:SetText("• Discord: \n  " .. SchlingelInc.discordLink)
+    discordText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -200)
+    discordText:SetText("Discord: " .. SchlingelInc.discordLink)
+    discordText:SetJustifyH("LEFT")
+
+
+    -- Ab hier Button Code.
 
     -- Schließen-Button
     local closeBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelCloseButton")
@@ -40,9 +58,10 @@ function SchlingelInc:CreateInfoWindow()
     -- Button zum Verlassen der Kanäle (looped)
     local leaveChannelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
     leaveChannelsBtn:SetSize(200, 30)
-    leaveChannelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 100, 10)
-    leaveChannelsBtn:SetText("Verlasse Alle Kanäle")
-    leaveChannelsBtn:SetScript("OnClick", function()
+    leaveChannelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 60)
+
+        leaveChannelsBtn:SetText("Verlasse alle globalen Kanäle")
+        leaveChannelsBtn:SetScript("OnClick", function()
         local channelsToLeave = {
             "Allgemein", "General",
             "Handel", "Trade",
@@ -50,7 +69,7 @@ function SchlingelInc:CreateInfoWindow()
             "SucheNachGruppe", "LookingForGroup",
             "WeltVerteidigung", "WorldDefense"
         }
-    
+
         for i = 1, 10 do
             local id, name = GetChannelName(i)
             if name then
@@ -65,16 +84,32 @@ function SchlingelInc:CreateInfoWindow()
         end
     end)
 
-    -- Schalte die Fenster für beide Sprachen
-    local function SetButtonTextLanguage()
-        if GetLocale() == "deDE" then
-            leaveChannelsBtn:SetText("Verlasse Alle Kanäle")
-        else
-            leaveChannelsBtn:SetText("Leave All Channels")
-        end
-    end
+    -- Button zum Beitreten der Schlingel Chats 
+    local joinChanelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
+    joinChanelsBtn:SetSize(200, 30)
+    joinChanelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 25)
+    joinChanelsBtn:SetText("Schlingelchats beitreten")
+    joinChanelsBtn:SetScript("OnClick", function()
+        SchlingelInc:Print("Schlingelchats beigetreten")
+    end)
 
-    SetButtonTextLanguage()
+    -- Button zum Anfragen der Main Gilde 
+    local joinMainGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
+    joinMainGuildBtn:SetSize(200, 30)
+    joinMainGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 60)
+    joinMainGuildBtn:SetText("SchlingelInc beitreten")
+    joinMainGuildBtn:SetScript("OnClick", function()
+        SchlingelInc:Print("Gildenbeitritt SchlingelInc angefragt")
+    end)
+
+    -- Button zum Anfragen der Twink Gilde 
+    local joinTwinkGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
+    joinTwinkGuildBtn:SetSize(200, 30)
+    joinTwinkGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 25)
+    joinTwinkGuildBtn:SetText("Twinkgilde beitreten")
+    joinTwinkGuildBtn:SetScript("OnClick", function()
+        SchlingelInc:Print("Gildenbeitritt Twink Gilde angefragt")
+    end)
 
     SchlingelInc.infoWindow = InfoFrame
 end
