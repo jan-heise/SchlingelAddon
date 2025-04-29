@@ -4,6 +4,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc.Rules:Initialize()
 
     SchlingelInc:CheckAddonVersion()
+    SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
 
