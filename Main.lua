@@ -16,3 +16,7 @@ frame:SetScript("OnEvent", function(_, event, addonName)
         SchlingelInc:OnLoad()
     end
 end)
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function()
+    SchlingelInc:InitMinimapIcon()
+end)
