@@ -14,8 +14,8 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
 
-frame:SetScript("OnEvent", function(_, event, arg1)
-    if event == "ADDON_LOADED" and arg1 == "SchlingelInc" then
+frame:SetScript("OnEvent", function(_, event, addonName)
+    if event == "ADDON_LOADED" and addonName == "SchlingelInc" then
         SchlingelInc:OnLoad()
     elseif event == "PLAYER_LOGIN" then
         SchlingelInc:InitMinimapIcon()
