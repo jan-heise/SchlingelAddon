@@ -15,6 +15,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
 
+-- So haben wir einen OnEvent Listener. Doppelte überschreiben sich gegenseitig.
 frame:SetScript("OnEvent", function(_, event, addonName)
     if event == "ADDON_LOADED" and addonName == "SchlingelInc" then
         SchlingelInc:OnLoad()
