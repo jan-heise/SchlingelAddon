@@ -6,6 +6,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc.LevelUps:Initialize()
     SchlingelInc:CheckAddonVersion()
     SchlingelInc:CreatePvPWarningFrame()
+    SchlingelInc:InitMinimapIcon()
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
 
@@ -17,7 +18,5 @@ frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(_, event, addonName)
     if event == "ADDON_LOADED" and addonName == "SchlingelInc" then
         SchlingelInc:OnLoad()
-    elseif event == "PLAYER_LOGIN" then
-        SchlingelInc:InitMinimapIcon()
     end
 end)
