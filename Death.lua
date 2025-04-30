@@ -15,6 +15,7 @@ DeathFrame:RegisterEvent("PLAYER_UNGHOST")
 -- Event-Handler
 DeathFrame:SetScript("OnEvent", function(self, event, ...)
 
+	-- Event für den Tod.
 	if event == "PLAYER_DEAD" then
 		-- Vorbereiten der genutzten Variablen für die GildenNachricht
 		local name = UnitName("player")
@@ -51,6 +52,8 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		SendChatMessage(messageString, "GUILD")
 
 		CharacterDeaths = CharacterDeaths + 1
+
+	-- Event für den revive. Ist aktuell allgemein, sollte also zB auch beim rez triggern.
 	else if event == "PLAYER_UNGHOST" then
 		local name = UnitName("player")
 		SendChatMessage(name .. " wurde wiederbelebt!", "GUILD")
