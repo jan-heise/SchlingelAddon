@@ -12,12 +12,12 @@ end
 -- Event-Handler registrieren
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
-frame:SetScript("OnEvent", function(_, event, addonName)
-    if addonName == "SchlingelInc" then
-        SchlingelInc:OnLoad()
-    end
-end)
 frame:RegisterEvent("PLAYER_LOGIN")
-frame:SetScript("OnEvent", function()
-    SchlingelInc:InitMinimapIcon()
+
+frame:SetScript("OnEvent", function(_, event, arg1)
+    if event == "ADDON_LOADED" and arg1 == "SchlingelInc" then
+        SchlingelInc:OnLoad()
+    elseif event == "PLAYER_LOGIN" then
+        SchlingelInc:InitMinimapIcon()
+    end
 end)
