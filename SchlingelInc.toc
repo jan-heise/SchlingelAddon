@@ -17,5 +17,4 @@ Main.lua
 Rules.lua
 LevelUp.lua
 Interface.lua
-
 Death.lua
