@@ -67,7 +67,7 @@ SlashCmdList["DEATHSET"] = function(msg)
         return
     end
 
-    -- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann.
+    -- -- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann. Zum Debuggen einfach auskommentieren.
     if CharacterDeaths ~= 0 then
         SchlingelInc:Print("Tod-Counter ist bereits gesetzt auf: " .. CharacterDeaths)
         return
