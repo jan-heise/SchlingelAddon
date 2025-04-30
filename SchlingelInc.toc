@@ -1,7 +1,7 @@
 ## Interface: 11507
 ## Title: Schlingel Inc
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
-## Author: Cricksu, Pudi
+## Author: Cricksu, Pudi, Canasterzaster
 ## Version: 2.0.0
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
