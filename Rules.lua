@@ -27,30 +27,30 @@ end
 
 -- Regel: Gruppen mit Spielern außerhalb der Gilde verbieten
 function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
-    local identifiers = {
-        "party1",
-        "party2",
-        "party3",
-        "party4",
-    }
+    local groupGuilds = {}
+    local guildName = GetGuildInfo("player")
+    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "SCHLINGEL_GUILD:" .. guildName, "RAID")
 
-    for _, id in ipairs(identifiers) do
-        local party_member = UnitName(id)
-
-        if party_member == nil then
-            -- Spieler existiert nicht, weiter zur nächsten ID
-        elseif UnitIsConnected(id) == false then
-            -- Spieler ist offline, weiter zur nächsten ID
-        else
-            -- Überprüfe, ob der Spieler in einer erlaubten Gilde ist
-            local isInGuild = SchlingelInc:IsPlayerInGuild(GetGuildInfo(id))
-            if not isInGuild then
-                -- Wenn ein Spieler nicht in der Gilde ist, starte die asynchrone Gruppenprüfung
-                SchlingelInc:IsGroupInGuild()
-                return -- Beende die Schleife, da die Gruppenprüfung gestartet wurde
+    local frame = CreateFrame("Frame")
+    frame:RegisterEvent("CHAT_MSG_ADDON")
+    frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
+        if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
+            local _, _, guildName = string.find(message, "SCHLINGEL_GUILD:(.+)")
+            if guildName and guildName ~= "" then
+                groupGuilds[SchlingelInc:RemoveRealmFromName(sender)] = guildName
             end
         end
-    end
+    end)
+
+    C_Timer.After(2, function()
+        for _, guildName in pairs(groupGuilds) do
+            if not SchlingelInc:IsGuildAllowed(guildName) then
+                SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
+                LeaveParty() -- Command to leave the group
+            end
+        end
+        frame:UnregisterEvent("CHAT_MSG_ADDON")
+    end)
 end
 
 -- Initialisierung der Regeln
@@ -60,16 +60,20 @@ function SchlingelInc.Rules:Initialize()
     frame:RegisterEvent("AUCTION_HOUSE_SHOW")  -- Event für Auktionshaus öffnen
     frame:RegisterEvent("TRADE_SHOW")          -- Event für Handel öffnen
     frame:RegisterEvent("GROUP_ROSTER_UPDATE") -- Event für Handel öffnen
+    frame:RegisterEvent("RAID_ROSTER_UPDATE")  -- Event für Raidmitglieder aktualisieren
+    frame:RegisterEvent("CHAT_MSG_ADDON")      -- Event für Chatnachrichten
 
-    frame:SetScript("OnEvent", function(_, event)
+    frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
         if event == "MAIL_SHOW" then
             self:ProhibitMailboxUsage()
         elseif event == "AUCTION_HOUSE_SHOW" then
             self:ProhibitAuctionhouseUsage()
         elseif event == "TRADE_SHOW" then
             self:ProhibitTradeWithNonGuildMembers()
-        elseif event == "GROUP_ROSTER_UPDATE" then
+        elseif event == "GROUP_ROSTER_UPDATE" or event == "RAID_ROSTER_UPDATE" then
             self:ProhibitGroupingWithNonGuildMembers()
+        elseif event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
+            --print(message) --debug
         end
     end)
 end

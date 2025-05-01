@@ -50,6 +50,12 @@ function SchlingelInc:CreateInfoWindow()
     discordText:SetText("Discord: " .. SchlingelInc.discordLink)
     discordText:SetJustifyH("LEFT")
 
+    -- Version Text
+    local versionText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    versionText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -225)
+    versionText:SetText("Version: " .. SchlingelInc.version)
+    versionText:SetJustifyH("LEFT")
+
 
     -- Ab hier Button Code.
 

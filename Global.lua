@@ -21,6 +21,15 @@ SchlingelInc.allowedGuilds = {
     "Schlingel IInc"
 }
 
+function SchlingelInc:IsGuildAllowed(guildName)
+    for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
+        if guildName == allowedGuild then
+            return true
+        end
+    end
+    return false
+end
+
 -- Tabelle für PvP-Alert Timestamps
 SchlingelInc.lastPvPAlert = {}
 
@@ -52,57 +61,6 @@ function SchlingelInc:IsPlayerInGuild(guildName)
         end
     end
     return false
-end
-
-function SchlingelInc:IsGroupInGuild()
-    -- Tabelle, um Antworten zu speichern
-    local responses = {}
-    local allInGuild = true
-
-    -- Nachricht an die Raid-Gruppe senden, um die Gildennamen anzufordern
-    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "GUILD_NAME_REQUEST", "RAID")
-
-    -- Warte 2 Sekunden, um Antworten zu sammeln
-    C_Timer.After(2, function()
-        local identifiers = {
-            "party1",
-            "party2",
-            "party3",
-            "party4",
-        }
-
-        -- Überprüfe die Gildennamen der Gruppenmitglieder
-        for _, id in ipairs(identifiers) do
-            local party_member = UnitName(id)
-
-            if party_member and UnitIsConnected(id) then
-                -- Verwende die Antwort oder hole den Gildennamen direkt
-                local guildName = responses[party_member] or GetGuildInfo(id)
-                if not SchlingelInc:IsPlayerInGuild(guildName) then
-                    allInGuild = false
-                end
-            end
-        end
-
-        -- Wenn ein Spieler nicht in einer erlaubten Gilde ist, verlasse die Gruppe
-        if not allInGuild then
-            SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
-            LeaveParty()
-        end
-    end)
-
-    -- Registriere den Event-Listener für Addon-Nachrichten
-    frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
-        if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
-            -- Überprüfe, ob die Nachricht eine GILD_NAME_RESPONSE ist
-            local guildName = message:match("^GUILD_NAME_RESPONSE:(.+)$")
-            if guildName then
-                responses[sender] = guildName
-            end
-        end
-    end)
-
-    return true
 end
 
 -- Event-Listener für eingehende GILD_NAME_REQUEST-Nachrichten
@@ -166,6 +124,47 @@ function SchlingelInc:CompareVersions(v1, v2)
     if a1 ~= b1 then return a1 - b1 end
     if a2 ~= b2 then return a2 - b2 end
     return a3 - b3
+end
+
+-- Hilfsfunction um Tabellen auszugeben
+function SchlingelInc:PrintFormattedTable(tbl, indent)
+    -- Default indentation level is 0
+    indent = indent or 0
+    local indentation = string.rep("  ", indent)
+    local output = "{\n"
+
+    for key, value in pairs(tbl) do
+        -- Check the type of the value
+        if type(value) == "table" then
+            -- Print the key and recursively print the nested table
+            output = output ..
+                indentation ..
+                "  " .. tostring(key) .. " = " .. SchlingelInc:PrintFormattedTable(value, indent + 1) .. ",\n"
+        elseif type(value) == "string" then
+            -- Add quotes around string values
+            output = output .. indentation .. "  " .. tostring(key) .. " = \"" .. tostring(value) .. "\",\n"
+        else
+            -- Print other types as is
+            output = output .. indentation .. "  " .. tostring(key) .. " = " .. tostring(value) .. ",\n"
+        end
+    end
+
+    output = output .. indentation .. "}"
+    return output
+end
+
+-- Hilfsfunktion um den Realm-Namen aus dem Spielernamen zu entfernen
+function SchlingelInc:RemoveRealmFromName(fullName)
+    -- Find the position of the hyphen in the name
+    local dashPosition = string.find(fullName, "-")
+
+    if dashPosition then
+        -- Extract the part of the string before the hyphen
+        return string.sub(fullName, 1, dashPosition - 1)
+    else
+        -- If there's no hyphen, return the original name
+        return fullName
+    end
 end
 
 -- Überprüfe ob das Ziel ein PvP Flag hat
@@ -297,6 +296,7 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
     OnEnter = function(SchlingelInc)
         GameTooltip:SetOwner(SchlingelInc, "ANCHOR_RIGHT")
         GameTooltip:AddLine("Schlingel Inc", 1, 0.7, 0.9)
+        GameTooltip:AddLine("Version: " .. (GetAddOnMetadata("SchlingelInc", "Version") or "Unbekannt"), 1, 1, 1)
         GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
         GameTooltip:Show()
     end,
