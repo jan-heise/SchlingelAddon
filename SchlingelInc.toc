@@ -1,10 +1,21 @@
 ## Interface: 11507
 ## Title: Schlingel Inc
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
-## Author: Cricksu, Pudi
+## Author: Cricksu, Pudi, Canasterzaster
 ## Version: 2.0.0
+## SavedVariablesPerCharacter: CharacterDeaths
 
+# Notwendiges externe Abhängigkeiten aus dem Lib Folder
+## OptionalDeps: LibStub, LibDataBroker-1.1, LibDBIcon-1.0
+libs\LibStub\LibStub.lua
+libs\libdatabroker-1-1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+# Unsere lua files.
 Global.lua
 Main.lua
 Rules.lua
 GuildRecruitment.lua
+LevelUp.lua
+Interface.lua
+Death.lua
