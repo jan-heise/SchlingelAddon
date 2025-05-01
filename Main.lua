@@ -2,6 +2,8 @@
 function SchlingelInc:OnLoad()
     -- Initialisierung der Regeln
     SchlingelInc.Rules:Initialize()
+    -- Initialisierung der Gildenanfragen
+    SchlingelInc.GuildRecruitment:InitializeSlashCommands()
     -- Initialisierung der LevelUps
     SchlingelInc.LevelUps:Initialize()
     SchlingelInc:CheckAddonVersion()
