@@ -18,7 +18,7 @@ SchlingelInc.version = GetAddOnMetadata("SchlingelInc", "Version") or "Unbekannt
 
 SchlingelInc.allowedGuilds = {
     "Schlingel Inc",
-    "Schlingel Inc II"
+    "Schlingel IInc"
 }
 
 -- Tabelle für PvP-Alert Timestamps
@@ -275,4 +275,49 @@ function SchlingelInc:RumbleFrame(frame)
             frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         end
     end)
+end
+
+-- Ab hier MiniMap Icon
+
+local LDB = LibStub("LibDataBroker-1.1")
+local DBIcon = LibStub("LibDBIcon-1.0")
+
+-- Datenobjekt für das Minimap Icon
+local minimapLDB = LDB:NewDataObject("SchlingelInc", {
+    type = "data source",
+    text = "Schlingel Inc",
+    icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga",
+
+    OnClick = function(_, button)
+        if button == "LeftButton" then
+            SchlingelInc:ToggleInfoWindow()
+        end
+    end,
+
+    OnEnter = function(SchlingelInc)
+        GameTooltip:SetOwner(SchlingelInc, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Schlingel Inc", 1, 0.7, 0.9)
+        GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
+        GameTooltip:Show()
+    end,
+
+    OnLeave = function()
+        GameTooltip:Hide()
+    end
+})
+
+-- Initialisierung des Minimap Icons
+function SchlingelInc:InitMinimapIcon()
+    if not DBIcon or not minimapLDB then
+        return
+    end
+
+    -- Stelle sicher, dass das Icon nur einmal registriert wird
+    if not SchlingelInc.minimapRegistered then
+        SchlingelInc.db = SchlingelInc.db or {}
+        SchlingelInc.db.minimap = SchlingelInc.db.minimap or { hide = false }
+
+        DBIcon:Register("SchlingelInc", minimapLDB, SchlingelInc.db.minimap)
+        SchlingelInc.minimapRegistered = true
+    end
 end
