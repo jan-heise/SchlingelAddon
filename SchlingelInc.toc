@@ -3,6 +3,7 @@
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
 ## Author: Cricksu, Pudi
 ## Version: 2.0.0
+## SavedVariablesPerCharacter: CharacterDeaths
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
 ## OptionalDeps: LibStub, LibDataBroker-1.1, LibDBIcon-1.0
@@ -16,3 +17,4 @@ Main.lua
 Rules.lua
 LevelUp.lua
 Interface.lua
+Death.lua
