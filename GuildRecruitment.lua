@@ -5,7 +5,7 @@ SchlingelInc.GuildRecruitment = {}
 local inviteRequests = {}
 
 -- Funktion zum Senden einer Gildenanfrage
-local function SendGuildRequest(guildName)
+function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     -- Sicherstellen, dass ein Gildenname übergeben wurde
     if not guildName or guildName == "" then
         print("[Schlingel] Kein Gildenname angegeben.")
@@ -81,7 +81,6 @@ local function SendGuildRequest(guildName)
 
             -- Start der Anfragekette
             SendNextRequest()
-            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", "Devschlingel")
 
             -- Deregistrieren, damit der Handler nicht aktiv bleibt
             self:UnregisterEvent("WHO_LIST_UPDATE")
@@ -210,9 +209,9 @@ function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
 
     SlashCmdList["SCHLINGELINC"] = function(msg)
         if msg == "request main" then
-            SendGuildRequest("Schlingel Inc")
+            self:SendGuildRequest("Schlingel Inc")
         elseif msg == "request twink" then
-            SendGuildRequest("Schlingel Inc II")
+            self:SendGuildRequest("Schlingel Inc II")
         elseif msg == "requests" then
             if not self.requestUI then
                 self.requestUI = CreateRequestUI()

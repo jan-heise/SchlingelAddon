@@ -15,7 +15,9 @@ function SchlingelInc:CreateInfoWindow()
     InfoFrame:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true, tileSize = 32, edgeSize = 32,
+        tile = true,
+        tileSize = 32,
+        edgeSize = 32,
         insets = { left = 11, right = 12, top = 12, bottom = 11 }
     })
     InfoFrame:SetMovable(true)
@@ -60,8 +62,8 @@ function SchlingelInc:CreateInfoWindow()
     leaveChannelsBtn:SetSize(200, 30)
     leaveChannelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 60)
 
-        leaveChannelsBtn:SetText("Verlasse alle globalen Kanäle")
-        leaveChannelsBtn:SetScript("OnClick", function()
+    leaveChannelsBtn:SetText("Verlasse alle globalen Kanäle")
+    leaveChannelsBtn:SetScript("OnClick", function()
         local channelsToLeave = {
             "Allgemein", "General",
             "Handel", "Trade",
@@ -84,31 +86,33 @@ function SchlingelInc:CreateInfoWindow()
         end
     end)
 
-    -- Button zum Beitreten der Schlingel Chats 
+    -- Button zum Beitreten der Schlingel Chats
     local joinChanelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
     joinChanelsBtn:SetSize(200, 30)
     joinChanelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 25)
     joinChanelsBtn:SetText("Schlingelchats beitreten")
     joinChanelsBtn:SetScript("OnClick", function()
+        local channel_type, channel_name = JoinChannelByName("SchlingelTrade", nil, ChatFrame1:GetID(), nil);
+        local channel_type, channel_name = JoinChannelByName("SchlingelGroup", nil, ChatFrame1:GetID(), nil);
         SchlingelInc:Print("Schlingelchats beigetreten")
     end)
 
-    -- Button zum Anfragen der Main Gilde 
+    -- Button zum Anfragen der Main Gilde
     local joinMainGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
     joinMainGuildBtn:SetSize(200, 30)
     joinMainGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 60)
-    joinMainGuildBtn:SetText("SchlingelInc beitreten")
+    joinMainGuildBtn:SetText("Schlingel Inc beitreten")
     joinMainGuildBtn:SetScript("OnClick", function()
-        SchlingelInc:Print("Gildenbeitritt SchlingelInc angefragt")
+        SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel Inc")
     end)
 
-    -- Button zum Anfragen der Twink Gilde 
+    -- Button zum Anfragen der Twink Gilde
     local joinTwinkGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
     joinTwinkGuildBtn:SetSize(200, 30)
     joinTwinkGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 25)
-    joinTwinkGuildBtn:SetText("Twinkgilde beitreten")
+    joinTwinkGuildBtn:SetText("Schlingel IInc beitreten")
     joinTwinkGuildBtn:SetScript("OnClick", function()
-        SchlingelInc:Print("Gildenbeitritt Twink Gilde angefragt")
+        SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel IInc")
     end)
 
     SchlingelInc.infoWindow = InfoFrame
