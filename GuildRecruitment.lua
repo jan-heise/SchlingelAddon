@@ -90,23 +90,25 @@ end
 
 -- Addon-Nachrichten abfangen
 local function HandleAddonMessage(prefix, message, _, sender)
-    if prefix ~= SchlingelInc.prefix then return end
+    if CanGuildInvite() then
+        if prefix ~= SchlingelInc.prefix then return end
 
-    -- INVITE_REQUEST-Nachricht verarbeiten
-    local name, level = message:match("^INVITE_REQUEST:([^:]+):(%d+)$")
-    if name and level then
-        -- Überprüfen, ob die Anfrage bereits existiert
-        for _, existing in ipairs(inviteRequests) do
-            if existing.name == name then return end
-        end
+        -- INVITE_REQUEST-Nachricht verarbeiten
+        local name, level = message:match("^INVITE_REQUEST:([^:]+):(%d+)$")
+        if name and level then
+            -- Überprüfen, ob die Anfrage bereits existiert
+            for _, existing in ipairs(inviteRequests) do
+                if existing.name == name then return end
+            end
 
-        -- Neue Anfrage hinzufügen
-        table.insert(inviteRequests, { name = name, level = tonumber(level) })
-        SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) erhalten.", name, level))
+            -- Neue Anfrage hinzufügen
+            table.insert(inviteRequests, { name = name, level = tonumber(level) })
+            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) erhalten.", name, level))
 
-        -- UI aktualisieren, falls es sichtbar ist
-        if SchlingelInc.GuildRecruitment.requestUI and SchlingelInc.GuildRecruitment.requestUI:IsShown() then
-            SchlingelInc.GuildRecruitment:UpdateRequestUI()
+            -- UI aktualisieren, falls es sichtbar ist
+            if SchlingelInc.GuildRecruitment.requestUI and SchlingelInc.GuildRecruitment.requestUI:IsShown() then
+                SchlingelInc.GuildRecruitment:UpdateRequestUI()
+            end
         end
     end
 end
@@ -212,7 +214,7 @@ function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
             self:SendGuildRequest("Schlingel Inc")
         elseif msg == "request twink" then
             self:SendGuildRequest("Schlingel Inc II")
-        elseif msg == "requests" then
+        elseif msg == "requests" and CanGuildInvite() then
             if not self.requestUI then
                 self.requestUI = CreateRequestUI()
             end
