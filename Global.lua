@@ -183,6 +183,7 @@ guildChatFrame:RegisterEvent("CHAT_MSG_GUILD")
 
 -- Add a filter to modify guild messages
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sender, ...)
+    if not CanGuildInvite() then return end
     -- Get the sender's version from the stored data
     local version = SchlingelInc.guildMemberVersions[sender] or nil
 
