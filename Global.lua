@@ -47,17 +47,19 @@ end
 
 -- Check if Player is in Battleground
 function SchlingelInc:IsInBattleground()
-    local IsInBattleground = false
+    local isInBattleground = false
+    local level = UnitLevel("player")
+    local isInAllowedBattleground = false
     for i = 1, GetMaxBattlefieldID() do
         local battleFieldStatus = GetBattlefieldStatus(i)
         if battleFieldStatus == "active" then
-            IsInBattleground = true
-            break
+            isInBattleground = true
         end
     end
-    if IsInBattleground then
-        return
+    if isInBattleground and level >= 55 then
+        isInAllowedBattleground = true
     end
+    return isInAllowedBattleground
 end
 
 -- Überprüfen, ob ein Spieler in der Gilde ist
