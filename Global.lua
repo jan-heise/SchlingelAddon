@@ -45,6 +45,21 @@ function SchlingelInc:Print(message)
     print(SchlingelInc.colorCode .. "[Schlingel Inc]|r " .. message)
 end
 
+-- Check if Player is in Battleground
+function SchlingelInc:IsInBattleground()
+    local IsInBattleground = false
+    for i = 1, GetMaxBattlefieldID() do
+        local battleFieldStatus = GetBattlefieldStatus(i)
+        if battleFieldStatus == "active" then
+            IsInBattleground = true
+            break
+        end
+    end
+    if IsInBattleground then
+        return
+    end
+end
+
 -- Überprüfen, ob ein Spieler in der Gilde ist
 --[[
     usage:
@@ -79,7 +94,9 @@ end)
 
 -- Event beim Zielwechsel abgreifen und PvP Helfer Funktion rufen
 pvpFrame:SetScript("OnEvent", function()
-    SchlingelInc:CheckTargetPvP()
+    if not SchlingelInc:IsInBattleground() then
+        SchlingelInc:CheckTargetPvP()
+    end
 end)
 
 -- Version Check Hilfsfunktion
