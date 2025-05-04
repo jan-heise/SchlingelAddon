@@ -45,6 +45,23 @@ function SchlingelInc:Print(message)
     print(SchlingelInc.colorCode .. "[Schlingel Inc]|r " .. message)
 end
 
+-- Check if Player is in Battleground
+function SchlingelInc:IsInBattleground()
+    local isInBattleground = false
+    local level = UnitLevel("player")
+    local isInAllowedBattleground = false
+    for i = 1, GetMaxBattlefieldID() do
+        local battleFieldStatus = GetBattlefieldStatus(i)
+        if battleFieldStatus == "active" then
+            isInBattleground = true
+        end
+    end
+    if isInBattleground and level >= 55 then
+        isInAllowedBattleground = true
+    end
+    return isInAllowedBattleground
+end
+
 -- Überprüfen, ob ein Spieler in der Gilde ist
 --[[
     usage:
@@ -79,7 +96,9 @@ end)
 
 -- Event beim Zielwechsel abgreifen und PvP Helfer Funktion rufen
 pvpFrame:SetScript("OnEvent", function()
-    SchlingelInc:CheckTargetPvP()
+    if not SchlingelInc:IsInBattleground() then
+        SchlingelInc:CheckTargetPvP()
+    end
 end)
 
 -- Version Check Hilfsfunktion
@@ -125,6 +144,57 @@ function SchlingelInc:CompareVersions(v1, v2)
     if a2 ~= b2 then return a2 - b2 end
     return a3 - b3
 end
+
+-- Hook into the SendChatMessage function
+local originalSendChatMessage = SendChatMessage
+function SendChatMessage(msg, chatType, language, channel)
+    -- Check if the message is being sent to the guild
+    if chatType == "GUILD" then
+        -- Send the addon version via the hidden addon communications channel
+        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
+    end
+
+    -- Call the original SendChatMessage function
+    originalSendChatMessage(msg, chatType, language, channel)
+end
+
+-- Table to store versions of guild members
+SchlingelInc.guildMemberVersions = {}
+
+-- Frame to handle addon messages
+local addonMessageFrame = CreateFrame("Frame")
+addonMessageFrame:RegisterEvent("CHAT_MSG_ADDON")
+C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix)
+
+addonMessageFrame:SetScript("OnEvent", function(_, event, prefix, message, _, sender)
+    if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
+        -- Check if the message contains version information
+        local receivedVersion = message:match("^VERSION:(.+)$")
+        if receivedVersion then
+            -- Store the version for the sender
+            SchlingelInc.guildMemberVersions[sender] = receivedVersion
+        end
+    end
+end)
+
+-- Frame to listen for guild chat messages
+local guildChatFrame = CreateFrame("Frame")
+guildChatFrame:RegisterEvent("CHAT_MSG_GUILD")
+
+-- Add a filter to modify guild messages
+ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sender, ...)
+    if not CanGuildInvite() then return end
+    -- Get the sender's version from the stored data
+    local version = SchlingelInc.guildMemberVersions[sender] or nil
+
+    local modifiedMessage = msg
+    if version ~= nil then
+        modifiedMessage = SchlingelInc.colorCode .. "[" .. version .. "]|r " .. msg
+    end
+
+    -- Return the modified message
+    return false, modifiedMessage, sender, ...
+end)
 
 -- Hilfsfunction um Tabellen auszugeben
 function SchlingelInc:PrintFormattedTable(tbl, indent)

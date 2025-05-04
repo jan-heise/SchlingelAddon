@@ -71,7 +71,9 @@ function SchlingelInc.Rules:Initialize()
         elseif event == "TRADE_SHOW" then
             self:ProhibitTradeWithNonGuildMembers()
         elseif event == "GROUP_ROSTER_UPDATE" or event == "RAID_ROSTER_UPDATE" then
-            self:ProhibitGroupingWithNonGuildMembers()
+            if not SchlingelInc:IsInBattleground() then
+                self:ProhibitGroupingWithNonGuildMembers()
+            end
         elseif event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
             --print(message) --debug
         end
