@@ -17,5 +17,6 @@ Main.lua
 Rules.lua
 GuildRecruitment.lua
 LevelUp.lua
-Interface.lua
 Death.lua
+interfaces\OffiInterface.lua
+interfaces\SchlingelInterface.lua

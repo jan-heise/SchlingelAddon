@@ -195,7 +195,7 @@ function SchlingelInc:CheckTargetPvP()
 
             -- Popup generierung und zeigen
             SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
-            SchlingelInc.pvpWarningName:SetText(name .. " ist PvP-aktiv!")
+            SchlingelInc.pvpWarningName:SetText(name .. " ist PvP geflagged!")
             SchlingelInc.pvpWarningFrame:SetAlpha(1)
             SchlingelInc.pvpWarningFrame:Show()
             SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
@@ -290,6 +290,9 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
     OnClick = function(_, button)
         if button == "LeftButton" then
             SchlingelInc:ToggleInfoWindow()
+        end
+        if button == "RightButton" then
+            SchlingelInc:ToggleOffiWindow()
         end
     end,
 
