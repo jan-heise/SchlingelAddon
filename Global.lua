@@ -237,21 +237,22 @@ function SchlingelInc:RemoveRealmFromName(fullName)
     end
 end
 
--- Überprüfe ob das Ziel ein PvP Flag hat
 function SchlingelInc:CheckTargetPvP()
     local unit = "target"
 
     if not UnitExists(unit) then return end
 
-    -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
     local targetFaction = UnitFactionGroup(unit)
-    local playerFaction = UnitFactionGroup("player")
-    if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
-        --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
+
+    -- WARNUNG bei Allianz-NPCs
+    if targetFaction == "Alliance" and not UnitIsPlayer(unit) then
+        local name = UnitName(unit) or "Unbekannt"
+        SchlingelInc:ShowPvPWarning(name .. " (Allianz-NPC)")
         return
     end
 
-    if UnitIsPVP(unit) then
+    -- WARNUNG bei Spielern mit PvP-Flag (egal ob Horde oder Allianz)
+    if UnitIsPlayer(unit) and UnitIsPVP(unit) then
         local name = UnitName(unit)
         local now = GetTime()
         local lastAlert = SchlingelInc.lastPvPAlert and SchlingelInc.lastPvPAlert[name] or 0
@@ -262,21 +263,23 @@ function SchlingelInc:CheckTargetPvP()
 
         if (now - lastAlert) > 10 then
             SchlingelInc.lastPvPAlert[name] = now
-
-            -- Popup generierung und zeigen
-            SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
-            SchlingelInc.pvpWarningName:SetText(name .. " ist PvP-aktiv!")
-            SchlingelInc.pvpWarningFrame:SetAlpha(1)
-            SchlingelInc.pvpWarningFrame:Show()
-            SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
-
-            -- Fade out nach 1 Sekunde
-            C_Timer.After(1, function()
-                UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
-                C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
-            end)
+            SchlingelInc:ShowPvPWarning(name .. " ist PvP-aktiv!")
         end
     end
+end
+
+function SchlingelInc:ShowPvPWarning(text)
+    SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
+    SchlingelInc.pvpWarningName:SetText(text)
+    SchlingelInc.pvpWarningFrame:SetAlpha(1)
+    SchlingelInc.pvpWarningFrame:Show()
+    SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
+
+    -- Fade out nach 1 Sekunde
+    C_Timer.After(1, function()
+        UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
+        C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
+    end)
 end
 
 -- Pop Up für die PvP Warnung
