@@ -6,9 +6,20 @@ local inviteRequests = {}
 
 -- Funktion zum Senden einer Gildenanfrage
 function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
+    if IsInGuild() then
+        SchlingelInc:Print("Du bist bereits in einer Gilde.")
+        return
+    end
+
+    -- einkommentieren sobald die Übergangsphase vorbei ist
+    -- if UnitLevel("player") > 1 then
+    -- SchlingelInc:Print("Du darfst nur mit Level 1 eine Gildenanfrage senden.")
+    -- return
+    -- end
+
     -- Sicherstellen, dass ein Gildenname übergeben wurde
     if not guildName or guildName == "" then
-        print("[Schlingel] Kein Gildenname angegeben.")
+        SchlingelInc:Print("Kein Gildenname angegeben.")
         return
     end
 
@@ -213,7 +224,7 @@ function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
         if msg == "request main" then
             self:SendGuildRequest("Schlingel Inc")
         elseif msg == "request twink" then
-            self:SendGuildRequest("Schlingel Inc II")
+            self:SendGuildRequest("Schlingel IInc")
         elseif msg == "requests" and CanGuildInvite() then
             if not self.requestUI then
                 self.requestUI = CreateRequestUI()
