@@ -1,3 +1,12 @@
+StaticPopupDialogs["SCHLINGEL_HARDCOREUNLOCKED_WARNING"] = {
+    text = "Du hast das veraltete Addon aktiv.\nBitte entferne es, da es zu Problemen mit SchlingelInc führt!",
+    button1 = "OK",
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
 -- Initialisierung des Addons
 function SchlingelInc:OnLoad()
     -- Initialisierung der Regeln
@@ -9,9 +18,21 @@ function SchlingelInc:OnLoad()
     SchlingelInc:CheckAddonVersion()
     SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:InitMinimapIcon()
+    -- Prüfung auf Hardcore Unlocked bzw Schlingel Addon
+    local numAddons = GetNumAddOns()
+    for i = 1, numAddons do
+        local name, _, _, enabled = GetAddOnInfo(i)
+        if name == "HardcoreUnlocked" or "SchlingelAddon" and enabled == 1 then
+            SchlingelInc:Print(
+            "|cffff0000Warnung: Du hast das veraltete Addon aktiv. Bitte entferne es, da es zu Problemen mit SchlingelInc führt!|r")
+            StaticPopup_Show("SCHLINGEL_HARDCOREUNLOCKED_WARNING")
+            break
+        end
+    end
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
     if CharacterDeaths == nil then
-        SchlingelInc:Print("Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
+        SchlingelInc:Print(
+        "Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
     end
 end
 
