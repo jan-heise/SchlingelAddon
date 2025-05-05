@@ -10,7 +10,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:InitMinimapIcon()
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
-    if CharacterDeaths == 0 then
+    if CharacterDeaths == nil then
         SchlingelInc:Print("Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
     end
 end
