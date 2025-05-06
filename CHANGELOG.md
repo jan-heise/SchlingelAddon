@@ -1,3 +1,7 @@
+# 2.0.6, 2.0.7
+
+- Remove GreenWall from dependencies and check ingame if it is enabled
+
 # 2.0.5
 
 - Fixing false positive on "Alliance" NPCs

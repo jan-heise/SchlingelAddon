@@ -21,6 +21,51 @@ SchlingelInc.allowedGuilds = {
     "Schlingel IInc"
 }
 
+function SchlingelInc:CheckDependencies()
+    StaticPopupDialogs["SCHLINGEL_HARDCOREUNLOCKED_WARNING"] = {
+        text = "Du hast das veraltete Addon aktiv.\nBitte entferne es, da es zu Problemen mit SchlingelInc führt!",
+        button1 = "OK",
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+    StaticPopupDialogs["SCHLINGEL_GREENWALL_MISSING"] = {
+        text = "Du hast Greenwall nicht aktiv.\nBitte aktiviere oder installiere es!",
+        button1 = "OK",
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+
+    C_Timer.After(30, function()
+        -- Prüfung auf Hardcore Unlocked bzw Schlingel Addon
+        local numAddons = GetNumAddOns()
+        local greenwall_found = false
+        for i = 1, numAddons do
+            local name, _, _, enabled = GetAddOnInfo(i)
+            if (name == "HardcoreUnlocked" and IsAddOnLoaded("HardcoreUnlocked")) or (name == "SchlingelAddon" and IsAddonLoaded("SchlingelAddon")) then
+                SchlingelInc:Print(
+                    "|cffff0000Warnung: Du hast das veraltete Addon aktiv. Bitte entferne es, da es zu Problemen mit SchlingelInc führt!|r")
+                StaticPopup_Show("SCHLINGEL_HARDCOREUNLOCKED_WARNING")
+            end
+
+            if name == "GreenWall" and IsAddOnLoaded("GreenWall") then
+                greenwall_found = true
+            end
+        end
+
+        C_Timer.After(5, function()
+            if not greenwall_found then
+                SchlingelInc:Print(
+                    "|cffff0000Warnung: Du hast Greenwall nicht aktiv. Bitte aktiviere oder installiere es!|r")
+                StaticPopup_Show("SCHLINGEL_GREENWALL_MISSING")
+            end
+        end)
+    end)
+end
+
 function SchlingelInc:IsGuildAllowed(guildName)
     for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
         if guildName == allowedGuild then
