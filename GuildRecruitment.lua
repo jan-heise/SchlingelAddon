@@ -1,8 +1,3 @@
--- GuildRecruitment.lua
--- Stellt sicher, dass SchlingelInc initialisiert ist, z.B.:
--- SchlingelInc = SchlingelInc or { prefix = "SCHLINGELINC_MSG" }
--- function SchlingelInc:Print(msg) print("|cffFFD700Schlingel Inc:|r " .. msg) end
-
 -- Initialisiert den Namespace für das Gildenrekrutierungsmodul, falls noch nicht vorhanden.
 SchlingelInc.GuildRecruitment = SchlingelInc.GuildRecruitment or {}
 -- Tabelle zum Speichern aller offenen Gildenanfragen.
