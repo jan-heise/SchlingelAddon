@@ -1,3 +1,7 @@
+# 2.0.8
+
+- Adding basic functionality to Offi Interface
+
 # 2.0.6, 2.0.7
 
 - Remove GreenWall from dependencies and check ingame if it is enabled
