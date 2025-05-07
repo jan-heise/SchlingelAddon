@@ -12,7 +12,7 @@
 
 # 2.0.4
 
-- Fixing DeathCOunt initialization and PvP Flag on neutral NPCs
+- Fixing DeathCount initialization and PvP Flag on neutral NPCs
 
 # 2.0.3
 
