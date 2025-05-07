@@ -45,9 +45,16 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
                 return
             end
 
+            -- Spieler Infos für den Invite vorbereiten
             local playerName = UnitName("player")
             local playerLevel = UnitLevel("player")
-            local message = string.format("INVITE_REQUEST:%s:%d", playerName, playerLevel)
+            local playerExp = UnitXP("player")
+            local zone, mapID
+            mapID = C_Map.GetBestMapForUnit("player")
+            zone = C_Map.GetMapInfo(mapID).name
+            local money = GetMoney()
+            local playerGold = GetMoneyString(money, true)
+            local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
             local currentIndex = 1
             local maxWhoResults = C_FriendList.GetNumWhoResults()
@@ -105,7 +112,7 @@ local function HandleAddonMessage(prefix, message, _, sender)
         if prefix ~= SchlingelInc.prefix then return end
 
         -- INVITE_REQUEST-Nachricht verarbeiten
-        local name, level = message:match("^INVITE_REQUEST:([^:]+):(%d+)$")
+        local name, level, exp, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
         if name and level then
             -- Überprüfen, ob die Anfrage bereits existiert
             for _, existing in ipairs(inviteRequests) do
@@ -113,8 +120,8 @@ local function HandleAddonMessage(prefix, message, _, sender)
             end
 
             -- Neue Anfrage hinzufügen
-            table.insert(inviteRequests, { name = name, level = tonumber(level) })
-            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) erhalten.", name, level))
+            table.insert(inviteRequests, { name = name, level = tonumber(level), exp = tonumber(exp), zone = zone, money = money })
+            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, level, zone))
 
             -- UI aktualisieren, falls es sichtbar ist
             if SchlingelInc.GuildRecruitment.requestUI and SchlingelInc.GuildRecruitment.requestUI:IsShown() then
@@ -126,7 +133,7 @@ end
 
 -- UI aktualisieren
 function SchlingelInc.GuildRecruitment:UpdateRequestUI()
-    local ui = self.requestUI
+    local ui = SchlingelInc.GuildRecruitment.requestUI
     if not ui then return end
 
     -- Vorhandene Inhalte löschen
@@ -144,12 +151,19 @@ function SchlingelInc.GuildRecruitment:UpdateRequestUI()
 
     for i, req in ipairs(inviteRequests) do
         local row = CreateFrame("Frame", nil, ui.content)
-        row:SetSize(424, 24)
+        row:SetSize(424, 30)
         row:SetPoint("TOPLEFT", 0, yOffset)
 
         local text = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         text:SetPoint("LEFT", 0, 0)
-        text:SetText(req.name .. " (Level " .. req.level .. ")")
+        text:SetText(string.format(
+            "Name: %s\n Level: %d Erfahrung: %s\nOrt: %s Gold: %s",
+            req.name or "Unbekannt",
+            req.level or 0,
+            req.exp or "Keine Angabe",
+            req.zone or "Unbekannt",
+            req.money or "0"
+        ))
 
         local inviteBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
         inviteBtn:SetSize(80, 24)
@@ -158,7 +172,7 @@ function SchlingelInc.GuildRecruitment:UpdateRequestUI()
         inviteBtn:SetScript("OnClick", function()
             C_GuildInfo.Invite(req.name)
             table.remove(inviteRequests, i)
-            self:UpdateRequestUI()
+            SchlingelInc.GuildRecruitment:UpdateRequestUI()
         end)
 
         local removeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
@@ -167,7 +181,7 @@ function SchlingelInc.GuildRecruitment:UpdateRequestUI()
         removeBtn:SetText("X")
         removeBtn:SetScript("OnClick", function()
             table.remove(inviteRequests, i)
-            self:UpdateRequestUI()
+            SchlingelInc.GuildRecruitment:UpdateRequestUI()
         end)
 
         yOffset = yOffset - 28
