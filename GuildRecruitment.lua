@@ -4,12 +4,15 @@ SchlingelInc.GuildRecruitment = {}
 -- Lokale Variablen
 local inviteRequests = {}
 
+-- Debug-Flag: Bei Aktivierung wird die Anfrage direkt an Pudidev gesendet
+local DEBUG_MODE = false -- Standardmäßig deaktiviert, zum Aktivieren auf true setzen
+
 -- Funktion zum Senden einer Gildenanfrage
 function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
-    if IsInGuild() then
-        SchlingelInc:Print("Du bist bereits in einer Gilde.")
-        return
-    end
+    -- if IsInGuild() then
+    --     SchlingelInc:Print("Du bist bereits in einer Gilde.")
+    --     return
+    -- end
 
     -- einkommentieren sobald die Übergangsphase vorbei ist
     -- if UnitLevel("player") > 1 then
@@ -20,6 +23,21 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     -- Sicherstellen, dass ein Gildenname übergeben wurde
     if not guildName or guildName == "" then
         SchlingelInc:Print("Kein Gildenname angegeben.")
+        return
+    end
+
+    if DEBUG_MODE then
+        local playerName = UnitName("player")
+        local playerLevel = UnitLevel("player")
+        local playerExp = UnitXP("player")
+        local zone, mapID
+        mapID = C_Map.GetBestMapForUnit("player")
+        zone = C_Map.GetMapInfo(mapID).name
+        local money = GetMoney()
+        local playerGold = GetMoneyString(money, true)
+        local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
+        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", "Pudidev") -- Direkt an Pudidev
+        SchlingelInc:Print("Gildenanfrage im DEBUG_MODE an Pudidev gesendet.")
         return
     end
 
@@ -108,7 +126,7 @@ end
 
 -- Addon-Nachrichten abfangen
 local function HandleAddonMessage(prefix, message, _, sender)
-    if CanGuildInvite() then
+    --if CanGuildInvite() then
         if prefix ~= SchlingelInc.prefix then return end
 
         -- INVITE_REQUEST-Nachricht verarbeiten
@@ -128,64 +146,56 @@ local function HandleAddonMessage(prefix, message, _, sender)
                 SchlingelInc.GuildRecruitment:UpdateRequestUI()
             end
         end
-    end
+    --end
 end
 
--- UI aktualisieren
 function SchlingelInc.GuildRecruitment:UpdateRequestUI()
-    local ui = SchlingelInc.GuildRecruitment.requestUI
+    local ui = self.requestUI
     if not ui then return end
 
-    -- Vorhandene Inhalte löschen
-    for _, child in ipairs({ ui.content:GetChildren() }) do
-        child:Hide()
+    -- Alle vorherigen Einträge entfernen
+    for _, requestFrame in ipairs(ui.requests) do
+        requestFrame:Hide()
+        requestFrame:SetParent(nil)
     end
+    wipe(ui.requests)
 
-    if #inviteRequests == 0 then
+    if #inviteRequests > 0 then
+        local yOffset = -30
+        for i, request in ipairs(inviteRequests) do
+            local requestFrame = CreateFrame("Frame", nil, ui.content)
+            requestFrame:SetPoint("TOPLEFT", 5, yOffset - (i - 1) * 20)
+            requestFrame:SetSize(550, 20)
+            ui.requests[i] = requestFrame
+
+            local nameText = requestFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            nameText:SetPoint("TOPLEFT", 0, 0)
+            nameText:SetText(request.name)
+            nameText:SetWidth(120)
+
+            local levelText = requestFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            levelText:SetPoint("LEFT", nameText, "RIGHT", 10, 0)
+            levelText:SetText(request.level)
+            levelText:SetWidth(50)
+            levelText:SetJustifyH("CENTER")
+
+            local zoneText = requestFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            zoneText:SetPoint("LEFT", levelText, "RIGHT", 10, 0)
+            zoneText:SetText(request.zone)
+            zoneText:SetWidth(150)
+
+            local goldText = requestFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            goldText:SetPoint("LEFT", zoneText, "RIGHT", 10, 0)
+            goldText:SetText(request.money)
+            goldText:SetWidth(100)
+            goldText:SetJustifyH("RIGHT")
+        end
+        ui.content:SetHeight(#inviteRequests * 20 + 5) -- Dynamische Höhe anpassen
+    else
         ui.content.text:SetText("Keine Anfragen empfangen.")
-        return
+        ui.content:SetHeight(20)
     end
-
-    ui.content.text:SetText("")
-    local yOffset = -10
-
-    for i, req in ipairs(inviteRequests) do
-        local row = CreateFrame("Frame", nil, ui.content)
-        row:SetSize(424, 30)
-        row:SetPoint("TOPLEFT", 0, yOffset)
-
-        local text = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        text:SetPoint("LEFT", 0, 0)
-        text:SetText(string.format(
-            "Name: %s\n Level: %d Erfahrung: %s\nOrt: %s Gold: %s",
-            req.name or "Unbekannt",
-            req.level or 0,
-            req.exp or "Keine Angabe",
-            req.zone or "Unbekannt",
-            req.money or "0"
-        ))
-
-        local inviteBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-        inviteBtn:SetSize(80, 24)
-        inviteBtn:SetPoint("RIGHT", -34, 0)
-        inviteBtn:SetText("Einladen")
-        inviteBtn:SetScript("OnClick", function()
-            C_GuildInfo.Invite(req.name)
-            table.remove(inviteRequests, i)
-            SchlingelInc.GuildRecruitment:UpdateRequestUI()
-        end)
-
-        local removeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-        removeBtn:SetSize(24, 24)
-        removeBtn:SetPoint("RIGHT", -2, 0)
-        removeBtn:SetText("X")
-        removeBtn:SetScript("OnClick", function()
-            table.remove(inviteRequests, i)
-            SchlingelInc.GuildRecruitment:UpdateRequestUI()
-        end)
-
-        yOffset = yOffset - 28
-    end
+    ui.scrollFrame:SetVerticalScroll(0)
 end
 
 -- Event-Handler für Addon-Nachrichten registrieren
@@ -224,6 +234,7 @@ local function CreateRequestUI()
     ui.content.text:SetPoint("TOPLEFT", 5, -5)
     ui.content.text:SetJustifyH("LEFT")
     ui.content.text:SetText("Noch keine Daten...")
+    ui.requests = {}
 
     ui:Hide()
     return ui
@@ -245,8 +256,23 @@ function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
             end
             self.requestUI:Show()
             self:UpdateRequestUI()
+        elseif msg == "debug" then -- Neuer Debug-Befehl
+            DEBUG_MODE = not DEBUG_MODE -- Toggle-Funktion
+            if DEBUG_MODE then
+                SchlingelInc:Print("DEBUG MODE AKTIVIERT: Anfragen werden direkt an Pudidev gesendet!")
+            else
+                SchlingelInc:Print("DEBUG MODE DEAKTIVIERT: Anfragen werden über /who gesendet.")
+            end
+        elseif msg == "addtestdata" then
+            -- Füge 3 Testdaten hinzu
+            table.insert(inviteRequests, { name = "TestUser1", level = 10, exp = 1000, zone = "Durotar", money = "5" })
+            table.insert(inviteRequests, { name = "TestUser2", level = 20, exp = 2500, zone = "Elwynn Forest", money = "12" })
+            table.insert(inviteRequests, { name = "TestUser3", level = 15, exp = 1800, zone = "Darkshore", money = "8" })
+            if SchlingelInc.GuildRecruitment.requestUI and SchlingelInc.GuildRecruitment.requestUI:IsShown() then
+                SchlingelInc.GuildRecruitment:UpdateRequestUI()
+            end
         else
-            SchlingelInc:Print("Usage: /schlingel request [main/twink] or /schlingel requests")
+            SchlingelInc:Print("Usage: /schlingel request [main/twink] or /schlingel requests or /schlingel debug or /schlingel addtestdata")
         end
     end
 end

@@ -411,7 +411,8 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
         if button == "LeftButton" then
             SchlingelInc:ToggleInfoWindow()
         end
-        if button == "RightButton" and rank == "Lootwichtel" then
+        -- if button == "RightButton" and rank == "Lootwichtel" then
+        if button == "RightButton" then
             SchlingelInc:ToggleOffiWindow()
         end
     end,

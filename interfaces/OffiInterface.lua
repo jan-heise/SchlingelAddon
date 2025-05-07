@@ -84,12 +84,35 @@ function SchlingelInc:CreateOffiWindow()
 
     recruitmentFrame.content = CreateFrame("Frame", nil, recruitmentFrame.scrollFrame)
     recruitmentFrame.scrollFrame:SetScrollChild(recruitmentFrame.content)
-    recruitmentFrame.content:SetSize(560, 280)
+    recruitmentFrame.content:SetSize(560, 1) -- Dynamische Höhe
 
-    recruitmentFrame.content.text = recruitmentFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    recruitmentFrame.content.text:SetPoint("TOPLEFT", 5, -5)
-    recruitmentFrame.content.text:SetJustifyH("LEFT")
-    recruitmentFrame.content.text:SetText("Keine Anfragen empfangen.")
+    recruitmentFrame.columnHeaders = CreateFrame("Frame", nil, recruitmentFrame.content)
+    recruitmentFrame.columnHeaders:SetPoint("TOPLEFT", 5, -5)
+    recruitmentFrame.columnHeaders:SetSize(550, 20)
+
+    local nameHeader = recruitmentFrame.columnHeaders:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    nameHeader:SetPoint("TOPLEFT", 0, 0)
+    nameHeader:SetText("Name")
+    nameHeader:SetWidth(120)
+
+    local levelHeader = recruitmentFrame.columnHeaders:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    levelHeader:SetPoint("LEFT", nameHeader, "RIGHT", 10, 0)
+    levelHeader:SetText("Level")
+    levelHeader:SetWidth(50)
+    levelHeader:SetJustifyH("CENTER")
+
+    local zoneHeader = recruitmentFrame.columnHeaders:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    zoneHeader:SetPoint("LEFT", levelHeader, "RIGHT", 10, 0)
+    zoneHeader:SetText("Ort")
+    zoneHeader:SetWidth(150)
+
+    local goldHeader = recruitmentFrame.columnHeaders:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    goldHeader:SetPoint("LEFT", zoneHeader, "RIGHT", 10, 0)
+    goldHeader:SetText("Gold")
+    goldHeader:SetWidth(100)
+    goldHeader:SetJustifyH("RIGHT")
+
+    recruitmentFrame.requests = {}
 
     -- Tab 3: Gildenstatistik
     local statsFrame = CreateFrame("Frame", nil, OffiFrame)
@@ -135,16 +158,14 @@ function SchlingelInc:UpdateGuildInfo()
     local memberCount = GetNumGuildMembers()
 
     local text = string.format("Name: %s - %s\nLevel: %d\nKlasse: %s\n\nGilde: %s\nMitglieder: %d\nRang: %s",
-    playerName, 
-    playerRealm or "", 
-    level or 0, 
-    classDisplayName or "Unbekannt", 
-    guildName or "Keine", 
-    memberCount or 0, 
+    playerName,
+    playerRealm or "",
+    level or 0,
+    classDisplayName or "Unbekannt",
+    guildName or "Keine",
+    memberCount or 0,
     guildRankName or "Unbekannt")
-self.guildInfoFrame.infoText:SetText(text)
-
-
+    self.guildInfoFrame.infoText:SetText(text)
 end
 
 function SchlingelInc:UpdateGuildStats()
