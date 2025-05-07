@@ -9,10 +9,13 @@ function SchlingelInc:OnLoad()
     SchlingelInc:CheckAddonVersion()
     SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:InitMinimapIcon()
+
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
-    if CharacterDeaths == 0 then
-        SchlingelInc:Print("Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
+    if CharacterDeaths == nil then
+        SchlingelInc:Print(
+            "Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
     end
+    SchlingelInc:CheckDependencies()
 end
 
 -- Event-Handler registrieren

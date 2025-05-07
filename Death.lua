@@ -4,10 +4,6 @@ LastChatMessage = ""
 -- Variable zum Speichern des letzten Gegners
 LastAttackSource = ""
 
-if not CharacterDeaths then
-	CharacterDeaths = 0
-end
-
 local DeathFrame = CreateFrame("Frame")
 DeathFrame:RegisterEvent("PLAYER_DEAD")
 DeathFrame:RegisterEvent("PLAYER_UNGHOST")
@@ -52,6 +48,11 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			SendChatMessage(messageString, "GUILD")
 		end
 
+		-- Wenn der DeathCount noch nicht gesetzt wurde, setzen wir ihn auf 1.
+		if CharacterDeaths == nil then
+			CharacterDeaths = 1
+		end
+
 		CharacterDeaths = CharacterDeaths + 1
 
 		-- Event für den revive. Ist aktuell allgemein, sollte also zB auch beim rez triggern.
@@ -76,8 +77,8 @@ SlashCmdList["DEATHSET"] = function(msg)
 		return
 	end
 
-	-- -- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann. Zum Debuggen einfach auskommentieren.
-	if CharacterDeaths ~= 0 then
+	-- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann. Zum Debuggen einfach auskommentieren.
+	if CharacterDeaths ~= nil then
 		SchlingelInc:Print("Tod-Counter ist bereits gesetzt auf: " .. CharacterDeaths)
 		return
 	end

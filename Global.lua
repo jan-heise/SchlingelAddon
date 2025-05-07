@@ -21,6 +21,51 @@ SchlingelInc.allowedGuilds = {
     "Schlingel IInc"
 }
 
+function SchlingelInc:CheckDependencies()
+    StaticPopupDialogs["SCHLINGEL_HARDCOREUNLOCKED_WARNING"] = {
+        text = "Du hast das veraltete Addon aktiv.\nBitte entferne es, da es zu Problemen mit SchlingelInc führt!",
+        button1 = "OK",
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+    StaticPopupDialogs["SCHLINGEL_GREENWALL_MISSING"] = {
+        text = "Du hast Greenwall nicht aktiv.\nBitte aktiviere oder installiere es!",
+        button1 = "OK",
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
+
+    C_Timer.After(30, function()
+        -- Prüfung auf Hardcore Unlocked bzw Schlingel Addon
+        local numAddons = GetNumAddOns()
+        local greenwall_found = false
+        for i = 1, numAddons do
+            local name, _, _, enabled = GetAddOnInfo(i)
+            if (name == "HardcoreUnlocked" and IsAddOnLoaded("HardcoreUnlocked")) or (name == "SchlingelAddon" and IsAddonLoaded("SchlingelAddon")) then
+                SchlingelInc:Print(
+                    "|cffff0000Warnung: Du hast das veraltete Addon aktiv. Bitte entferne es, da es zu Problemen mit SchlingelInc führt!|r")
+                StaticPopup_Show("SCHLINGEL_HARDCOREUNLOCKED_WARNING")
+            end
+
+            if name == "GreenWall" and IsAddOnLoaded("GreenWall") then
+                greenwall_found = true
+            end
+        end
+
+        C_Timer.After(5, function()
+            if not greenwall_found then
+                SchlingelInc:Print(
+                    "|cffff0000Warnung: Du hast Greenwall nicht aktiv. Bitte aktiviere oder installiere es!|r")
+                StaticPopup_Show("SCHLINGEL_GREENWALL_MISSING")
+            end
+        end)
+    end)
+end
+
 function SchlingelInc:IsGuildAllowed(guildName)
     for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
         if guildName == allowedGuild then
@@ -237,21 +282,23 @@ function SchlingelInc:RemoveRealmFromName(fullName)
     end
 end
 
--- Überprüfe ob das Ziel ein PvP Flag hat
 function SchlingelInc:CheckTargetPvP()
     local unit = "target"
 
     if not UnitExists(unit) then return end
+    if not UnitIsPVP(unit) then return end
 
-    -- Fraktionscheck: Bei NPCs eigener Fraktion ignorieren. Zu Debugzwecken den Fraktionscheck auskommentieren.
     local targetFaction = UnitFactionGroup(unit)
-    local playerFaction = UnitFactionGroup("player")
-    if targetFaction and playerFaction and targetFaction == playerFaction and not UnitIsPlayer(unit) then
-        --SchlingelInc:Print("DEBUG: Horde NPC erkannt.") | Für Debugging wieder einschalten.
+
+    -- WARNUNG bei Allianz-NPCs
+    if targetFaction == "Alliance" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
+        local name = UnitName(unit) or "Unbekannt"
+        SchlingelInc:ShowPvPWarning(name .. " (Allianz-NPC)")
         return
     end
 
-    if UnitIsPVP(unit) then
+    -- WARNUNG bei Spielern mit PvP-Flag (egal ob Horde oder Allianz)
+    if UnitIsPlayer(unit) and UnitIsPVP(unit) then
         local name = UnitName(unit)
         local now = GetTime()
         local lastAlert = SchlingelInc.lastPvPAlert and SchlingelInc.lastPvPAlert[name] or 0
@@ -262,21 +309,23 @@ function SchlingelInc:CheckTargetPvP()
 
         if (now - lastAlert) > 10 then
             SchlingelInc.lastPvPAlert[name] = now
-
-            -- Popup generierung und zeigen
-            SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
-            SchlingelInc.pvpWarningName:SetText(name .. " ist PvP geflagged!")
-            SchlingelInc.pvpWarningFrame:SetAlpha(1)
-            SchlingelInc.pvpWarningFrame:Show()
-            SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
-
-            -- Fade out nach 1 Sekunde
-            C_Timer.After(1, function()
-                UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
-                C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
-            end)
+            SchlingelInc:ShowPvPWarning(name .. " ist PvP-aktiv!")
         end
     end
+end
+
+function SchlingelInc:ShowPvPWarning(text)
+    SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
+    SchlingelInc.pvpWarningName:SetText(text)
+    SchlingelInc.pvpWarningFrame:SetAlpha(1)
+    SchlingelInc.pvpWarningFrame:Show()
+    SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
+
+    -- Fade out nach 1 Sekunde
+    C_Timer.After(1, function()
+        UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
+        C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
+    end)
 end
 
 -- Pop Up für die PvP Warnung
