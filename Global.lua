@@ -399,6 +399,7 @@ end
 
 local LDB = LibStub("LibDataBroker-1.1")
 local DBIcon = LibStub("LibDBIcon-1.0")
+local _, rank, _, _ = GetGuildInfo("player")
 
 -- Datenobjekt für das Minimap Icon
 local minimapLDB = LDB:NewDataObject("SchlingelInc", {
@@ -410,7 +411,7 @@ local minimapLDB = LDB:NewDataObject("SchlingelInc", {
         if button == "LeftButton" then
             SchlingelInc:ToggleInfoWindow()
         end
-        if button == "RightButton" then
+        if button == "RightButton" and rank == "Lootwichtel" then
             SchlingelInc:ToggleOffiWindow()
         end
     end,
