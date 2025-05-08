@@ -264,7 +264,7 @@ function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
     -- Prüft, ob der Spieler die Berechtigung zum Einladen hat.
     if CanGuildInvite() then
         SchlingelInc:Print("Versuche, " .. playerName .. " in die Gilde einzuladen...")
-        C_GuildInfo.Invite(playerName) -- Moderne API zum Einladen in Gilden (nicht Communities).
+        C_GuildInfo.Invite(playerName) -- Moderne API zum Einladen in Gilden.
     else
         SchlingelInc:Print("Du hast keine Berechtigung, Spieler in die Gilde einzuladen.")
         return -- Bricht ab, wenn keine Berechtigung vorhanden ist; Anfrage bleibt in der Liste.

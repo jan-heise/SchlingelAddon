@@ -1,4 +1,25 @@
--- global für die Regel texte im Interface
+-- Stellt sicher, dass die Haupt-Addon-Tabelle und die UIHelpers existieren
+SchlingelInc = SchlingelInc or {}
+SchlingelInc.UIHelpers = SchlingelInc.UIHelpers or {} -- (Die UIHelpers-Definitionen sollten vorher geladen sein)
+
+local ADDON_NAME = SchlingelInc.name
+local INFOFRAME_NAME = ADDON_NAME .. "InfoFrame"
+
+-- Font-Konstanten
+local FONT_HIGHLIGHT_LARGE = "GameFontHighlightLarge"
+local FONT_NORMAL = "GameFontNormal"
+
+-- Backdrop-Einstellungen 
+local BACKDROP_SETTINGS = {
+    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+    tile = true, tileSize = 32,
+    edgeSize = 32,
+    insets = { left = 11, right = 12, top = 12, bottom = 11 }
+}
+
+
+-- Global für die Regeltexte im Interface (unverändert)
 Rulestext = {
     "Die Nutzung des Briefkastens ist verboten!",
     "Die Nutzung des Auktionshauses ist verboten!",
@@ -7,19 +28,12 @@ Rulestext = {
 }
 
 function SchlingelInc:CreateInfoWindow()
-    if SchlingelInc.infoWindow then return end
+    if self.infoWindow then return end
 
-    local InfoFrame = CreateFrame("Frame", "SchlingelIncInfoFrame", UIParent, "BackdropTemplate")
+    local InfoFrame = CreateFrame("Frame", INFOFRAME_NAME, UIParent, "BackdropTemplate")
     InfoFrame:SetSize(500, 350)
     InfoFrame:SetPoint("RIGHT", -50, 25)
-    InfoFrame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 11, right = 12, top = 12, bottom = 11 }
-    })
+    InfoFrame:SetBackdrop(BACKDROP_SETTINGS)
     InfoFrame:SetMovable(true)
     InfoFrame:EnableMouse(true)
     InfoFrame:RegisterForDrag("LeftButton")
@@ -27,49 +41,39 @@ function SchlingelInc:CreateInfoWindow()
     InfoFrame:SetScript("OnDragStop", InfoFrame.StopMovingOrSizing)
     InfoFrame:Hide()
 
-
-    -- Ab hier Textfelder
-
     -- Überschrift
-    local title = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    title:SetPoint("TOP", 0, -20)
-    title:SetText("Schlingel Inc")
+    self.UIHelpers:CreateStyledText(InfoFrame, "Schlingel Inc", FONT_HIGHLIGHT_LARGE,
+                                   "TOP", InfoFrame, "TOP", 0, -20)
 
     -- Regeltexte
-    local ruleText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    ruleText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -50)
-    ruleText:SetText("Regeln der Gilden:\n\n\n")
-    for index, value in ipairs(Rulestext) do
-        ruleText:SetText(ruleText:GetText() .. value .. "\n\n")
+    local ruleTextContent = "Regeln der Gilden:\n\n" -- Start des Textes
+    for _, value in ipairs(Rulestext) do
+        ruleTextContent = ruleTextContent .. value .. "\n\n"
     end
-    ruleText:SetJustifyH("LEFT")
+    -- Hinweis: Die Breite und Höhe für Regeltexte muss ggf. angepasst werden, um alles anzuzeigen oder Scrolling nötig zu machen
+    self.UIHelpers:CreateStyledText(InfoFrame, ruleTextContent, FONT_NORMAL,
+                                   "TOPLEFT", InfoFrame, "TOPLEFT", 25, -50,
+                                   450, 140, "LEFT")
 
     -- Discord Link
-    local discordText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    discordText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -200)
-    discordText:SetText("Discord: " .. SchlingelInc.discordLink)
-    discordText:SetJustifyH("LEFT")
+    self.UIHelpers:CreateStyledText(InfoFrame, "Discord: " .. (self.discordLink or "N/A"), FONT_NORMAL,
+                                   "TOPLEFT", InfoFrame, "TOPLEFT", 25, -200,
+                                   nil, nil, "LEFT")
 
     -- Version Text
-    local versionText = InfoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    versionText:SetPoint("TOPLEFT", InfoFrame, "TOPLEFT", 25, -225)
-    versionText:SetText("Version: " .. SchlingelInc.version)
-    versionText:SetJustifyH("LEFT")
+    self.UIHelpers:CreateStyledText(InfoFrame, "Version: " .. (self.version or "N/A"), FONT_NORMAL,
+                                   "TOPLEFT", InfoFrame, "TOPLEFT", 25, -225,
+                                   nil, nil, "LEFT") 
 
-
-    -- Ab hier Button Code.
 
     -- Schließen-Button
-    local closeBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", InfoFrame, "TOPRIGHT", -10, -10)
+    self.UIHelpers:CreateStyledButton(InfoFrame, nil, 22, 22, -- Standardgröße für CloseButton
+                                     "TOPRIGHT", InfoFrame, "TOPRIGHT", -5, -5,
+                                     "UIPanelCloseButton", function() InfoFrame:Hide() end)
 
-    -- Button zum Verlassen der Kanäle (looped)
-    local leaveChannelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
-    leaveChannelsBtn:SetSize(200, 30)
-    leaveChannelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 60)
 
-    leaveChannelsBtn:SetText("Verlasse alle globalen Kanäle")
-    leaveChannelsBtn:SetScript("OnClick", function()
+    -- Button zum Verlassen der Kanäle
+    local leaveChannelsBtnFunc = function()
         local channelsToLeave = {
             "Allgemein", "General",
             "Handel", "Trade",
@@ -77,59 +81,74 @@ function SchlingelInc:CreateInfoWindow()
             "SucheNachGruppe", "LookingForGroup",
             "WeltVerteidigung", "WorldDefense"
         }
-
-        for i = 1, 10 do
-            local id, name = GetChannelName(i)
+        for i = 1, GetNumChannels() do -- GetNumChannels ist besser als feste Nummer
+            local _, name = GetChannelName(i)
             if name then
                 for _, unwanted in ipairs(channelsToLeave) do
-                    if string.find(name:lower(), unwanted:lower()) then
+                    -- :lower() auf nil vermeiden
+                    if name and unwanted and string.find(string.lower(name), string.lower(unwanted)) then
                         LeaveChannelByName(name)
-                        SchlingelInc:Print("Schlingel Inc: Verlasse Kanal '" .. name .. "'")
-                        break
+                        self:Print("Schlingel Inc: Verlasse Kanal '" .. name .. "'")
+                        break -- Den inneren Loop verlassen, da der Kanal verlassen wurde
                     end
                 end
             end
         end
-    end)
+    end
+    self.UIHelpers:CreateStyledButton(InfoFrame, "Verlasse alle globalen Kanäle", 200, 30,
+                                     "BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 60,
+                                     "UIPanelButtonTemplate", leaveChannelsBtnFunc)
 
     -- Button zum Beitreten der Schlingel Chats
-    local joinChanelsBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
-    joinChanelsBtn:SetSize(200, 30)
-    joinChanelsBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 25)
-    joinChanelsBtn:SetText("Schlingelchats beitreten")
-    joinChanelsBtn:SetScript("OnClick", function()
-        local channel_type, channel_name = JoinChannelByName("SchlingelTrade", nil, ChatFrame1:GetID(), nil);
-        local channel_type, channel_name = JoinChannelByName("SchlingelGroup", nil, ChatFrame1:GetID(), nil);
-        SchlingelInc:Print("Schlingelchats beigetreten")
-    end)
+    local joinChannelsBtnFunc = function()
+        JoinChannelByName("SchlingelTrade", nil, ChatFrame1:GetID()) -- Passwort nil, letztes Argument nicht nötig
+        JoinChannelByName("SchlingelGroup", nil, ChatFrame1:GetID())
+        self:Print("Schlingelchats beigetreten")
+    end
+    self.UIHelpers:CreateStyledButton(InfoFrame, "Schlingelchats beitreten", 200, 30,
+                                     "BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 25, 25,
+                                     "UIPanelButtonTemplate", joinChannelsBtnFunc)
 
     -- Button zum Anfragen der Main Gilde
-    local joinMainGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
-    joinMainGuildBtn:SetSize(200, 30)
-    joinMainGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 60)
-    joinMainGuildBtn:SetText("Schlingel Inc beitreten")
-    joinMainGuildBtn:SetScript("OnClick", function()
-        SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel Inc")
-    end)
+    local joinMainGuildBtnFunc = function()
+        if self.GuildRecruitment and self.GuildRecruitment.SendGuildRequest then
+            self.GuildRecruitment:SendGuildRequest("Schlingel Inc")
+        else
+            self:Print("Fehler: GuildRecruitment Modul nicht gefunden.")
+        end
+    end
+    self.UIHelpers:CreateStyledButton(InfoFrame, "Schlingel Inc beitreten", 200, 30,
+                                     "BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 60,
+                                     "UIPanelButtonTemplate", joinMainGuildBtnFunc)
 
     -- Button zum Anfragen der Twink Gilde
-    local joinTwinkGuildBtn = CreateFrame("Button", nil, InfoFrame, "UIPanelButtonTemplate")
-    joinTwinkGuildBtn:SetSize(200, 30)
-    joinTwinkGuildBtn:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 25)
-    joinTwinkGuildBtn:SetText("Schlingel IInc beitreten")
-    joinTwinkGuildBtn:SetScript("OnClick", function()
-        SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel IInc")
-    end)
+    local joinTwinkGuildBtnFunc = function()
+        if self.GuildRecruitment and self.GuildRecruitment.SendGuildRequest then
+            self.GuildRecruitment:SendGuildRequest("Schlingel IInc")
+        else
+            self:Print("Fehler: GuildRecruitment Modul nicht gefunden.")
+        end
+    end
+    self.UIHelpers:CreateStyledButton(InfoFrame, "Schlingel IInc beitreten", 200, 30,
+                                     "BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 275, 25,
+                                     "UIPanelButtonTemplate", joinTwinkGuildBtnFunc)
 
-    SchlingelInc.infoWindow = InfoFrame
+    self.infoWindow = InfoFrame
 end
 
 -- Öffnet/Schließt das Info-Fenster
 function SchlingelInc:ToggleInfoWindow()
-    SchlingelInc:CreateInfoWindow()
-    if SchlingelInc.infoWindow:IsShown() then
-        SchlingelInc.infoWindow:Hide()
+    if not self.infoWindow then -- Erstelle Fenster nur, wenn es nicht existiert
+        self:CreateInfoWindow()
+        if not self.infoWindow then
+            print(ADDON_NAME .. ": InfoWindow konnte nicht erstellt werden!")
+            return
+        end
+    end
+
+    if self.infoWindow:IsShown() then
+        self.infoWindow:Hide()
     else
-        SchlingelInc.infoWindow:Show()
+        self.infoWindow:Show()
     end
 end
