@@ -20,6 +20,7 @@ SchlingelInc.allowedGuilds = {
     "Schlingel Inc",
     "Schlingel IInc"
 }
+SchlingelInc.GameTimeTotal, SchlingelInc.GameTimePerLevel = 0, 0
 
 function SchlingelInc:CheckDependencies()
     StaticPopupDialogs["SCHLINGEL_HARDCOREUNLOCKED_WARNING"] = {
@@ -40,12 +41,11 @@ function SchlingelInc:CheckDependencies()
     }
 
     C_Timer.After(30, function()
-        -- Prüfung auf Hardcore Unlocked bzw Schlingel Addon
         local numAddons = GetNumAddOns()
         local greenwall_found = false
         for i = 1, numAddons do
             local name, _, _, enabled = GetAddOnInfo(i)
-            if (name == "HardcoreUnlocked" and IsAddOnLoaded("HardcoreUnlocked")) or (name == "SchlingelAddon" and IsAddonLoaded("SchlingelAddon")) then
+            if (name == "HardcoreUnlocked" and IsAddOnLoaded("HardcoreUnlocked")) or (name == "SchlingelAddon" and IsAddOnLoaded("SchlingelAddon")) then
                 SchlingelInc:Print(
                     "|cffff0000Warnung: Du hast das veraltete Addon aktiv. Bitte entferne es, da es zu Problemen mit SchlingelInc führt!|r")
                 StaticPopup_Show("SCHLINGEL_HARDCOREUNLOCKED_WARNING")
@@ -75,22 +75,18 @@ function SchlingelInc:IsGuildAllowed(guildName)
     return false
 end
 
--- Tabelle für PvP-Alert Timestamps
 SchlingelInc.lastPvPAlert = {}
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 
--- Frame für die PvP Interaktion
 local pvpFrame = CreateFrame("Frame")
 pvpFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 
--- Print-Funktion
 function SchlingelInc:Print(message)
-    print(SchlingelInc.colorCode .. "[Schlingel Inc]|r " .. message)
+    print(SchlingelInc.colorCode .. "[" .. SchlingelInc.name .. "]|r " .. message)
 end
 
--- Check if Player is in Battleground
 function SchlingelInc:IsInBattleground()
     local isInBattleground = false
     local level = UnitLevel("player")
@@ -99,24 +95,19 @@ function SchlingelInc:IsInBattleground()
         local battleFieldStatus = GetBattlefieldStatus(i)
         if battleFieldStatus == "active" then
             isInBattleground = true
+            break -- No need to check further if already found in one active BG
         end
     end
-    if isInBattleground and level >= 55 then
+    if isInBattleground and level >= 55 then -- Assuming 55 is a specific rule for your server/addon
         isInAllowedBattleground = true
     end
     return isInAllowedBattleground
 end
 
--- Überprüfen, ob ein Spieler in der Gilde ist
---[[
-    usage:
-    local isInGuild = SchlingelInc:IsPlayerInGuild(GetGuildInfo("NPC"))
---]]
 function SchlingelInc:IsPlayerInGuild(guildName)
     if not guildName then
         return false
     end
-
     for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
         if guildName == allowedGuild then
             return true
@@ -125,37 +116,29 @@ function SchlingelInc:IsPlayerInGuild(guildName)
     return false
 end
 
--- Event-Listener für eingehende GILD_NAME_REQUEST-Nachrichten
 frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
     if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
         if message == "GUILD_NAME_REQUEST" then
-            -- Hole den Gildennamen des Spielers
             local guildName = GetGuildInfo("player")
             if guildName then
-                -- Sende den Gildennamen als Antwort zurück
                 C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "GUILD_NAME_RESPONSE:" .. guildName, "RAID")
             end
         end
     end
 end)
 
--- Event beim Zielwechsel abgreifen und PvP Helfer Funktion rufen
 pvpFrame:SetScript("OnEvent", function()
     if not SchlingelInc:IsInBattleground() then
         SchlingelInc:CheckTargetPvP()
     end
 end)
 
--- Version Check Hilfsfunktion
 function SchlingelInc:CheckAddonVersion()
     local highestSeenVersion = SchlingelInc.version
-
-    -- Frame to handle version events
     local versionFrame = CreateFrame("Frame")
     versionFrame:RegisterEvent("CHAT_MSG_ADDON")
     C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix)
 
-    -- Listen for version messages
     versionFrame:SetScript("OnEvent", function(_, event, msgPrefix, message, _, sender)
         if event == "CHAT_MSG_ADDON" and msgPrefix == SchlingelInc.prefix then
             local receivedVersion = message:match("^VERSION:(.+)$")
@@ -169,144 +152,100 @@ function SchlingelInc:CheckAddonVersion()
         end
     end)
 
-    -- Send own version
     if IsInGuild() then
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
 end
 
--- Hilfsfunktion zum Versionsabgleich
 function SchlingelInc:CompareVersions(v1, v2)
     local function parse(v)
         local major, minor, patch = string.match(v, "(%d+)%.(%d+)%.?(%d*)")
         return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0)
     end
-
     local a1, a2, a3 = parse(v1)
     local b1, b2, b3 = parse(v2)
-
     if a1 ~= b1 then return a1 - b1 end
     if a2 ~= b2 then return a2 - b2 end
     return a3 - b3
 end
 
--- Hook into the SendChatMessage function
 local originalSendChatMessage = SendChatMessage
 function SendChatMessage(msg, chatType, language, channel)
-    -- Check if the message is being sent to the guild
     if chatType == "GUILD" then
-        -- Send the addon version via the hidden addon communications channel
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
-
-    -- Call the original SendChatMessage function
     originalSendChatMessage(msg, chatType, language, channel)
 end
 
--- Table to store versions of guild members
 SchlingelInc.guildMemberVersions = {}
 
--- Frame to handle addon messages
 local addonMessageFrame = CreateFrame("Frame")
 addonMessageFrame:RegisterEvent("CHAT_MSG_ADDON")
 C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix)
 
 addonMessageFrame:SetScript("OnEvent", function(_, event, prefix, message, _, sender)
     if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
-        -- Check if the message contains version information
         local receivedVersion = message:match("^VERSION:(.+)$")
         if receivedVersion then
-            -- Store the version for the sender
             SchlingelInc.guildMemberVersions[sender] = receivedVersion
         end
     end
 end)
 
--- Frame to listen for guild chat messages
 local guildChatFrame = CreateFrame("Frame")
 guildChatFrame:RegisterEvent("CHAT_MSG_GUILD")
 
--- Add a filter to modify guild messages
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sender, ...)
-    if not CanGuildInvite() then return end
-    -- Get the sender's version from the stored data
+    if not CanGuildInvite() then return false, msg, sender, ... end -- Pass original if not officer
     local version = SchlingelInc.guildMemberVersions[sender] or nil
-
     local modifiedMessage = msg
     if version ~= nil then
         modifiedMessage = SchlingelInc.colorCode .. "[" .. version .. "]|r " .. msg
     end
-
-    -- Return the modified message
     return false, modifiedMessage, sender, ...
 end)
 
--- Hilfsfunction um Tabellen auszugeben
 function SchlingelInc:PrintFormattedTable(tbl, indent)
-    -- Default indentation level is 0
     indent = indent or 0
     local indentation = string.rep("  ", indent)
     local output = "{\n"
-
     for key, value in pairs(tbl) do
-        -- Check the type of the value
         if type(value) == "table" then
-            -- Print the key and recursively print the nested table
-            output = output ..
-                indentation ..
-                "  " .. tostring(key) .. " = " .. SchlingelInc:PrintFormattedTable(value, indent + 1) .. ",\n"
+            output = output .. indentation .. "  " .. tostring(key) .. " = " .. SchlingelInc:PrintFormattedTable(value, indent + 1) .. ",\n"
         elseif type(value) == "string" then
-            -- Add quotes around string values
             output = output .. indentation .. "  " .. tostring(key) .. " = \"" .. tostring(value) .. "\",\n"
         else
-            -- Print other types as is
             output = output .. indentation .. "  " .. tostring(key) .. " = " .. tostring(value) .. ",\n"
         end
     end
-
     output = output .. indentation .. "}"
     return output
 end
 
--- Hilfsfunktion um den Realm-Namen aus dem Spielernamen zu entfernen
 function SchlingelInc:RemoveRealmFromName(fullName)
-    -- Find the position of the hyphen in the name
     local dashPosition = string.find(fullName, "-")
-
     if dashPosition then
-        -- Extract the part of the string before the hyphen
         return string.sub(fullName, 1, dashPosition - 1)
     else
-        -- If there's no hyphen, return the original name
         return fullName
     end
 end
 
 function SchlingelInc:CheckTargetPvP()
     local unit = "target"
-
     if not UnitExists(unit) then return end
     if not UnitIsPVP(unit) then return end
-
     local targetFaction = UnitFactionGroup(unit)
-
-    -- WARNUNG bei Allianz-NPCs
     if targetFaction == "Alliance" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
         local name = UnitName(unit) or "Unbekannt"
         SchlingelInc:ShowPvPWarning(name .. " (Allianz-NPC)")
         return
     end
-
-    -- WARNUNG bei Spielern mit PvP-Flag (egal ob Horde oder Allianz)
     if UnitIsPlayer(unit) and UnitIsPVP(unit) then
         local name = UnitName(unit)
         local now = GetTime()
         local lastAlert = SchlingelInc.lastPvPAlert and SchlingelInc.lastPvPAlert[name] or 0
-
-        if not SchlingelInc.lastPvPAlert then
-            SchlingelInc.lastPvPAlert = {}
-        end
-
+        if not SchlingelInc.lastPvPAlert then SchlingelInc.lastPvPAlert = {} end
         if (now - lastAlert) > 10 then
             SchlingelInc.lastPvPAlert[name] = now
             SchlingelInc:ShowPvPWarning(name .. " ist PvP-aktiv!")
@@ -315,133 +254,104 @@ function SchlingelInc:CheckTargetPvP()
 end
 
 function SchlingelInc:ShowPvPWarning(text)
+    if not SchlingelInc.pvpWarningFrame then SchlingelInc:CreatePvPWarningFrame() end -- Ensure frame exists
+    if not SchlingelInc.pvpWarningFrame then return end -- Still no frame, abort
+
     SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!")
     SchlingelInc.pvpWarningName:SetText(text)
     SchlingelInc.pvpWarningFrame:SetAlpha(1)
     SchlingelInc.pvpWarningFrame:Show()
     SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)
-
-    -- Fade out nach 1 Sekunde
     C_Timer.After(1, function()
-        UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
-        C_Timer.After(1, function() SchlingelInc.pvpWarningFrame:Hide() end)
+        if SchlingelInc.pvpWarningFrame then -- Check again in case it was destroyed
+            UIFrameFadeOut(SchlingelInc.pvpWarningFrame, 1, 1, 0)
+            C_Timer.After(1, function() if SchlingelInc.pvpWarningFrame then SchlingelInc.pvpWarningFrame:Hide() end end)
+        end
     end)
 end
 
--- Pop Up für die PvP Warnung
 function SchlingelInc:CreatePvPWarningFrame()
-    if SchlingelInc.pvpWarningFrame then return end
-
+    if SchlingelInc.pvpWarningFrame and SchlingelInc.pvpWarningFrame:IsObjectType("Frame") then return end -- Already created
     local pvpFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    pvpFrame:SetSize(320, 110)
-    pvpFrame:SetPoint("CENTER")
-    pvpFrame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true,
-        tileSize = 16,
-        edgeSize = 16,
-        insets = { left = 8, right = 8, top = 8, bottom = 8 }
-    })
-    pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1) -- Schlingel-Farbe (rosa)
-    pvpFrame:SetBackdropColor(0, 0, 0, 0.30)          -- Transparenter Hintergrund
-
-    pvpFrame:SetMovable(true)
-    pvpFrame:EnableMouse(true)
-    pvpFrame:RegisterForDrag("LeftButton")
-    pvpFrame:SetScript("OnDragStart", pvpFrame.StartMoving)
-    pvpFrame:SetScript("OnDragStop", pvpFrame.StopMovingOrSizing)
+    pvpFrame:SetSize(320, 110); pvpFrame:SetPoint("CENTER")
+    pvpFrame:SetBackdrop({ bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 8, right = 8, top = 8, bottom = 8 } })
+    pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1); pvpFrame:SetBackdropColor(0, 0, 0, 0.30)
+    pvpFrame:SetMovable(true); pvpFrame:EnableMouse(true); pvpFrame:RegisterForDrag("LeftButton"); pvpFrame:SetScript("OnDragStart", pvpFrame.StartMoving); pvpFrame:SetScript("OnDragStop", pvpFrame.StopMovingOrSizing)
     pvpFrame:Hide()
-
-    -- Haupttext
-    local text = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-    text:SetPoint("TOP", pvpFrame, "TOP", 0, -20)
-    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-
-    -- Zielname
-    local nameText = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    nameText:SetPoint("BOTTOM", pvpFrame, "BOTTOM", 0, 25)
-    nameText:SetFont("Fonts\\FRIZQT__.TTF", 14)
-    nameText:SetTextColor(1, 0.82, 0) -- Gelblicher Farbton für Namen
-
-    -- Speichern
-    SchlingelInc.pvpWarningFrame = pvpFrame
-    SchlingelInc.pvpWarningText = text
-    SchlingelInc.pvpWarningName = nameText
+    local text = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge"); text:SetPoint("TOP", pvpFrame, "TOP", 0, -20); text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
+    local nameText = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge"); nameText:SetPoint("BOTTOM", pvpFrame, "BOTTOM", 0, 25); nameText:SetFont("Fonts\\FRIZQT__.TTF", 14); nameText:SetTextColor(1, 0.82, 0)
+    SchlingelInc.pvpWarningFrame = pvpFrame; SchlingelInc.pvpWarningText = text; SchlingelInc.pvpWarningName = nameText
 end
 
--- Kurze Rumble-Animation beim Erscheinen
 function SchlingelInc:RumbleFrame(frame)
     if not frame then return end
-
-    local rumbleTime = 0.3
-    local interval = 0.03
-    local totalTicks = math.floor(rumbleTime / interval)
-    local tick = 0
-
-    C_Timer.NewTicker(interval, function()
-        if not frame:IsShown() then
-            return
-        end
-
+    local rumbleTime = 0.3; local interval = 0.03; local totalTicks = math.floor(rumbleTime / interval); local tick = 0
+    C_Timer.NewTicker(interval, function(ticker) -- Added ticker argument to stop it
+        if not frame:IsObjectType("Frame") or not frame:IsShown() then ticker:Cancel(); return end -- Stop if frame is gone
         tick = tick + 1
-        local offsetX = math.random(-4, 4)
-        local offsetY = math.random(-4, 4)
+        local offsetX = math.random(-4, 4); local offsetY = math.random(-4, 4)
         frame:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
-
-        if tick >= totalTicks then
-            frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-        end
-    end)
+        if tick >= totalTicks then frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0); ticker:Cancel() end
+    end, totalTicks) -- Provide max iterations to auto-cancel
 end
 
 -- Ab hier MiniMap Icon
+local LDB = LibStub("LibDataBroker-1.1", true) -- Add true to suppress errors if not found
+local DBIcon = LibStub("LibDBIcon-1.0", true) -- Add true
 
-local LDB = LibStub("LibDataBroker-1.1")
-local DBIcon = LibStub("LibDBIcon-1.0")
-local _, rank, _, _ = GetGuildInfo("player")
-
--- Datenobjekt für das Minimap Icon
-local minimapLDB = LDB:NewDataObject("SchlingelInc", {
-    type = "data source",
-    text = "Schlingel Inc",
-    icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga",
-
-    OnClick = function(_, button)
-        if button == "LeftButton" then
-            SchlingelInc:ToggleInfoWindow()
+-- Datenobjekt für das Minimap Icon (OnClick wird später gesetzt)
+if LDB then -- Proceed only if LDB is available
+    SchlingelInc.minimapDataObject = LDB:NewDataObject(SchlingelInc.name, { -- Store it on SchlingelInc
+        type = "launcher", -- Changed from "data source" to "launcher" as it launches UIs
+        label = SchlingelInc.name, -- Use label instead of text for launchers
+        icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga",
+        -- OnClick = function... (REMOVED FROM HERE)
+        OnEnter = function(selfFrame) -- LDB passes the frame the mouse is over
+            GameTooltip:SetOwner(selfFrame, "ANCHOR_RIGHT")
+            GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9) -- Use SchlingelInc.name
+            GameTooltip:AddLine("Version: " .. (SchlingelInc.version or "Unbekannt"), 1, 1, 1)
+            GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
+            GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8) -- Added Right-click info
+            GameTooltip:Show()
+        end,
+        OnLeave = function()
+            GameTooltip:Hide()
         end
-        -- if button == "RightButton" and rank == "Lootwichtel" then
-        if button == "RightButton" then
-            SchlingelInc:ToggleOffiWindow()
-        end
-    end,
-
-    OnEnter = function(SchlingelInc)
-        GameTooltip:SetOwner(SchlingelInc, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("Schlingel Inc", 1, 0.7, 0.9)
-        GameTooltip:AddLine("Version: " .. (GetAddOnMetadata("SchlingelInc", "Version") or "Unbekannt"), 1, 1, 1)
-        GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)
-        GameTooltip:Show()
-    end,
-
-    OnLeave = function()
-        GameTooltip:Hide()
-    end
-})
+    })
+else
+    SchlingelInc:Print("LibDataBroker-1.1 nicht gefunden. Minimap-Icon wird nicht erstellt.")
+end
 
 -- Initialisierung des Minimap Icons
 function SchlingelInc:InitMinimapIcon()
-    if not DBIcon or not minimapLDB then
+    if not DBIcon or not SchlingelInc.minimapDataObject then -- Check for SchlingelInc.minimapDataObject
+        SchlingelInc:Print("LibDBIcon-1.0 oder LDB-Datenobjekt nicht gefunden. Minimap-Icon wird nicht initialisiert.")
         return
     end
 
-    -- Stelle sicher, dass das Icon nur einmal registriert wird
     if not SchlingelInc.minimapRegistered then
         SchlingelInc.db = SchlingelInc.db or {}
         SchlingelInc.db.minimap = SchlingelInc.db.minimap or { hide = false }
-
-        DBIcon:Register("SchlingelInc", minimapLDB, SchlingelInc.db.minimap)
+        DBIcon:Register(SchlingelInc.name, SchlingelInc.minimapDataObject, SchlingelInc.db.minimap)
         SchlingelInc.minimapRegistered = true
+        SchlingelInc:Print("Minimap-Icon registriert.")
     end
 end
+
+-- Call initialization functions at the end of Global.lua or in an ADDON_LOADED event
+-- SchlingelInc:CheckDependencies() -- Moved to ADDON_LOADED or PLAYER_LOGIN
+-- SchlingelInc:CheckAddonVersion() -- Moved to ADDON_LOADED or PLAYER_LOGIN
+-- SchlingelInc:CreatePvPWarningFrame() -- Create it once, can be early
+
+local initFrame = CreateFrame("Frame")
+initFrame:RegisterEvent("PLAYER_LOGIN")
+initFrame:SetScript("OnEvent", function(self, event)
+    if event == "PLAYER_LOGIN" then
+        SchlingelInc:Print("Willkommen, Schlingel! Version " .. SchlingelInc.version)
+        SchlingelInc:CheckDependencies()
+        SchlingelInc:CheckAddonVersion()
+        SchlingelInc:CreatePvPWarningFrame() -- Ensure PvP Frame is ready
+        SchlingelInc:InitMinimapIcon()      -- Initialize minimap icon after login
+        self:UnregisterEvent("PLAYER_LOGIN") -- Unregister after first login
+    end
+end)
