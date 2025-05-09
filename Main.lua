@@ -6,7 +6,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc:CreatePvPWarningFrame()
     SchlingelInc:InitMinimapIcon()
 
-    SchlingelInc:Print("Willkommen, Schlingel! Version " .. SchlingelInc.version)
+    SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
 
 -- Event-Handler für globale Events wie Login, Time Played etc.
