@@ -1,3 +1,7 @@
+# 2.0.8
+
+- Adding basic functionality to Offi Interface and improving visuals of both interfaces
+
 # 2.0.6, 2.0.7
 
 - Remove GreenWall from dependencies and check ingame if it is enabled
@@ -8,7 +12,7 @@
 
 # 2.0.4
 
-- Fixing DeathCOunt initialization and PvP Flag on neutral NPCs
+- Fixing DeathCount initialization and PvP Flag on neutral NPCs
 
 # 2.0.3
 
