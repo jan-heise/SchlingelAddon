@@ -169,7 +169,7 @@ function SchlingelInc:_CreateInactivityTabContent(parentFrame)
 
     -- ScrollFrame für die Liste der inaktiven Mitglieder.
     local scrollFrame = CreateFrame("ScrollFrame", ADDON_PREFIX .. "InactivityScrollFrame", tabFrame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetSize(560, 420) -- Höhe ggf. anpassen.
+    scrollFrame:SetSize(560, 350) -- Höhe ggf. anpassen.
     scrollFrame:SetPoint("TOPLEFT", 10, -45)
     tabFrame.scrollFrame = scrollFrame
 
@@ -271,7 +271,7 @@ function SchlingelInc:CreateOffiWindow()
 
     -- Erstellt den Hauptframe des Offi-Fensters.
     local offiWindowFrame = CreateFrame("Frame", OFFIFRAME_NAME, UIParent, "BackdropTemplate")
-    offiWindowFrame:SetSize(600, 590)
+    offiWindowFrame:SetSize(600, 500)
     offiWindowFrame:SetPoint("RIGHT", -50, 25)
     offiWindowFrame:SetBackdrop(BACKDROP_SETTINGS)
     offiWindowFrame:SetMovable(true) -- Fenster kann verschoben werden.
@@ -736,7 +736,7 @@ function SchlingelInc:UpdateInactivityTab()
             rowFrame:SetPoint("TOPLEFT", 0, yOffset)
 
             -- Text für Name, Level, Rang und Offline-Dauer.
-            self.UIHelpers:CreateStyledText(rowFrame, memberData.name, FONT_NORMAL,
+            self.UIHelpers:CreateStyledText(rowFrame, SchlingelInc:RemoveRealmFromName(memberData.name), FONT_NORMAL,
                 "TOPLEFT", rowFrame, "TOPLEFT", xOffsets.name, 0, colWidths.name, nil, "LEFT", "MIDDLE")
             self.UIHelpers:CreateStyledText(rowFrame, memberData.level, FONT_NORMAL,
                 "TOPLEFT", rowFrame, "TOPLEFT", xOffsets.level, 0, colWidths.level, nil, "CENTER", "MIDDLE")
@@ -746,12 +746,14 @@ function SchlingelInc:UpdateInactivityTab()
                 "TOPLEFT", rowFrame, "TOPLEFT", xOffsets.duration, 0, colWidths.duration, nil, "LEFT", "MIDDLE")
 
             -- Kick-Button hinzufügen.
-            local kickButton = self.UIHelpers:CreateStyledButton(rowFrame, "Entfernen", colWidths.kick, rowHeight - 2,
+            if CanGuildRemove("player") then
+                local kickButton = self.UIHelpers:CreateStyledButton(rowFrame, "Entfernen", colWidths.kick, rowHeight - 2,
                 "TOPLEFT", rowFrame, "TOPLEFT", xOffsets.kick, 0, "UIPanelButtonTemplate")
             kickButton:SetScript("OnClick", function()
                 -- Zeigt einen Bestätigungsdialog vor dem Entfernen.
                 StaticPopup_Show("CONFIRM_GUILD_KICK", memberData.name, nil, { memberName = memberData.name })
             end)
+            end
 
             table.insert(uiElements, { rowFrame = rowFrame }) -- Fügt den Frame der Zeile zur UI-Elemente-Liste hinzu.
             yOffset = yOffset - rowHeight -- Nächste Zeile weiter unten.

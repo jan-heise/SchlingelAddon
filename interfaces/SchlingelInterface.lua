@@ -198,7 +198,7 @@ function SchlingelInc:_CreateInfoTabContent_SchlingelInterface(parentFrame)
     tabFrame.motdLabel = self.UIHelpers:CreateStyledText(tabFrame, "Gilden-MOTD:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY)
     currentY = currentY - tabFrame.motdLabel:GetHeight() - 7 -- Y-Position für MOTD Text (mit mehr Abstand)
     -- Gilden-MOTD Textfeld (mehrzeilig)
-    tabFrame.motdTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, "Lade MOTD...", FONT_SMALL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 100, "LEFT", "TOP")
+    tabFrame.motdTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, "Lade MOTD...", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 100, "LEFT", "TOP")
     currentY = currentY - 100 + textBlockSpacing -- Y-Position für das nächste Element
 
     -- Regeln Label
@@ -214,7 +214,7 @@ function SchlingelInc:_CreateInfoTabContent_SchlingelInterface(parentFrame)
             ruleTextContent = ruleTextContent .. "\n" -- Ein Zeilenumbruch am Ende
         end
     end
-    tabFrame.rulesTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, ruleTextContent, FONT_SMALL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 150, "LEFT", "TOP")
+    tabFrame.rulesTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, ruleTextContent, FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 150, "LEFT", "TOP")
 
     -- Update-Funktion für diesen Tab
     tabFrame.Update = function(selfTab)
@@ -268,27 +268,76 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
     -- --- Spalte 2: Chatkanäle ---
     self.UIHelpers:CreateStyledText(tabFrame, "Chatkanäle:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Labels)
     local currentY_Col2_Buttons = currentY_Buttons
+    -- Funktion, die ausgeführt wird, wenn der "Globale Kanäle verlassen"-Button geklickt wird.
     local leaveChannelsBtnFunc = function()
-        local channelsToLeave = { "Allgemein", "General", "Handel", "Trade", "LokaleVerteidigung", "LocalDefense", "SucheNachGruppe", "LookingForGroup", "WeltVerteidigung", "WorldDefense" }
-        local channelsLeft = {}
-        for i = 1, GetNumChannels() do
-            local _, name = GetChannelName(i)
-            if name then
-                for _, unwanted in ipairs(channelsToLeave) do
-                    if string.find(string.lower(name), string.lower(unwanted)) then
-                        table.insert(channelsLeft, name)
-                        break -- Breche innere Schleife ab, wenn Kanal gefunden wurde
+        -- Liste von Namensmustern für Kanäle, die verlassen werden sollen.
+        -- Dies ermöglicht das Verlassen von Kanälen, auch wenn der genaue Name leicht variiert (z.B. durch Nummerierung).
+        local channelsToLeavePatterns = {
+            "Allgemein",               -- Sucht nach "Allgemein" (z.B. "1. Allgemein - Stadt")
+            "General",                 -- Englische Variante
+            "Handel",                  -- Sucht nach "Handel"
+            "Trade",                   -- Englische Variante
+            "LokaleVerteidigung",      -- Sucht nach "LokaleVerteidigung"
+            "LocalDefense",            -- Englische Variante
+            "SucheNachGruppe",         -- Sucht nach "SucheNachGruppe"
+            "LookingForGroup",         -- Englische Variante
+            "WeltVerteidigung",        -- Sucht nach "WeltVerteidigung"
+            "WorldDefense"             -- Englische Variante
+        }
+
+        -- Tabelle, um die Namen der tatsächlich verlassenen Kanäle zu speichern.
+        local channelsActuallyLeft = {}
+
+        -- Ruft die Liste der aktuell beigetretenen Kanäle ab.
+        -- GetChannelList() gibt eine flache Liste zurück: id1, name1, flags1, id2, name2, flags2, ...
+        local joinedChannelInfo = { GetChannelList() }
+
+        -- Iteriert durch die Informationen der beigetretenen Kanäle.
+        -- Jeder Kanal belegt 3 Plätze in der 'joinedChannelInfo'-Tabelle (ID, Name, Flags).
+        local i = 1
+        while i <= #joinedChannelInfo do
+            -- local channelID = joinedChannelInfo[i] -- Die Kanal-ID wird hier nicht unbedingt benötigt.
+            local channelName = joinedChannelInfo[i+1] -- Der Name des Kanals.
+            -- local channelFlags = joinedChannelInfo[i+2] -- Flags könnten Informationen über den Kanaltyp enthalten.
+
+            -- Stellt sicher, dass ein Kanalname vorhanden ist.
+            if channelName then
+                -- Iteriert durch die Muster der zu verlassenden Kanäle.
+                for _, patternToLeave in ipairs(channelsToLeavePatterns) do
+                    -- Konvertiert den aktuellen Kanalnamen und das Muster in Kleinbuchstaben für einen nicht-case-sensitiven Vergleich.
+                    local lowerChannelName = string.lower(channelName)
+                    local lowerPattern = string.lower(patternToLeave)
+
+                    -- Überprüft, ob das Muster im Kanalnamen enthalten ist (einfacher Teilstring-Vergleich).
+                    -- Der Parameter 'true' bei string.find aktiviert den "plain" Modus für literale Vergleiche.
+                    if string.find(lowerChannelName, lowerPattern, 1, true) then
+                        -- Versucht, den Kanal zu verlassen.
+                        LeaveChannelByName(channelName, nil)
+                        -- Fügt den Namen des verlassenen Kanals zur Liste hinzu.
+                        table.insert(channelsActuallyLeft, channelName)
+                        -- Gibt eine Bestätigungsnachricht im Chat aus.
+                        SchlingelInc:Print(ADDON_NAME .. ": Verlasse Kanal '" .. channelName .. "'")
+                        -- Bricht die innere Schleife ab, da ein passendes Muster für diesen Kanal gefunden wurde.
+                        break
                     end
                 end
             end
+            -- Geht zu den Informationen des nächsten Kanals (springt 3 Elemente weiter).
+            i = i + 3
         end
-        for _, channelName in ipairs(channelsLeft) do
-            LeaveChannelByName(channelName)
-            SchlingelInc:Print(ADDON_NAME .. ": Verlasse Kanal '" .. channelName .. "'")
+
+        -- Gibt eine Nachricht aus, falls keine der zu verlassenden Kanäle gefunden wurden.
+        if #channelsActuallyLeft == 0 then
+            SchlingelInc:Print(ADDON_NAME .. ": Keine der zu verlassenden globalen Kanäle gefunden.")
         end
     end
+
+    -- Erstellt den Button "Globale Kanäle verlassen".
+    local col2X = col1X + buttonWidth + 40 -- Definiert an anderer Stelle im Code
+    local currentY_Col2_Buttons = currentY_Buttons -- Definiert an anderer Stelle im Code
     self.UIHelpers:CreateStyledButton(tabFrame, "Globale Kanäle verlassen", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", leaveChannelsBtnFunc)
     currentY_Col2_Buttons = currentY_Col2_Buttons - buttonHeight - buttonSpacingY
+    -- ... (Rest der Funktion) ...
 
     local joinChannelsBtnFunc = function()
         local cID = ChatFrame1 and ChatFrame1:GetID()
