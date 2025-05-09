@@ -9,6 +9,10 @@ SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inv
 -- Lokale Referenz auf die Anfragenliste für kürzeren und schnelleren Zugriff im Modul.
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
 
+-- Globale Variablen für den Debug-Modus
+SchlingelInc.GuildRecruitment.DEBUG_MODE_ENABLED = false -- Standardmäßig deaktiviert
+SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER = nil    -- Kein Standard-Zielbenutzer
+
 -- Gibt die aktuelle Liste der Gildenanfragen zurück.
 -- Diese Funktion dient als Schnittstelle, um von außerhalb des Moduls auf die Anfragen zuzugreifen.
 function SchlingelInc.GuildRecruitment:GetPendingRequests()
@@ -52,6 +56,18 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
 
     -- Erstellt die Addon-Nachricht mit den Spielerdaten im Format "BEFEHL:Daten1:Daten2:..."
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
+
+    -- -- DEBUG MODUS: Direkter Versand an einen Zielbenutzer
+    -- if SchlingelInc.GuildRecruitment.DEBUG_MODE_ENABLED and SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER then
+    --     if C_ChatInfo and C_ChatInfo.SendAddonMessage then
+    --         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER)
+    --         SchlingelInc:Print(string.format("DEBUG: Gildenanfrage-Nachricht direkt an '%s' gesendet.", SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER))
+    --     else
+    --         SchlingelInc:Print("DEBUG: C_ChatInfo.SendAddonMessage nicht verfügbar. Nachricht konnte nicht gesendet werden.")
+    --     end
+    --     return -- Normalen Workflow umgehen
+    -- end
+    -- -- ENDE DEBUG MODUS
 
     -- Sendet einen /who-Befehl, um Gildenmitglieder zu finden.
     -- Der String 'g-"Gildenname"' sucht nach Mitgliedern der spezifischen Gilde.
@@ -190,17 +206,18 @@ local function HandleAddonMessage(prefix, message, channel, sender)
         SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, level, zone))
 
         -- Aktualisiert die Benutzeroberfläche, um die neue Anfrage anzuzeigen.
-        RefreshAllRequestUIs()
+        SchlingelInc:RefreshAllRequestUIs()
     end
 end
 
+      
 -- Hilfsfunktion zum Aktualisieren aller relevanten UIs nach einer Änderung der Anfragenliste.
 -- Aktualisiert das Offi-Fenster, wenn es geöffnet ist.
-local function RefreshAllRequestUIs()
-    if SchlingelInc.OffiWindow and SchlingelInc.OffiWindow:IsShown() and SchlingelInc.OffiWindow.UpdateRecruitmentTabData then
-        SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
-    end
+function SchlingelInc:RefreshAllRequestUIs()
+    SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
 end
+
+    
 
 -- Verarbeitet das Akzeptieren einer Gildenanfrage.
 function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
@@ -228,7 +245,7 @@ function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
     end
 
     if found then
-        RefreshAllRequestUIs() -- Aktualisiert die UI.
+        SchlingelInc:RefreshAllRequestUIs() -- Aktualisiert die UI.
     end
 end
 
@@ -277,14 +294,36 @@ end
 --             GR:SendGuildRequest("Schlingel IInc") -- Sendet Anfrage an die Twinkgilde.
 --         elseif cmd == "addtestdata" then
 --             -- Fügt Testdaten zur Anfragenliste hinzu, um die UI zu testen.
---             table.insert(inviteRequests, { name = "TestUser1-"..random(100,999), level = random(1,60), exp = random(100,50000), zone = "Durotar", money = random(1,100).."g" })
---             table.insert(inviteRequests, { name = "TestUser2-"..random(100,999), level = random(1,60), exp = random(100,50000), zone = "Elwynn", money = random(1,100).."s" })
---             table.insert(inviteRequests, { name = "TestUser3-"..random(100,999), level = random(1,60), exp = random(100,50000), zone = "Darkshore", money = random(1,100).."c" })
+--             table.insert(inviteRequests, { name = "TestUser1-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Durotar", money = math.random(1,100).."g" })
+--             table.insert(inviteRequests, { name = "TestUser2-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Elwynn", money = math.random(1,100).."s" })
+--             table.insert(inviteRequests, { name = "TestUser3-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Darkshore", money = math.random(1,100).."c" })
 --             SchlingelInc:Print("Testdaten hinzugefügt.")
 --             RefreshAllRequestUIs()
+--         elseif cmd == "debugmode" then
+--             if param == "on" then
+--                 GR.DEBUG_MODE_ENABLED = true
+--                 SchlingelInc:Print("Gildenrekrutierung Debug-Modus: ANGESCHALTET.")
+--             elseif param == "off" then
+--                 GR.DEBUG_MODE_ENABLED = false
+--                 SchlingelInc:Print("Gildenrekrutierung Debug-Modus: AUSGESCHALTET.")
+--             else
+--                 SchlingelInc:Print("Verwendung: /si debugmode on|off")
+--             end
+--         elseif cmd == "debugtarget" then
+--             if param then
+--                 GR.DEBUG_TARGET_USER = param
+--                 SchlingelInc:Print(string.format("Gildenrekrutierung Debug-Ziel: %s.", param))
+--             else
+--                  SchlingelInc:Print("Verwendung: /si debugtarget <Spielername-Servername> (oder nur Spielername wenn gleicher Server)")
+--                  SchlingelInc:Print(string.format("Aktuelles Debug-Ziel: %s", GR.DEBUG_TARGET_USER or "Nicht gesetzt"))
+--             end
 --         else
 --             -- Zeigt die verfügbaren Befehle an.
---             SchlingelInc:Print("Befehle: /si  request main|twink or addtestdata]")
+--             SchlingelInc:Print("Verfügbare Befehle für /si:")
+--             SchlingelInc:Print("  request main|twink         - Sendet eine Gildenanfrage.")
+--             SchlingelInc:Print("  addtestdata                - Fügt Testdaten zur UI hinzu.")
+--             SchlingelInc:Print("  debugmode on|off           - Schaltet den Debug-Modus um.")
+--             SchlingelInc:Print("  debugtarget <Spielername>  - Setzt den Zielspieler für den Debug-Modus.")
 --         end
 --     end
 -- end
@@ -300,4 +339,4 @@ addonMessageGlobalHandlerFrame:SetScript("OnEvent", function(selfFrame, event, .
 end)
 
 -- -- Ruft die Initialisierungsfunktion für Slash-Befehle auf, sobald das Modul geladen wird.
--- SchlingelInc.GuildRecruitment:InitializeSlashCommands()
+--SchlingelInc.GuildRecruitment:InitializeSlashCommands()
