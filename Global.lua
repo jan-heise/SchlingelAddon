@@ -337,21 +337,3 @@ function SchlingelInc:InitMinimapIcon()
         SchlingelInc:Print("Minimap-Icon registriert.")
     end
 end
-
--- Call initialization functions at the end of Global.lua or in an ADDON_LOADED event
--- SchlingelInc:CheckDependencies() -- Moved to ADDON_LOADED or PLAYER_LOGIN
--- SchlingelInc:CheckAddonVersion() -- Moved to ADDON_LOADED or PLAYER_LOGIN
--- SchlingelInc:CreatePvPWarningFrame() -- Create it once, can be early
-
-local initFrame = CreateFrame("Frame")
-initFrame:RegisterEvent("PLAYER_LOGIN")
-initFrame:SetScript("OnEvent", function(self, event)
-    if event == "PLAYER_LOGIN" then
-        SchlingelInc:Print("Willkommen, Schlingel! Version " .. SchlingelInc.version)
-        SchlingelInc:CheckDependencies()
-        SchlingelInc:CheckAddonVersion()
-        SchlingelInc:CreatePvPWarningFrame() -- Ensure PvP Frame is ready
-        SchlingelInc:InitMinimapIcon()      -- Initialize minimap icon after login
-        self:UnregisterEvent("PLAYER_LOGIN") -- Unregister after first login
-    end
-end)
