@@ -177,16 +177,16 @@ local function HandleAddonMessage(prefix, message, channel, sender)
     local name, levelStr, expStr, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
     if name and levelStr then
         -- Zu Debugzwekcen diese Zeile auskommentieren
-        if not CanGuildInvite() then return end
 
         -- Wenn die Anfrage von einem Gildenmitglied kommt, das die Anfrage weiterleiten kann,
         -- sendet dieses eine Bestätigung zurück an den ursprünglichen Absender.
-        if sender and C_ChatInfo and C_ChatInfo.SendAddonMessage and CanGuildInvite() then
+        if sender and C_ChatInfo and C_ChatInfo.SendAddonMessage then
             -- Wir prüfen hier NICHT, ob der Sender in der eigenen Gilde ist, da die `SendGuildRequest` Logik
             -- die Anfrage an Mitglieder der Zielgilde schickt. Wenn ein Mitglied der Zielgilde (mit Rechten)
             -- diese Nachricht empfängt, soll es die Anfrage intern bearbeiten und dem Sender der Anfrage
             -- mitteilen, dass sie weitergeleitet wurde.
             -- Dies ist wichtig, damit der Anfragende weiß, dass seine Anfrage angekommen ist.
+            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "GUILD")
             C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "REQUEST_FORWARDED", "WHISPER", sender)
         end
 
@@ -268,7 +268,7 @@ function SchlingelInc.GuildRecruitment:HandleDeclineRequest(playerName)
     end
 
     if found then
-        RefreshAllRequestUIs() -- Aktualisiert die UI.
+        SchlingelInc:RefreshAllRequestUIs() -- Aktualisiert die UI.
     end
 end
 
