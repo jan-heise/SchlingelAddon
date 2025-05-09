@@ -160,8 +160,8 @@ local function HandleAddonMessage(prefix, message, channel, sender)
     -- Verarbeitet die "INVITE_REQUEST"-Nachricht.
     local name, levelStr, expStr, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
     if name and levelStr then
-        -- Optional: Nur Gildenoffiziere (oder Spieler mit Einladeberechtigung) sollten Anfragen bearbeiten.
-        -- if not CanGuildInvite() then return end
+        -- Zu Debugzwekcen diese Zeile auskommentieren
+        if not CanGuildInvite() then return end
 
         -- Wenn die Anfrage von einem Gildenmitglied kommt, das die Anfrage weiterleiten kann,
         -- sendet dieses eine Bestätigung zurück an den ursprünglichen Absender.
