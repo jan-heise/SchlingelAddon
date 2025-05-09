@@ -5,7 +5,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc.LevelUps:Initialize()
 
     -- Slash-Befehle für Gildenrekrutierung (derzeit für Produktion auskommentiert).
-    -- SchlingelInc.GuildRecruitment:InitializeSlashCommands()
+    --SchlingelInc.GuildRecruitment:InitializeSlashCommands()
 
     -- Erstellt und initialisiert den PvP-Warn-Frame.
     SchlingelInc:CreatePvPWarningFrame()
