@@ -2,7 +2,7 @@
 SchlingelInc = {}
 
 -- Addon-Name
-SchlingelInc.name = "Schlingel Inc"
+SchlingelInc.name = "SchlingelInc"
 
 -- Discord Link
 SchlingelInc.discordLink = "https://discord.gg/KXkyUZW"
@@ -435,6 +435,15 @@ if LDB then -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
         type = "launcher", -- Typ des LDB-Objekts: Startet eine UI oder Funktion.
         label = SchlingelInc.name, -- Text neben dem Icon (oft nur im LDB Display Addon sichtbar).
         icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga", -- Pfad zum Icon.
+        OnClick = function(clickedFrame, button)
+        if button == "LeftButton" then
+            if SchlingelInc.ToggleInfoWindow then SchlingelInc:ToggleInfoWindow()
+            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.") end
+        elseif button == "RightButton" then
+            if SchlingelInc.ToggleOffiWindow then SchlingelInc:ToggleOffiWindow()
+            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleOffiWindow ist nicht verfügbar.") end
+        end
+    end,
         -- OnClick = function... (WURDE HIER ENTFERNT, kann später hinzugefügt werden)
         OnEnter = function(selfFrame) -- Wird ausgeführt, wenn die Maus über das Icon fährt.
             GameTooltip:SetOwner(selfFrame, "ANCHOR_RIGHT") -- Positioniert den Tooltip rechts vom Icon.

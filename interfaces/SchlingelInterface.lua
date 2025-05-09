@@ -115,8 +115,8 @@ function SchlingelInc:_CreateCharacterTabContent_SchlingelInterface(parentFrame)
         else local xpString = string.format("XP: %s / %s", currentXP, maxXP); if restXP and restXP > 0 then xpString = xpString .. string.format(" (|cff80c0ff+%.0f Erholt|r)", restXP) end; selfTab.xpText:SetText(xpString) end
 
         -- ** Liest die globalen Spielzeit-Variablen (in Sekunden) und formatiert sie **
-        local timePlayedTotalSeconds = SchlingelInc.GameTimeTotal -- Annahme: Wird von Main.lua gesetzt
-        local timePlayedLevelSeconds = SchlingelInc.GameTimePerLevel -- Annahme: Wird von Main.lua gesetzt
+        local timePlayedTotalSeconds = SchlingelInc.GameTimeTotal
+        local timePlayedLevelSeconds = SchlingelInc.GameTimePerLevel
 
         -- Verwendet die FormatSeconds Hilfsfunktion
         selfTab.timePlayedTotalText:SetText("Spielzeit (Gesamt): " .. FormatSeconds(timePlayedTotalSeconds))
@@ -210,23 +210,23 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
     local joinChannelsBtnFunc = function() local cID = ChatFrame1 and ChatFrame1:GetID(); if not cID then SchlingelInc:Print(ADDON_NAME..": Konnte ChatFrame1 ID nicht ermitteln."); return end; JoinChannelByName("SchlingelTrade", nil, cID); JoinChannelByName("SchlingelGroup", nil, cID); SchlingelInc:Print(ADDON_NAME .. ": Versuche Schlingel-Chats beizutreten.") end
     self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel-Chats beitreten", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", joinChannelsBtnFunc);
 
-    -- Info below buttons (Discord + Version)
-    local infoY = math.min(currentY_Col1_Buttons, currentY_Col2_Buttons) - buttonHeight - (buttonSpacingY * 2) -- Y pos below lowest button
+
+    local infoY = math.min(currentY_Col1_Buttons, currentY_Col2_Buttons) - buttonHeight - (buttonSpacingY * 2)
     local infoWidth = (buttonWidth * 2) + 30 -- Span both columns
 
     tabFrame.discordText = self.UIHelpers:CreateStyledText(tabFrame, "Discord: ...", FONT_NORMAL,
                                    "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
-                                   infoWidth, nil, "CENTER") -- Centered below buttons
+                                   infoWidth, nil, "CENTER")
     infoY = infoY - 25 -- Mehr Space zwischen Discord und Version
 
     tabFrame.versionText = self.UIHelpers:CreateStyledText(tabFrame, "Version: ...", FONT_NORMAL,
                                    "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
-                                   infoWidth, nil, "CENTER") -- Centered below Discord
+                                   infoWidth, nil, "CENTER")
 
 
     tabFrame.Update = function(selfTab)
         selfTab.discordText:SetText("Discord: " .. (SchlingelInc.discordLink or "N/A"))
-        selfTab.versionText:SetText("Version: " .. (SchlingelInc.version or "N/A")) -- Update version here
+        selfTab.versionText:SetText("Version: " .. (SchlingelInc.version or "N/A"))
     end
     return tabFrame
 end
@@ -298,7 +298,6 @@ function SchlingelInc:ToggleInfoWindow()
     end
 end
 
--- Event handler specific to this UI module
 local function RegisterSchlingelInterfaceEvents()
     local eventFrameSI = CreateFrame("Frame", "SchlingelInterfaceEventFrame")
     eventFrameSI:RegisterEvent("PLAYER_LEVEL_UP"); eventFrameSI:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -317,20 +316,3 @@ local function RegisterSchlingelInterfaceEvents()
     end)
 end
 RegisterSchlingelInterfaceEvents()
-
---------------------------------------------------------------------------------
--- LDB OnClick Handler Setup (Deferred)
---------------------------------------------------------------------------------
-if SchlingelInc.minimapDataObject then
-    SchlingelInc.minimapDataObject.OnClick = function(clickedFrame, button)
-        if button == "LeftButton" then
-            if SchlingelInc.ToggleInfoWindow then SchlingelInc:ToggleInfoWindow()
-            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.") end
-        elseif button == "RightButton" then
-            if SchlingelInc.ToggleOffiWindow then SchlingelInc:ToggleOffiWindow()
-            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleOffiWindow ist nicht verfügbar.") end
-        end
-    end
-else
-    -- SchlingelInc:Print(SchlingelInc.name .. ": WARNUNG - Minimap-Datenobjekt nicht gefunden, um OnClick zu setzen.")
-end
