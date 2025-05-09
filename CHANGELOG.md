@@ -1,3 +1,7 @@
+# 2.0.9
+
+- Remove guild request messages from players who can't invite people
+
 # 2.0.8
 
 - Adding basic functionality to Offi Interface and improving visuals of both interfaces

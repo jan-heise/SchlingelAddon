@@ -95,21 +95,23 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     whoFrameHandler:SetScript("OnEvent", function(selfEventFrame, event, ...)
         if event == "WHO_LIST_UPDATE" then
             selfEventFrame:UnregisterEvent("WHO_LIST_UPDATE") -- Event abmelden, um Mehrfachausführung zu verhindern.
-            whoFrameHandler:Hide() -- Frame verstecken, da er nicht mehr benötigt wird.
+            whoFrameHandler:Hide()                            -- Frame verstecken, da er nicht mehr benötigt wird.
 
             if not C_FriendList or not C_FriendList.GetNumWhoResults then
-                 SchlingelInc:Print("Fehler beim Verarbeiten der WHO-Antwort.")
-                 return
+                SchlingelInc:Print("Fehler beim Verarbeiten der WHO-Antwort.")
+                return
             end
 
             local numResults = C_FriendList.GetNumWhoResults()
             if numResults == 0 then
-                SchlingelInc:Print(string.format("Keine Online-Mitglieder in der Gilde '%s' gefunden, an die eine Anfrage gesendet werden könnte.", guildName))
+                SchlingelInc:Print(string.format(
+                "Keine Online-Mitglieder in der Gilde '%s' gefunden, an die eine Anfrage gesendet werden könnte.",
+                    guildName))
                 return
             end
 
             local currentIndex = 1
-            local maxWhoResults = numResults -- Anzahl der gefundenen Gildenmitglieder.
+            local maxWhoResults = numResults  -- Anzahl der gefundenen Gildenmitglieder.
             local requestWasForwarded = false -- Flag, um zu prüfen, ob die Anfrage erfolgreich weitergeleitet wurde.
 
             -- Temporärer Frame, um auf eine Bestätigungsnachricht ("REQUEST_FORWARDED") vom empfangenden Addon zu warten.
@@ -136,7 +138,8 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
 
                 if currentIndex > maxWhoResults then
                     -- Alle Mitglieder wurden durchlaufen, ohne dass die Anfrage weitergeleitet wurde.
-                    SchlingelInc:Print(string.format("Anfrage an Gilde '%s' konnte nicht zugestellt werden (kein Offizier mit Addon online?).", guildName))
+                    SchlingelInc:Print(string.format(
+                    "Anfrage an Gilde '%s' konnte nicht zugestellt werden (kein Offizier mit Addon online?).", guildName))
                     SchlingelInc:Print("Bitte über Discord melden, falls keine Antwort kommt.")
                     addonMsgResponseHandler:UnregisterEvent("CHAT_MSG_ADDON")
                     addonMsgResponseHandler:Hide()
@@ -201,23 +204,23 @@ local function HandleAddonMessage(prefix, message, channel, sender)
             end
         end
 
-        -- Fügt die neue Anfrage zur Liste hinzu.
-        table.insert(inviteRequests, { name = name, level = level, exp = exp, zone = zone, money = money })
-        SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, level, zone))
+        if CanGuildInvite() then
+            -- Fügt die neue Anfrage zur Liste hinzu.
+            table.insert(inviteRequests, { name = name, level = level, exp = exp, zone = zone, money = money })
+            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, level, zone))
 
-        -- Aktualisiert die Benutzeroberfläche, um die neue Anfrage anzuzeigen.
-        SchlingelInc:RefreshAllRequestUIs()
+            -- Aktualisiert die Benutzeroberfläche, um die neue Anfrage anzuzeigen.
+            SchlingelInc:RefreshAllRequestUIs()
+        end
     end
 end
 
-      
+
 -- Hilfsfunktion zum Aktualisieren aller relevanten UIs nach einer Änderung der Anfragenliste.
 -- Aktualisiert das Offi-Fenster auch wenn es geschlossen ist.
 function SchlingelInc:RefreshAllRequestUIs()
     SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
 end
-
-    
 
 -- Verarbeitet das Akzeptieren einer Gildenanfrage.
 function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)

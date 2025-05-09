@@ -38,9 +38,9 @@ local function FormatSeconds(totalSeconds)
         local m = math.floor((totalSeconds % 3600) / 60)
         return string.format("%dd %dh %dm", d, h, m)
     elseif totalSeconds == 0 then
-         return "0d 0h 0m" -- Zeigt 0 explizit an, wenn die Spielzeit genau 0 ist.
+        return "0d 0h 0m" -- Zeigt 0 explizit an, wenn die Spielzeit genau 0 ist.
     else
-        return "Lade..." -- Zeigt "Lade..." an, wenn Daten nil sind (z.B. noch nicht vom Server empfangen).
+        return "Lade..."  -- Zeigt "Lade..." an, wenn Daten nil sind (z.B. noch nicht vom Server empfangen).
     end
 end
 
@@ -64,39 +64,52 @@ function SchlingelInc:_CreateCharacterTabContent_SchlingelInterface(parentFrame)
     local xCol1 = 0
     local xCol2 = contentFrame:GetWidth() * 0.55 -- Rechte Spalte beginnt bei 55% der Breite
     local lineHeight = 22
-    local currentY_Col1 = 0 -- Aktuelle Y-Position für Spalte 1
-    local currentY_Col2 = 0 -- Aktuelle Y-Position für Spalte 2
+    local currentY_Col1 = 0                      -- Aktuelle Y-Position für Spalte 1
+    local currentY_Col2 = 0                      -- Aktuelle Y-Position für Spalte 2
 
     -- --- Spalte 1: Allgemeine Charakterdaten ---
-    tabFrame.playerNameText = self.UIHelpers:CreateStyledText(contentFrame, "Name: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.playerNameText = self.UIHelpers:CreateStyledText(contentFrame, "Name: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, currentY_Col1)
     currentY_Col1 = currentY_Col1 - lineHeight
-    tabFrame.levelText = self.UIHelpers:CreateStyledText(contentFrame, "Level: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.levelText = self.UIHelpers:CreateStyledText(contentFrame, "Level: ...", FONT_NORMAL, "TOPLEFT", contentFrame,
+        "TOPLEFT", xCol1, currentY_Col1)
     currentY_Col1 = currentY_Col1 - lineHeight
-    tabFrame.classText = self.UIHelpers:CreateStyledText(contentFrame, "Klasse: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.classText = self.UIHelpers:CreateStyledText(contentFrame, "Klasse: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, currentY_Col1)
     currentY_Col1 = currentY_Col1 - lineHeight
-    tabFrame.raceText = self.UIHelpers:CreateStyledText(contentFrame, "Rasse: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.raceText = self.UIHelpers:CreateStyledText(contentFrame, "Rasse: ...", FONT_NORMAL, "TOPLEFT", contentFrame,
+        "TOPLEFT", xCol1, currentY_Col1)
     currentY_Col1 = currentY_Col1 - lineHeight
-    tabFrame.zoneText = self.UIHelpers:CreateStyledText(contentFrame, "Zone: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.zoneText = self.UIHelpers:CreateStyledText(contentFrame, "Zone: ...", FONT_NORMAL, "TOPLEFT", contentFrame,
+        "TOPLEFT", xCol1, currentY_Col1)
     currentY_Col1 = currentY_Col1 - lineHeight
-    tabFrame.deathCountText = self.UIHelpers:CreateStyledText(contentFrame, "Tode: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, currentY_Col1)
+    tabFrame.deathCountText = self.UIHelpers:CreateStyledText(contentFrame, "Tode: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, currentY_Col1)
 
     -- --- Spalte 2: Weitere Charakterdaten ---
-    tabFrame.moneyText = self.UIHelpers:CreateStyledText(contentFrame, "Geld: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
+    tabFrame.moneyText = self.UIHelpers:CreateStyledText(contentFrame, "Geld: ...", FONT_NORMAL, "TOPLEFT", contentFrame,
+        "TOPLEFT", xCol2, currentY_Col2)
     currentY_Col2 = currentY_Col2 - lineHeight
-    tabFrame.xpText = self.UIHelpers:CreateStyledText(contentFrame, "XP: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
+    tabFrame.xpText = self.UIHelpers:CreateStyledText(contentFrame, "XP: ...", FONT_NORMAL, "TOPLEFT", contentFrame,
+        "TOPLEFT", xCol2, currentY_Col2)
     currentY_Col2 = currentY_Col2 - lineHeight
     -- Spielzeit-Felder initial mit "Lade..." erstellen, da diese asynchron geladen werden
-    tabFrame.timePlayedTotalText = self.UIHelpers:CreateStyledText(contentFrame, "Spielzeit (Gesamt): Lade...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
+    tabFrame.timePlayedTotalText = self.UIHelpers:CreateStyledText(contentFrame, "Spielzeit (Gesamt): Lade...",
+        FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
     currentY_Col2 = currentY_Col2 - lineHeight
-    tabFrame.timePlayedLevelText = self.UIHelpers:CreateStyledText(contentFrame, "Spielzeit (Level): Lade...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
+    tabFrame.timePlayedLevelText = self.UIHelpers:CreateStyledText(contentFrame, "Spielzeit (Level): Lade...",
+        FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol2, currentY_Col2)
 
     -- --- Gildeninformationen unterhalb der beiden Spalten ---
     local guildYStart = math.min(currentY_Col1, currentY_Col2) - (lineHeight * 2) -- Startet unter der kürzeren Spalte
-    tabFrame.guildNameText = self.UIHelpers:CreateStyledText(contentFrame, "Gilde: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, guildYStart)
+    tabFrame.guildNameText = self.UIHelpers:CreateStyledText(contentFrame, "Gilde: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, guildYStart)
     guildYStart = guildYStart - lineHeight
-    tabFrame.guildRankText = self.UIHelpers:CreateStyledText(contentFrame, "Gildenrang: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, guildYStart)
+    tabFrame.guildRankText = self.UIHelpers:CreateStyledText(contentFrame, "Gildenrang: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, guildYStart)
     guildYStart = guildYStart - lineHeight
-    tabFrame.guildMembersText = self.UIHelpers:CreateStyledText(contentFrame, "Mitglieder: ...", FONT_NORMAL, "TOPLEFT", contentFrame, "TOPLEFT", xCol1, guildYStart)
+    tabFrame.guildMembersText = self.UIHelpers:CreateStyledText(contentFrame, "Mitglieder: ...", FONT_NORMAL, "TOPLEFT",
+        contentFrame, "TOPLEFT", xCol1, guildYStart)
 
     -- Update-Funktion für diesen Tab, um die angezeigten Werte zu aktualisieren
     tabFrame.Update = function(selfTab)
@@ -133,7 +146,8 @@ function SchlingelInc:_CreateCharacterTabContent_SchlingelInterface(parentFrame)
 
         local classColor = pClassToken and RAID_CLASS_COLORS[pClassToken]
         if classColor then
-            selfTab.classText:SetText(string.format("Klasse: |cff%02x%02x%02x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, pClassLoc))
+            selfTab.classText:SetText(string.format("Klasse: |cff%02x%02x%02x%s|r", classColor.r * 255, classColor.g *
+                255, classColor.b * 255, pClassLoc))
         else
             selfTab.classText:SetText("Klasse: " .. pClassLoc)
         end
@@ -189,20 +203,23 @@ function SchlingelInc:_CreateInfoTabContent_SchlingelInterface(parentFrame)
     local tabFrame = CreateFrame("Frame", ADDON_NAME .. "InfoTabSI", parentFrame)
     tabFrame:SetAllPoints(true)
 
-    local currentY = -20 -- Start Y-Position
-    local leftPadding = 20 -- Linker Randabstand
+    local currentY = -20                                            -- Start Y-Position
+    local leftPadding = 20                                          -- Linker Randabstand
     local contentWidth = parentFrame:GetWidth() - (leftPadding * 2) -- Verfügbare Breite für Textblöcke
-    local textBlockSpacing = -20 -- Zusätzlicher Abstand zwischen Textblöcken
+    local textBlockSpacing = -20                                    -- Zusätzlicher Abstand zwischen Textblöcken
 
     -- Gilden-MOTD Label
-    tabFrame.motdLabel = self.UIHelpers:CreateStyledText(tabFrame, "Gilden-MOTD:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY)
+    tabFrame.motdLabel = self.UIHelpers:CreateStyledText(tabFrame, "Gilden-MOTD:", FONT_NORMAL, "TOPLEFT", tabFrame,
+        "TOPLEFT", leftPadding, currentY)
     currentY = currentY - tabFrame.motdLabel:GetHeight() - 7 -- Y-Position für MOTD Text (mit mehr Abstand)
     -- Gilden-MOTD Textfeld (mehrzeilig)
-    tabFrame.motdTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, "Lade MOTD...", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 100, "LEFT", "TOP")
+    tabFrame.motdTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, "Lade MOTD...", FONT_NORMAL, "TOPLEFT", tabFrame,
+        "TOPLEFT", leftPadding, currentY, contentWidth, 100, "LEFT", "TOP")
     currentY = currentY - 100 + textBlockSpacing -- Y-Position für das nächste Element
 
     -- Regeln Label
-    tabFrame.rulesLabel = self.UIHelpers:CreateStyledText(tabFrame, "Regeln der Gilden:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY)
+    tabFrame.rulesLabel = self.UIHelpers:CreateStyledText(tabFrame, "Regeln der Gilden:", FONT_NORMAL, "TOPLEFT",
+        tabFrame, "TOPLEFT", leftPadding, currentY)
     currentY = currentY - tabFrame.rulesLabel:GetHeight() - 7 -- Y-Position für Regeltext (mit mehr Abstand)
     -- Regeln Textfeld (mehrzeilig)
     local ruleTextContent = ""
@@ -211,10 +228,11 @@ function SchlingelInc:_CreateInfoTabContent_SchlingelInterface(parentFrame)
         if i < #Rulestext then
             ruleTextContent = ruleTextContent .. "\n\n" -- Zwei Zeilenumbrüche für besseren Abstand
         else
-            ruleTextContent = ruleTextContent .. "\n" -- Ein Zeilenumbruch am Ende
+            ruleTextContent = ruleTextContent .. "\n"   -- Ein Zeilenumbruch am Ende
         end
     end
-    tabFrame.rulesTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, ruleTextContent, FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 150, "LEFT", "TOP")
+    tabFrame.rulesTextDisplay = self.UIHelpers:CreateStyledText(tabFrame, ruleTextContent, FONT_NORMAL, "TOPLEFT",
+        tabFrame, "TOPLEFT", leftPadding, currentY, contentWidth, 150, "LEFT", "TOP")
 
     -- Update-Funktion für diesen Tab
     tabFrame.Update = function(selfTab)
@@ -240,49 +258,53 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
     -- Berechnet X-Positionen für zwei Spalten, zentriert
     local col1X = (parentFrame:GetWidth() - (buttonWidth * 2 + 40)) / 2
     local col2X = col1X + buttonWidth + 40
-    local currentY_Labels = -20 -- Y-Position für Spaltenüberschriften
+    local currentY_Labels = -20                   -- Y-Position für Spaltenüberschriften
     local currentY_Buttons = currentY_Labels - 30 -- Y-Position für die erste Button-Reihe
 
     -- --- Spalte 1: Gildenbeitritt ---
-    self.UIHelpers:CreateStyledText(tabFrame, "Gildenbeitritt:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col1X, currentY_Labels)
+    self.UIHelpers:CreateStyledText(tabFrame, "Gildenbeitritt:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col1X,
+        currentY_Labels)
     local currentY_Col1_Buttons = currentY_Buttons
     local joinMainGuildBtnFunc = function()
         if SchlingelInc.GuildRecruitment and SchlingelInc.GuildRecruitment.SendGuildRequest then
             SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel Inc")
         else
-            SchlingelInc:Print(ADDON_NAME .. ": Fehler - GuildRecruitment Modul nicht gefunden.")
+            SchlingelInc:Print("Fehler - GuildRecruitment Modul nicht gefunden.")
         end
     end
-    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel Inc beitreten", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinMainGuildBtnFunc)
+    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel Inc beitreten", buttonWidth, buttonHeight, "TOPLEFT", tabFrame,
+        "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinMainGuildBtnFunc)
     currentY_Col1_Buttons = currentY_Col1_Buttons - buttonHeight - buttonSpacingY
 
     local joinTwinkGuildBtnFunc = function()
         if SchlingelInc.GuildRecruitment and SchlingelInc.GuildRecruitment.SendGuildRequest then
             SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel IInc")
         else
-            SchlingelInc:Print(ADDON_NAME .. ": Fehler - GuildRecruitment Modul nicht gefunden.")
+            SchlingelInc:Print("Fehler - GuildRecruitment Modul nicht gefunden.")
         end
     end
-    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel IInc beitreten", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinTwinkGuildBtnFunc)
+    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel IInc beitreten", buttonWidth, buttonHeight, "TOPLEFT",
+        tabFrame, "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinTwinkGuildBtnFunc)
 
     -- --- Spalte 2: Chatkanäle ---
-    self.UIHelpers:CreateStyledText(tabFrame, "Chatkanäle:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Labels)
+    self.UIHelpers:CreateStyledText(tabFrame, "Chatkanäle:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col2X,
+        currentY_Labels)
     local currentY_Col2_Buttons = currentY_Buttons
     -- Funktion, die ausgeführt wird, wenn der "Globale Kanäle verlassen"-Button geklickt wird.
     local leaveChannelsBtnFunc = function()
         -- Liste von Namensmustern für Kanäle, die verlassen werden sollen.
         -- Dies ermöglicht das Verlassen von Kanälen, auch wenn der genaue Name leicht variiert (z.B. durch Nummerierung).
         local channelsToLeavePatterns = {
-            "Allgemein",               -- Sucht nach "Allgemein" (z.B. "1. Allgemein - Stadt")
-            "General",                 -- Englische Variante
-            "Handel",                  -- Sucht nach "Handel"
-            "Trade",                   -- Englische Variante
-            "LokaleVerteidigung",      -- Sucht nach "LokaleVerteidigung"
-            "LocalDefense",            -- Englische Variante
-            "SucheNachGruppe",         -- Sucht nach "SucheNachGruppe"
-            "LookingForGroup",         -- Englische Variante
-            "WeltVerteidigung",        -- Sucht nach "WeltVerteidigung"
-            "WorldDefense"             -- Englische Variante
+            "Allgemein",          -- Sucht nach "Allgemein" (z.B. "1. Allgemein - Stadt")
+            "General",            -- Englische Variante
+            "Handel",             -- Sucht nach "Handel"
+            "Trade",              -- Englische Variante
+            "LokaleVerteidigung", -- Sucht nach "LokaleVerteidigung"
+            "LocalDefense",       -- Englische Variante
+            "SucheNachGruppe",    -- Sucht nach "SucheNachGruppe"
+            "LookingForGroup",    -- Englische Variante
+            "WeltVerteidigung",   -- Sucht nach "WeltVerteidigung"
+            "WorldDefense"        -- Englische Variante
         }
 
         -- Tabelle, um die Namen der tatsächlich verlassenen Kanäle zu speichern.
@@ -297,7 +319,7 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
         local i = 1
         while i <= #joinedChannelInfo do
             -- local channelID = joinedChannelInfo[i] -- Die Kanal-ID wird hier nicht unbedingt benötigt.
-            local channelName = joinedChannelInfo[i+1] -- Der Name des Kanals.
+            local channelName = joinedChannelInfo[i + 1] -- Der Name des Kanals.
             -- local channelFlags = joinedChannelInfo[i+2] -- Flags könnten Informationen über den Kanaltyp enthalten.
 
             -- Stellt sicher, dass ein Kanalname vorhanden ist.
@@ -316,7 +338,7 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
                         -- Fügt den Namen des verlassenen Kanals zur Liste hinzu.
                         table.insert(channelsActuallyLeft, channelName)
                         -- Gibt eine Bestätigungsnachricht im Chat aus.
-                        SchlingelInc:Print(ADDON_NAME .. ": Verlasse Kanal '" .. channelName .. "'")
+                        SchlingelInc:Print("Verlasse Kanal '" .. channelName .. "'")
                         -- Bricht die innere Schleife ab, da ein passendes Muster für diesen Kanal gefunden wurde.
                         break
                     end
@@ -328,41 +350,43 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
 
         -- Gibt eine Nachricht aus, falls keine der zu verlassenden Kanäle gefunden wurden.
         if #channelsActuallyLeft == 0 then
-            SchlingelInc:Print(ADDON_NAME .. ": Keine der zu verlassenden globalen Kanäle gefunden.")
+            SchlingelInc:Print("Keine der zu verlassenden globalen Kanäle gefunden.")
         end
     end
 
     -- Erstellt den Button "Globale Kanäle verlassen".
-    local col2X = col1X + buttonWidth + 40 -- Definiert an anderer Stelle im Code
+    local col2X = col1X + buttonWidth + 40         -- Definiert an anderer Stelle im Code
     local currentY_Col2_Buttons = currentY_Buttons -- Definiert an anderer Stelle im Code
-    self.UIHelpers:CreateStyledButton(tabFrame, "Globale Kanäle verlassen", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", leaveChannelsBtnFunc)
+    self.UIHelpers:CreateStyledButton(tabFrame, "Globale Kanäle verlassen", buttonWidth, buttonHeight, "TOPLEFT",
+        tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", leaveChannelsBtnFunc)
     currentY_Col2_Buttons = currentY_Col2_Buttons - buttonHeight - buttonSpacingY
     -- ... (Rest der Funktion) ...
 
     local joinChannelsBtnFunc = function()
         local cID = ChatFrame1 and ChatFrame1:GetID()
         if not cID then
-            SchlingelInc:Print(ADDON_NAME..": Konnte ChatFrame1 ID nicht ermitteln.")
+            SchlingelInc:Print(ADDON_NAME .. ": Konnte ChatFrame1 ID nicht ermitteln.")
             return
         end
         JoinChannelByName("SchlingelTrade", nil, cID)
         JoinChannelByName("SchlingelGroup", nil, cID)
-        SchlingelInc:Print(ADDON_NAME .. ": Versuche Schlingel-Chats beizutreten.")
+        SchlingelInc:Print("Versuche Schlingel-Chats beizutreten.")
     end
-    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel-Chats beitreten", buttonWidth, buttonHeight, "TOPLEFT", tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", joinChannelsBtnFunc)
+    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel-Chats beitreten", buttonWidth, buttonHeight, "TOPLEFT",
+        tabFrame, "TOPLEFT", col2X, currentY_Col2_Buttons, "UIPanelButtonTemplate", joinChannelsBtnFunc)
 
     -- --- Informationen unterhalb der Buttons (Discord, Version) ---
     local infoY = math.min(currentY_Col1_Buttons, currentY_Col2_Buttons) - buttonHeight - (buttonSpacingY * 2)
     local infoWidth = (buttonWidth * 2) + 30 -- Breite über beide Spalten
 
     tabFrame.discordText = self.UIHelpers:CreateStyledText(tabFrame, "Discord: ...", FONT_NORMAL,
-                                   "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
-                                   infoWidth, nil, "CENTER")
+        "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
+        infoWidth, nil, "CENTER")
     infoY = infoY - 25 -- Mehr Abstand zwischen Discord und Version
 
     tabFrame.versionText = self.UIHelpers:CreateStyledText(tabFrame, "Version: ...", FONT_NORMAL,
-                                   "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
-                                   infoWidth, nil, "CENTER")
+        "TOPLEFT", tabFrame, "TOPLEFT", col1X, infoY,
+        infoWidth, nil, "CENTER")
 
     -- Update-Funktion für diesen Tab
     tabFrame.Update = function(selfTab)
@@ -393,13 +417,15 @@ function SchlingelInc:CreateInfoWindow()
     mainFrame:SetScript("OnDragStart", mainFrame.StartMoving)
     mainFrame:SetScript("OnDragStop", mainFrame.StopMovingOrSizing)
     mainFrame:SetFrameStrata("MEDIUM") -- Stellt sicher, dass es über den meisten UI-Elementen liegt
-    mainFrame:Hide() -- Standardmäßig versteckt
+    mainFrame:Hide()                   -- Standardmäßig versteckt
 
     -- Fenstertitel
-    self.UIHelpers:CreateStyledText(mainFrame, "Schlingel Inc Interface", FONT_HIGHLIGHT_LARGE, "TOP", mainFrame, "TOP", 0, -15)
+    self.UIHelpers:CreateStyledText(mainFrame, "Schlingel Inc Interface", FONT_HIGHLIGHT_LARGE, "TOP", mainFrame, "TOP",
+        0, -15)
     -- Schließen-Button
     local closeButtonFunc = function() mainFrame:Hide() end
-    self.UIHelpers:CreateStyledButton(mainFrame, nil, 22, 22, "TOPRIGHT", mainFrame, "TOPRIGHT", -7, -7, "UIPanelCloseButton", closeButtonFunc)
+    self.UIHelpers:CreateStyledButton(mainFrame, nil, 22, 22, "TOPRIGHT", mainFrame, "TOPRIGHT", -7, -7,
+        "UIPanelCloseButton", closeButtonFunc)
 
     -- Container für die Tab-Inhalte
     local tabContentContainer = CreateFrame("Frame", ADDON_NAME .. "SITabContentContainer", mainFrame)
@@ -420,7 +446,7 @@ function SchlingelInc:CreateInfoWindow()
                 if index == tabIndex then
                     PanelTemplates_SelectTab(button) -- Visuelle Auswahl des Buttons
                     contentFrame:Show()
-                    if contentFrame.Update then -- Ruft die Update-Funktion des Tabs auf, falls vorhanden
+                    if contentFrame.Update then      -- Ruft die Update-Funktion des Tabs auf, falls vorhanden
                         contentFrame:Update(contentFrame)
                     end
                 else
@@ -447,7 +473,8 @@ function SchlingelInc:CreateInfoWindow()
         button:SetID(i)
         button:SetText(tabDef.name)
         button:SetWidth(tabButtonWidth)
-        button:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMLEFT", initialXOffsetForTabs + (i-1)*(tabButtonWidth + tabButtonSpacing), 12)
+        button:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMLEFT",
+            initialXOffsetForTabs + (i - 1) * (tabButtonWidth + tabButtonSpacing), 12)
         button:GetFontString():SetPoint("CENTER", 0, 1) -- Zentriert den Text im Button
         local selectThisTabFunc = function() SelectTab(i) end
         button:SetScript("OnClick", selectThisTabFunc)
@@ -501,11 +528,12 @@ local function RegisterSchlingelInterfaceEvents()
     eventFrameSI:SetScript("OnEvent", function(selfFrame, event, ...)
         -- Aktualisiert das Info-Fenster nur, wenn es existiert und sichtbar ist
         if SchlingelInc and SchlingelInc.infoWindow and SchlingelInc.infoWindow:IsShown() then
-             local activeTabIndex = SchlingelInc.infoWindow.selectedTab or 1
-             local tabToUpdate = SchlingelInc.infoWindow.tabContentFrames and SchlingelInc.infoWindow.tabContentFrames[activeTabIndex]
+            local activeTabIndex = SchlingelInc.infoWindow.selectedTab or 1
+            local tabToUpdate = SchlingelInc.infoWindow.tabContentFrames and
+                SchlingelInc.infoWindow.tabContentFrames[activeTabIndex]
 
             if tabToUpdate and tabToUpdate:IsShown() and tabToUpdate.Update then
-                 tabToUpdate:Update(tabToUpdate) -- Ruft die Update-Funktion des aktiven Tabs auf
+                tabToUpdate:Update(tabToUpdate) -- Ruft die Update-Funktion des aktiven Tabs auf
             end
         end
     end)
