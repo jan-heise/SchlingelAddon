@@ -212,7 +212,7 @@ end
 
       
 -- Hilfsfunktion zum Aktualisieren aller relevanten UIs nach einer Änderung der Anfragenliste.
--- Aktualisiert das Offi-Fenster, wenn es geöffnet ist.
+-- Aktualisiert das Offi-Fenster auch wenn es geschlossen ist.
 function SchlingelInc:RefreshAllRequestUIs()
     SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
 end
