@@ -25,9 +25,18 @@ SchlingelInc.allowedGuilds = {
     "Schlingel IInc"
 }
 
+-- Liste der für das OffiInterface zugelassenen Rollen
+SchlingelInc.AllowedRanks = { 
+    "Lootwichtel", 
+    "Oberlootwichtel"
+}
+
 -- Initialisierung von Spielzeit-Variablen (derzeit nicht weiter verwendet im Snippet).
 SchlingelInc.GameTimeTotal = 0
 SchlingelInc.GameTimePerLevel = 0
+
+-- Global um zu chekcen ob man den OffiFrame sehen darf.
+SchlingelInc.isAllowed = false
 
 -- Überprüft Abhängigkeiten und warnt bei Problemen.
 function SchlingelInc:CheckDependencies()
@@ -436,21 +445,34 @@ if LDB then -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
         label = SchlingelInc.name, -- Text neben dem Icon (oft nur im LDB Display Addon sichtbar).
         icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga", -- Pfad zum Icon.
         OnClick = function(clickedFrame, button)
-        if button == "LeftButton" then
-            if SchlingelInc.ToggleInfoWindow then SchlingelInc:ToggleInfoWindow()
-            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.") end
-        elseif button == "RightButton" then
-            if SchlingelInc.ToggleOffiWindow then SchlingelInc:ToggleOffiWindow()
-            else SchlingelInc:Print(SchlingelInc.name .. ": ToggleOffiWindow ist nicht verfügbar.") end
-        end
-    end,
+            if button == "LeftButton" then
+                if SchlingelInc.ToggleInfoWindow then
+                    SchlingelInc:ToggleInfoWindow()
+                else
+                    SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.")
+                end
+            elseif button == "RightButton" then
+                    if SchlingelInc.isAllowed then
+                    if SchlingelInc.ToggleOffiWindow then
+                        SchlingelInc:ToggleOffiWindow()
+                    else
+                        SchlingelInc:Print(SchlingelInc.name .. ": ToggleOffiWindow ist nicht verfügbar.")
+                    end
+                else
+                    return
+                end
+            end
+        end,
+
         -- OnClick = function... (WURDE HIER ENTFERNT, kann später hinzugefügt werden)
         OnEnter = function(selfFrame) -- Wird ausgeführt, wenn die Maus über das Icon fährt.
             GameTooltip:SetOwner(selfFrame, "ANCHOR_RIGHT") -- Positioniert den Tooltip rechts vom Icon.
             GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9) -- Addon-Name im Tooltip.
             GameTooltip:AddLine("Version: " .. (SchlingelInc.version or "Unbekannt"), 1, 1, 1) -- Version im Tooltip.
             GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1) -- Hinweis für Linksklick.
-            GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8) -- Hinweis für Rechtsklick.
+            if SchlingelInc.isAllowed then
+                GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8) -- Hinweis für Rechtsklick.
+            end
             GameTooltip:Show() -- Zeigt den Tooltip an.
         end,
         OnLeave = function() -- Wird ausgeführt, wenn die Maus das Icon verlässt.
@@ -480,5 +502,17 @@ function SchlingelInc:InitMinimapIcon()
         DBIcon:Register(SchlingelInc.name, SchlingelInc.minimapDataObject, SchlingelInc.db.minimap)
         SchlingelInc.minimapRegistered = true -- Markiert das Icon als registriert.
         SchlingelInc:Print("Minimap-Icon registriert.")
+    end
+end
+
+function SchlingelInc:CheckForOffieRights()
+    -- Prüfe nach Gildenrolle, die das Interface sehen darf
+    local _, rankName = GetGuildInfo("player")
+    SchlingelInc.isAllowed = false
+    for _, rank in ipairs(SchlingelInc.AllowedRanks) do
+        if rank == rankName then
+            SchlingelInc.isAllowed = true
+            break
+        end
     end
 end

@@ -10,6 +10,9 @@ function SchlingelInc:OnLoad()
     -- Erstellt und initialisiert den PvP-Warn-Frame.
     SchlingelInc:CreatePvPWarningFrame()
 
+    -- Prüfe, ob der User das OffiInterface sehen darf
+    SchlingelInc:CheckForOffieRights()
+
     -- Initialisiert die Minimap-Icon-Funktionalität.
     SchlingelInc:InitMinimapIcon()
 
