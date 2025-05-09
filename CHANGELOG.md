@@ -1,6 +1,6 @@
 # 2.0.8
 
-- Adding basic functionality to Offi Interface
+- Adding basic functionality to Offi Interface and improving visuals of both interfaces
 
 # 2.0.6, 2.0.7
 
