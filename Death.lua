@@ -51,6 +51,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		-- Wenn der DeathCount noch nicht gesetzt wurde, setzen wir ihn auf 1.
 		if CharacterDeaths == nil then
 			CharacterDeaths = 1
+			return -- Abbruch des Eventhandlers
 		end
 
 		CharacterDeaths = CharacterDeaths + 1
