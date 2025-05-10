@@ -51,6 +51,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		-- Wenn der DeathCount noch nicht gesetzt wurde, setzen wir ihn auf 1.
 		if CharacterDeaths == nil then
 			CharacterDeaths = 1
+			return -- Abbruch des Eventhandlers
 		end
 
 		CharacterDeaths = CharacterDeaths + 1
@@ -77,14 +78,13 @@ SlashCmdList["DEATHSET"] = function(msg)
 		return
 	end
 
-	-- Eine einmalige Zuweisung soll verhindern, dass der Wert nach der initialen Zuweisung noch geändert werden kann. Zum Debuggen einfach auskommentieren.
-	if CharacterDeaths ~= nil then
-		SchlingelInc:Print("Tod-Counter ist bereits gesetzt auf: " .. CharacterDeaths)
+	if CharacterDeaths >= 0 and inputValue == 0 then
+		SchlingelInc:Print("Ein nachträgliches ändern auf 0 ist nicht erlaubt! SCHANDE!")
 		return
 	end
 
 	CharacterDeaths = inputValue
-	SchlingelInc:Print("Tod-Counter wurde initial auf " .. CharacterDeaths .. " gesetzt.")
+	SchlingelInc:Print("Tod-Counter wurde auf " .. CharacterDeaths .. " gesetzt.")
 end
 
 
