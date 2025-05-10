@@ -1,3 +1,9 @@
+# 2.0.10
+
+- Play sound when Target is pvp active
+- Display Alert with sound when someone dies
+- Fix death counter
+
 # 2.0.9
 
 - Remove guild request messages from players who can't invite people

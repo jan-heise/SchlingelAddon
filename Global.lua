@@ -171,9 +171,10 @@ end)
 
 -- Überprüft die Addon-Versionen anderer Spieler in der Gilde.
 function SchlingelInc:CheckAddonVersion()
-    local highestSeenVersion = SchlingelInc.version -- Startet mit der eigenen Version als höchster bekannter.
+    local highestSeenVersion = SchlingelInc
+        .version                                               -- Startet mit der eigenen Version als höchster bekannter.
     local versionFrame = CreateFrame("Frame")
-    versionFrame:RegisterEvent("CHAT_MSG_ADDON") -- Lauscht auf Addon-Nachrichten.
+    versionFrame:RegisterEvent("CHAT_MSG_ADDON")               -- Lauscht auf Addon-Nachrichten.
     C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix) -- Registriert den Prefix für eingehende Nachrichten.
 
     versionFrame:SetScript("OnEvent", function(_, event, msgPrefix, message, _, sender)
@@ -205,12 +206,12 @@ function SchlingelInc:CompareVersions(v1, v2)
         local major, minor, patch = string.match(v, "(%d+)%.(%d+)%.?(%d*)")
         return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0)
     end
-    local a1, a2, a3 = parse(v1) -- Parsed v1.
-    local b1, b2, b3 = parse(v2) -- Parsed v2.
+    local a1, a2, a3 = parse(v1)        -- Parsed v1.
+    local b1, b2, b3 = parse(v2)        -- Parsed v2.
 
     if a1 ~= b1 then return a1 - b1 end -- Vergleiche Major-Version.
     if a2 ~= b2 then return a2 - b2 end -- Vergleiche Minor-Version.
-    return a3 - b3 -- Vergleiche Patch-Version.
+    return a3 - b3                      -- Vergleiche Patch-Version.
 end
 
 -- Speichert die originale SendChatMessage Funktion, um sie später aufrufen zu können.
@@ -258,7 +259,7 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sen
     end
 
     local version = SchlingelInc.guildMemberVersions[sender] or nil -- Holt die gespeicherte Version des Senders.
-    local modifiedMessage = msg -- Standardmäßig die Originalnachricht.
+    local modifiedMessage = msg                                     -- Standardmäßig die Originalnachricht.
 
     -- Wenn eine Version für den Sender bekannt ist, füge sie der Nachricht hinzu.
     if version ~= nil then
@@ -270,13 +271,15 @@ end)
 
 -- Gibt eine Tabelle formatiert (mit Einrückungen) als String zurück. Nützlich für Debugging.
 function SchlingelInc:PrintFormattedTable(tbl, indent)
-    indent = indent or 0 -- Standard-Einrückung ist 0.
+    indent = indent or 0                         -- Standard-Einrückung ist 0.
     local indentation = string.rep("  ", indent) -- Erzeugt den Einrückungsstring.
     local output = "{\n"
     for key, value in pairs(tbl) do
         if type(value) == "table" then
             -- Rekursiver Aufruf für verschachtelte Tabellen.
-            output = output .. indentation .. "  " .. tostring(key) .. " = " .. SchlingelInc:PrintFormattedTable(value, indent + 1) .. ",\n"
+            output = output ..
+                indentation ..
+                "  " .. tostring(key) .. " = " .. SchlingelInc:PrintFormattedTable(value, indent + 1) .. ",\n"
         elseif type(value) == "string" then
             output = output .. indentation .. "  " .. tostring(key) .. " = \"" .. tostring(value) .. "\",\n"
         else
@@ -289,19 +292,19 @@ end
 
 -- Entfernt den Realm-Namen von einem vollständigen Spielernamen (z.B. "Spieler-Realm" -> "Spieler").
 function SchlingelInc:RemoveRealmFromName(fullName)
-    local dashPosition = string.find(fullName, "-") -- Findet die Position des Bindestrichs.
+    local dashPosition = string.find(fullName, "-")      -- Findet die Position des Bindestrichs.
     if dashPosition then
         return string.sub(fullName, 1, dashPosition - 1) -- Gibt den Teil vor dem Bindestrich zurück.
     else
-        return fullName -- Kein Bindestrich gefunden, gibt den vollen Namen zurück.
+        return fullName                                  -- Kein Bindestrich gefunden, gibt den vollen Namen zurück.
     end
 end
 
 -- Überprüft das aktuelle Ziel des Spielers auf PvP-Relevanz.
 function SchlingelInc:CheckTargetPvP()
-    local unit = "target" -- Das Ziel des Spielers.
-    if not UnitExists(unit) then return end -- Kein Ziel vorhanden.
-    if not UnitIsPVP(unit) then return end -- Ziel ist nicht PvP-markiert.
+    local unit = "target"                        -- Das Ziel des Spielers.
+    if not UnitExists(unit) then return end      -- Kein Ziel vorhanden.
+    if not UnitIsPVP(unit) then return end       -- Ziel ist nicht PvP-markiert.
 
     local targetFaction = UnitFactionGroup(unit) -- Fraktion des Ziels.
     -- Warnung bei feindlichen Allianz-NPCs, die PvP-markiert sind.
@@ -335,10 +338,12 @@ function SchlingelInc:ShowPvPWarning(text)
     if not SchlingelInc.pvpWarningFrame then return end
 
     SchlingelInc.pvpWarningText:SetText("Obacht Schlingel!") -- Setzt den Haupttitel der Warnung.
-    SchlingelInc.pvpWarningName:SetText(text) -- Setzt den spezifischen Warntext (z.B. Spielername).
-    SchlingelInc.pvpWarningFrame:SetAlpha(1) -- Macht das Fenster vollständig sichtbar.
-    SchlingelInc.pvpWarningFrame:Show() -- Zeigt das Fenster an.
-    SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame) -- Startet den "Rumble"-Effekt.
+    SchlingelInc.pvpWarningName:SetText(text)                -- Setzt den spezifischen Warntext (z.B. Spielername).
+    SchlingelInc.pvpWarningFrame:SetAlpha(1)                 -- Macht das Fenster vollständig sichtbar.
+    SchlingelInc.pvpWarningFrame:Show()                      -- Zeigt das Fenster an.
+    SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)   -- Startet den "Rumble"-Effekt.
+
+    PlaySound(8174)                                          -- Horde-Flagge aufgenommen
 
     -- Blendet das Fenster nach 1 Sekunde langsam aus.
     C_Timer.After(1, function()
@@ -368,14 +373,14 @@ function SchlingelInc:CreatePvPWarningFrame()
         edgeSize = 16,
         insets = { left = 8, right = 8, top = 8, bottom = 8 }
     })
-    pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1) -- Randfarbe (rosa).
-    pvpFrame:SetBackdropColor(0, 0, 0, 0.30) -- Hintergrundfarbe (leicht transparent schwarz).
-    pvpFrame:SetMovable(true) -- Erlaubt das Verschieben des Fensters.
-    pvpFrame:EnableMouse(true) -- Aktiviert Mauseingaben für das Fenster.
-    pvpFrame:RegisterForDrag("LeftButton") -- Registriert Linksklick zum Ziehen.
-    pvpFrame:SetScript("OnDragStart", pvpFrame.StartMoving) -- Funktion bei Beginn des Ziehens.
+    pvpFrame:SetBackdropBorderColor(1, 0.55, 0.73, 1)             -- Randfarbe (rosa).
+    pvpFrame:SetBackdropColor(0, 0, 0, 0.30)                      -- Hintergrundfarbe (leicht transparent schwarz).
+    pvpFrame:SetMovable(true)                                     -- Erlaubt das Verschieben des Fensters.
+    pvpFrame:EnableMouse(true)                                    -- Aktiviert Mauseingaben für das Fenster.
+    pvpFrame:RegisterForDrag("LeftButton")                        -- Registriert Linksklick zum Ziehen.
+    pvpFrame:SetScript("OnDragStart", pvpFrame.StartMoving)       -- Funktion bei Beginn des Ziehens.
     pvpFrame:SetScript("OnDragStop", pvpFrame.StopMovingOrSizing) -- Funktion bei Ende des Ziehens.
-    pvpFrame:Hide() -- Standardmäßig versteckt.
+    pvpFrame:Hide()                                               -- Standardmäßig versteckt.
 
     -- Erstellt den Text für den Titel.
     local text = pvpFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
@@ -396,12 +401,12 @@ end
 
 -- Lässt ein UI-Frame für kurze Zeit "zittern" (Rumble-Effekt).
 function SchlingelInc:RumbleFrame(frame)
-    if not frame then return end -- Bricht ab, wenn kein Frame übergeben wurde.
+    if not frame then return end                         -- Bricht ab, wenn kein Frame übergeben wurde.
 
-    local rumbleTime = 0.3 -- Gesamtdauer des Zitterns in Sekunden.
-    local interval = 0.03 -- Intervall zwischen den Bewegungen in Sekunden.
+    local rumbleTime = 0.3                               -- Gesamtdauer des Zitterns in Sekunden.
+    local interval = 0.03                                -- Intervall zwischen den Bewegungen in Sekunden.
     local totalTicks = math.floor(rumbleTime / interval) -- Gesamtzahl der Bewegungen.
-    local tick = 0 -- Zähler für aktuelle Bewegung.
+    local tick = 0                                       -- Zähler für aktuelle Bewegung.
 
     -- Startet einen Timer, der wiederholt ausgeführt wird.
     C_Timer.NewTicker(interval, function(ticker)
@@ -412,16 +417,16 @@ function SchlingelInc:RumbleFrame(frame)
         end
 
         tick = tick + 1
-        local offsetX = math.random(-4, 4) -- Zufälliger X-Versatz.
-        local offsetY = math.random(-4, 4) -- Zufälliger Y-Versatz.
+        local offsetX = math.random(-4, 4)                             -- Zufälliger X-Versatz.
+        local offsetY = math.random(-4, 4)                             -- Zufälliger Y-Versatz.
         frame:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY) -- Bewegt das Frame.
 
         -- Wenn alle Bewegungen ausgeführt wurden:
         if tick >= totalTicks then
             frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0) -- Setzt das Frame auf die ursprüngliche Mittelposition zurück.
-            ticker:Cancel() -- Stoppt den Timer.
+            ticker:Cancel()                                    -- Stoppt den Timer.
         end
-    end, totalTicks) -- Der Timer stoppt automatisch nach 'totalTicks' Ausführungen.
+    end, totalTicks)                                           -- Der Timer stoppt automatisch nach 'totalTicks' Ausführungen.
 end
 
 -- Ab hier MiniMap Icon
@@ -430,10 +435,10 @@ local LDB = LibStub("LibDataBroker-1.1", true)
 local DBIcon = LibStub("LibDBIcon-1.0", true)
 
 -- Datenobjekt für das Minimap Icon (OnClick wird später gesetzt, falls benötigt).
-if LDB then -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
+if LDB then                                                                -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
     SchlingelInc.minimapDataObject = LDB:NewDataObject(SchlingelInc.name, {
-        type = "launcher", -- Typ des LDB-Objekts: Startet eine UI oder Funktion.
-        label = SchlingelInc.name, -- Text neben dem Icon (oft nur im LDB Display Addon sichtbar).
+        type = "launcher",                                                 -- Typ des LDB-Objekts: Startet eine UI oder Funktion.
+        label = SchlingelInc.name,                                         -- Text neben dem Icon (oft nur im LDB Display Addon sichtbar).
         icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga", -- Pfad zum Icon.
         OnClick = function(clickedFrame, button)
             if button == "LeftButton" then
@@ -443,7 +448,7 @@ if LDB then -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
                     SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.")
                 end
             elseif button == "RightButton" then
-                    if CanGuildInvite("player") then
+                if CanGuildInvite("player") then
                     if SchlingelInc.ToggleOffiWindow then
                         SchlingelInc:ToggleOffiWindow()
                     else
@@ -456,18 +461,18 @@ if LDB then -- Fährt nur fort, wenn LibDataBroker verfügbar ist.
         end,
 
         -- OnClick = function... (WURDE HIER ENTFERNT, kann später hinzugefügt werden)
-        OnEnter = function(selfFrame) -- Wird ausgeführt, wenn die Maus über das Icon fährt.
-            GameTooltip:SetOwner(selfFrame, "ANCHOR_RIGHT") -- Positioniert den Tooltip rechts vom Icon.
-            GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9) -- Addon-Name im Tooltip.
+        OnEnter = function(selfFrame)                                                          -- Wird ausgeführt, wenn die Maus über das Icon fährt.
+            GameTooltip:SetOwner(selfFrame, "ANCHOR_RIGHT")                                    -- Positioniert den Tooltip rechts vom Icon.
+            GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9)                                -- Addon-Name im Tooltip.
             GameTooltip:AddLine("Version: " .. (SchlingelInc.version or "Unbekannt"), 1, 1, 1) -- Version im Tooltip.
-            GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1) -- Hinweis für Linksklick.
+            GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)                          -- Hinweis für Linksklick.
             if CanGuildInvite("player") then
-                GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8) -- Hinweis für Rechtsklick.
+                GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8)                -- Hinweis für Rechtsklick.
             end
-            GameTooltip:Show() -- Zeigt den Tooltip an.
+            GameTooltip:Show()                                                                 -- Zeigt den Tooltip an.
         end,
-        OnLeave = function() -- Wird ausgeführt, wenn die Maus das Icon verlässt.
-            GameTooltip:Hide() -- Versteckt den Tooltip.
+        OnLeave = function()                                                                   -- Wird ausgeführt, wenn die Maus das Icon verlässt.
+            GameTooltip:Hide()                                                                 -- Versteckt den Tooltip.
         end
     })
 else

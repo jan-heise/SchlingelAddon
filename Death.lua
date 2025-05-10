@@ -43,9 +43,13 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			messageString = string.format('%s. Die letzten Worte: "%s"', messageString, LastChatMessage)
 		end
 
+		local popupMessageFormat = "SCHLINGEL_DEATH:%s:%s:%s:%s"
+		local popupMessageString = popupMessageFormat:format(name, class, level, zone)
+
 		-- Send broadcast text messages to guild and greenwall
 		if not SchlingelInc:IsInBattleground() then
 			SendChatMessage(messageString, "GUILD")
+			C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, popupMessageString, "GUILD")
 		end
 
 		-- Wenn der DeathCount noch nicht gesetzt wurde, setzen wir ihn auf 1.
@@ -121,6 +125,50 @@ CombatLogFrame:SetScript("OnEvent", function()
 		if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or event == "SPELL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE" then
 			-- Speichere letzte Angriffsquelle
 			LastAttackSource = sourceName or "Unbekannt"
+		end
+	end
+end)
+
+-- Frame für die zentrale Bildschirmnachricht
+local DeathMessageFrame = CreateFrame("Frame", "DeathMessageFrame", UIParent)
+DeathMessageFrame:SetSize(400, 100)                              -- Breite und Höhe des Frames
+DeathMessageFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 400) -- Position in der Mitte des Bildschirms
+DeathMessageFrame:Hide()                                         -- Standardmäßig versteckt
+
+-- Hintergrund und Text
+-- DeathMessageFrame.bg = DeathMessageFrame:CreateTexture(nil, "BACKGROUND")
+-- DeathMessageFrame.bg:SetAllPoints(true)
+-- DeathMessageFrame.bg:SetColorTexture(0, 0, 0, 0.5) -- Halbtransparenter schwarzer Hintergrund
+
+DeathMessageFrame.text = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightHuge")
+DeathMessageFrame.text:SetPoint("CENTER", DeathMessageFrame, "CENTER")
+DeathMessageFrame.text:SetTextColor(1, 1, 1, 1) -- Weiße Schrift
+DeathMessageFrame.text:SetText("")              -- Standardmäßig leer
+
+-- Funktion zum Anzeigen der Nachricht
+local function ShowDeathMessage(message)
+	DeathMessageFrame.text:SetText(message)
+	DeathMessageFrame:Show()
+
+
+	PlaySound(8192) -- Horde-Flagge zurückgebracht
+
+	-- Nachricht nach 5 Sekunden ausblenden
+	C_Timer.After(5, function()
+		DeathMessageFrame:Hide()
+	end)
+end
+
+local PopupTracker = CreateFrame("Frame")
+PopupTracker:RegisterEvent("CHAT_MSG_ADDON")
+PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...)
+	if (event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix and msg:find("SCHLINGEL_DEATH")) then
+		local name, class, level, zone = msg:match("^SCHLINGEL_DEATH:([^:]+):([^:]+):([^:]+):([^:]+)$")
+		if name and class and level and zone then
+			local messageFormat = "%s der %s ist mit Level %s in %s gestorben. Schande!"
+			local messageString = messageFormat:format(name, class, level, zone)
+			-- Zeige die Nachricht im zentralen Frame an
+			ShowDeathMessage(messageString)
 		end
 	end
 end)
