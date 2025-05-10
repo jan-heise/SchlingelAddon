@@ -153,61 +153,61 @@ function SchlingelInc.GuildRecruitment:HandleDeclineRequest(playerName)
     end
 end
 
--- DEBUG: SlashCommands nicht produktiv einsetzen, damit Logik nicht umgangen werden kann.
--- Initialisiert die Slash-Befehle für das Addon.
-function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
-    SLASH_SCHLINGELINC1 = "/schlingel" -- Haupt-Slash-Befehl.
-    SLASH_SCHLINGELINC2 = "/si"      -- Kurzform des Slash-Befehls.
+-- -- DEBUG: SlashCommands nicht produktiv einsetzen, damit Logik nicht umgangen werden kann.
+-- -- Initialisiert die Slash-Befehle für das Addon.
+-- function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
+--     SLASH_SCHLINGELINC1 = "/schlingel" -- Haupt-Slash-Befehl.
+--     SLASH_SCHLINGELINC2 = "/si"      -- Kurzform des Slash-Befehls.
 
-    SlashCmdList["SCHLINGELINC"] = function(msg)
-        -- Zerlegt die Eingabe in Befehl und Parameter.
-        local cmd, param = msg:match("^(%S+)%s*(.-)$")
-        cmd = cmd and cmd:lower() or "" -- Kleinschreibung für den Befehl.
-        param = param == "" and nil or param -- Parameter ist nil, wenn leer.
+--     SlashCmdList["SCHLINGELINC"] = function(msg)
+--         -- Zerlegt die Eingabe in Befehl und Parameter.
+--         local cmd, param = msg:match("^(%S+)%s*(.-)$")
+--         cmd = cmd and cmd:lower() or "" -- Kleinschreibung für den Befehl.
+--         param = param == "" and nil or param -- Parameter ist nil, wenn leer.
 
-        -- Ruft die Methoden im Kontext von self.GuildRecruitment auf,
-        -- damit `self` korrekt auf das GuildRecruitment-Objekt verweist.
-        local GR = SchlingelInc.GuildRecruitment
+--         -- Ruft die Methoden im Kontext von self.GuildRecruitment auf,
+--         -- damit `self` korrekt auf das GuildRecruitment-Objekt verweist.
+--         local GR = SchlingelInc.GuildRecruitment
 
-        if cmd == "request" and param == "main" then
-            GR:SendGuildRequest("Schlingel Inc") -- Sendet Anfrage an die Hauptgilde.
-        elseif cmd == "request" and param == "twink" then
-            GR:SendGuildRequest("Schlingel IInc") -- Sendet Anfrage an die Twinkgilde.
-        elseif cmd == "addtestdata" then
-            -- Fügt Testdaten zur Anfragenliste hinzu, um die UI zu testen.
-            table.insert(inviteRequests, { name = "TestUser1-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Durotar", money = math.random(1,100).."g" })
-            table.insert(inviteRequests, { name = "TestUser2-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Elwynn", money = math.random(1,100).."s" })
-            table.insert(inviteRequests, { name = "TestUser3-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Darkshore", money = math.random(1,100).."c" })
-            SchlingelInc:Print("Testdaten hinzugefügt.")
-            RefreshAllRequestUIs()
-        elseif cmd == "debugmode" then
-            if param == "on" then
-                GR.DEBUG_MODE_ENABLED = true
-                SchlingelInc:Print("Gildenrekrutierung Debug-Modus: ANGESCHALTET.")
-            elseif param == "off" then
-                GR.DEBUG_MODE_ENABLED = false
-                SchlingelInc:Print("Gildenrekrutierung Debug-Modus: AUSGESCHALTET.")
-            else
-                SchlingelInc:Print("Verwendung: /si debugmode on|off")
-            end
-        elseif cmd == "debugtarget" then
-            if param then
-                GR.DEBUG_TARGET_USER = param
-                SchlingelInc:Print(string.format("Gildenrekrutierung Debug-Ziel: %s.", param))
-            else
-                 SchlingelInc:Print("Verwendung: /si debugtarget <Spielername-Servername> (oder nur Spielername wenn gleicher Server)")
-                 SchlingelInc:Print(string.format("Aktuelles Debug-Ziel: %s", GR.DEBUG_TARGET_USER or "Nicht gesetzt"))
-            end
-        else
-            -- Zeigt die verfügbaren Befehle an.
-            SchlingelInc:Print("Verfügbare Befehle für /si:")
-            SchlingelInc:Print("  request main|twink         - Sendet eine Gildenanfrage.")
-            SchlingelInc:Print("  addtestdata                - Fügt Testdaten zur UI hinzu.")
-            SchlingelInc:Print("  debugmode on|off           - Schaltet den Debug-Modus um.")
-            SchlingelInc:Print("  debugtarget <Spielername>  - Setzt den Zielspieler für den Debug-Modus.")
-        end
-    end
-end
+--         if cmd == "request" and param == "main" then
+--             GR:SendGuildRequest("Schlingel Inc") -- Sendet Anfrage an die Hauptgilde.
+--         elseif cmd == "request" and param == "twink" then
+--             GR:SendGuildRequest("Schlingel IInc") -- Sendet Anfrage an die Twinkgilde.
+--         elseif cmd == "addtestdata" then
+--             -- Fügt Testdaten zur Anfragenliste hinzu, um die UI zu testen.
+--             table.insert(inviteRequests, { name = "TestUser1-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Durotar", money = math.random(1,100).."g" })
+--             table.insert(inviteRequests, { name = "TestUser2-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Elwynn", money = math.random(1,100).."s" })
+--             table.insert(inviteRequests, { name = "TestUser3-"..math.random(100,999), level = math.random(1,60), exp = math.random(100,50000), zone = "Darkshore", money = math.random(1,100).."c" })
+--             SchlingelInc:Print("Testdaten hinzugefügt.")
+--             RefreshAllRequestUIs()
+--         elseif cmd == "debugmode" then
+--             if param == "on" then
+--                 GR.DEBUG_MODE_ENABLED = true
+--                 SchlingelInc:Print("Gildenrekrutierung Debug-Modus: ANGESCHALTET.")
+--             elseif param == "off" then
+--                 GR.DEBUG_MODE_ENABLED = false
+--                 SchlingelInc:Print("Gildenrekrutierung Debug-Modus: AUSGESCHALTET.")
+--             else
+--                 SchlingelInc:Print("Verwendung: /si debugmode on|off")
+--             end
+--         elseif cmd == "debugtarget" then
+--             if param then
+--                 GR.DEBUG_TARGET_USER = param
+--                 SchlingelInc:Print(string.format("Gildenrekrutierung Debug-Ziel: %s.", param))
+--             else
+--                  SchlingelInc:Print("Verwendung: /si debugtarget <Spielername-Servername> (oder nur Spielername wenn gleicher Server)")
+--                  SchlingelInc:Print(string.format("Aktuelles Debug-Ziel: %s", GR.DEBUG_TARGET_USER or "Nicht gesetzt"))
+--             end
+--         else
+--             -- Zeigt die verfügbaren Befehle an.
+--             SchlingelInc:Print("Verfügbare Befehle für /si:")
+--             SchlingelInc:Print("  request main|twink         - Sendet eine Gildenanfrage.")
+--             SchlingelInc:Print("  addtestdata                - Fügt Testdaten zur UI hinzu.")
+--             SchlingelInc:Print("  debugmode on|off           - Schaltet den Debug-Modus um.")
+--             SchlingelInc:Print("  debugtarget <Spielername>  - Setzt den Zielspieler für den Debug-Modus.")
+--         end
+--     end
+-- end
 
 -- Globaler Event-Handler-Frame für eingehende Addon-Nachrichten.
 -- Dieser Frame lauscht permanent auf CHAT_MSG_ADDON Events.
@@ -220,4 +220,4 @@ addonMessageGlobalHandlerFrame:SetScript("OnEvent", function(selfFrame, event, .
 end)
 
 -- -- Ruft die Initialisierungsfunktion für Slash-Befehle auf, sobald das Modul geladen wird.
-SchlingelInc.GuildRecruitment:InitializeSlashCommands()
+--SchlingelInc.GuildRecruitment:InitializeSlashCommands()
