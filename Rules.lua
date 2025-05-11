@@ -43,10 +43,15 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     end)
 
     C_Timer.After(2, function()
-        for _, guildName in pairs(groupGuilds) do
-            if not SchlingelInc:IsGuildAllowed(guildName) then
-                SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
-                LeaveParty() -- Command to leave the group
+        if GetNumGroupMembers() ~= #groupGuilds then
+            SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
+            LeaveParty() -- Command to leave the group
+        else
+            for _, guildName in pairs(groupGuilds) do
+                if not SchlingelInc:IsGuildAllowed(guildName) then
+                    SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
+                    LeaveParty() -- Command to leave the group
+                end
             end
         end
         frame:UnregisterEvent("CHAT_MSG_ADDON")

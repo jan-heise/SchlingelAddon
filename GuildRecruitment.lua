@@ -22,10 +22,10 @@ end
 -- Sendet eine Gildenanfrage an die angegebene Gilde.
 function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     -- Prüft, ob der Spieler bereits in einer Gilde ist.
-    if IsInGuild() then
-        SchlingelInc:Print("Du bist bereits in einer Gilde.")
-        return
-    end
+    -- if IsInGuild() then
+    --     SchlingelInc:Print("Du bist bereits in einer Gilde.")
+    --     return
+    -- end
 
     -- Optional: Level-Beschränkung für Anfragen (derzeit auskommentiert).
     -- if UnitLevel("player") > 1 then
@@ -57,115 +57,19 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     -- Erstellt die Addon-Nachricht mit den Spielerdaten im Format "BEFEHL:Daten1:Daten2:..."
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
-    -- -- DEBUG MODUS: Direkter Versand an einen Zielbenutzer
-    -- if SchlingelInc.GuildRecruitment.DEBUG_MODE_ENABLED and SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER then
-    --     if C_ChatInfo and C_ChatInfo.SendAddonMessage then
-    --         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER)
-    --         SchlingelInc:Print(string.format("DEBUG: Gildenanfrage-Nachricht direkt an '%s' gesendet.", SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER))
-    --     else
-    --         SchlingelInc:Print("DEBUG: C_ChatInfo.SendAddonMessage nicht verfügbar. Nachricht konnte nicht gesendet werden.")
-    --     end
-    --     return -- Normalen Workflow umgehen
-    -- end
-    -- -- ENDE DEBUG MODUS
-
-    -- Sendet einen /who-Befehl, um Gildenmitglieder zu finden.
-    -- Der String 'g-"Gildenname"' sucht nach Mitgliedern der spezifischen Gilde.
-    if C_FriendList and C_FriendList.SendWho then
-        local whoString = string.format('g-"%s"', guildName)
-        C_FriendList.SendWho(whoString)
-    else
-        SchlingelInc:Print("WHO-Funktion nicht verfügbar.")
-        return
+    GuildRoster() -- Aktualisiert einmal die Gilde und cached sie im Client.
+    for i = 1, GetNumGuildMembers() do
+        local name, rank, rankIndex, _, _, _, _, _, online, _, _, _, _, _, _, _ = GetGuildRosterInfo(i);
+        -- if online and name and (rank == "Oberlootwichtel" or rank == "Lootwichtel" or rank == "GroßSchlingel") then
+        --     C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", name)
+        --     SchlingelInc:Print(SchlingelInc:RemoveRealmFromName(name) .. " ist online und würde die Anfrage erhalten.")
+        --     return
+        -- else
+        --     SchlingelInc:Print("Aktuell ist kein Offi online.")
+        --     return
+        -- end
     end
-
-    -- Versteckt das "Wer"-Fenster (Freundefenster) kurz nach dem Senden des /who-Befehls,
-    -- um die Benutzeroberfläche nicht zu stören.
-    if C_Timer and C_Timer.After then
-        C_Timer.After(0.5, function()
-            if FriendsFrame and FriendsFrame:IsShown() then
-                HideUIPanel(FriendsFrame)
-            end
-        end)
-    end
-
-    -- Erstellt einen temporären Frame, um auf das Ergebnis der /who-Anfrage zu warten.
-    local whoFrameHandler = CreateFrame("Frame")
-    whoFrameHandler:RegisterEvent("WHO_LIST_UPDATE") -- Event wird ausgelöst, wenn die /who-Liste aktualisiert wird.
-    whoFrameHandler:SetScript("OnEvent", function(selfEventFrame, event, ...)
-        if event == "WHO_LIST_UPDATE" then
-            selfEventFrame:UnregisterEvent("WHO_LIST_UPDATE") -- Event abmelden, um Mehrfachausführung zu verhindern.
-            whoFrameHandler:Hide()                            -- Frame verstecken, da er nicht mehr benötigt wird.
-
-            if not C_FriendList or not C_FriendList.GetNumWhoResults then
-                SchlingelInc:Print("Fehler beim Verarbeiten der WHO-Antwort.")
-                return
-            end
-
-            local numResults = C_FriendList.GetNumWhoResults()
-            if numResults == 0 then
-                SchlingelInc:Print(string.format(
-                "Keine Online-Mitglieder in der Gilde '%s' gefunden, an die eine Anfrage gesendet werden könnte.",
-                    guildName))
-                return
-            end
-
-            local currentIndex = 1
-            local maxWhoResults = numResults  -- Anzahl der gefundenen Gildenmitglieder.
-            local requestWasForwarded = false -- Flag, um zu prüfen, ob die Anfrage erfolgreich weitergeleitet wurde.
-
-            -- Temporärer Frame, um auf eine Bestätigungsnachricht ("REQUEST_FORWARDED") vom empfangenden Addon zu warten.
-            local addonMsgResponseHandler = CreateFrame("Frame")
-            addonMsgResponseHandler:RegisterEvent("CHAT_MSG_ADDON")
-            addonMsgResponseHandler:SetScript("OnEvent", function(_, eventArg, prefixArg, msgArg, channelArg, senderArg)
-                if eventArg == "CHAT_MSG_ADDON" and prefixArg == SchlingelInc.prefix and msgArg == "REQUEST_FORWARDED" then
-                    requestWasForwarded = true
-                    addonMsgResponseHandler:UnregisterEvent("CHAT_MSG_ADDON")
-                    addonMsgResponseHandler:Hide()
-                end
-            end)
-
-            -- Funktion, die versucht, die Addon-Nachricht an das nächste Gildenmitglied in der /who-Liste zu senden.
-            -- Dies geschieht nacheinander mit einer kleinen Verzögerung, um das System nicht zu überlasten
-            -- und um auf eine mögliche "REQUEST_FORWARDED"-Antwort zu warten.
-            local function SendNextRequest()
-                if requestWasForwarded then
-                    SchlingelInc:Print(string.format("Anfrage an Gilde '%s' erfolgreich gesendet.", guildName))
-                    addonMsgResponseHandler:UnregisterEvent("CHAT_MSG_ADDON") -- Sicherstellen, dass der Handler abgemeldet wird.
-                    addonMsgResponseHandler:Hide()
-                    return
-                end
-
-                if currentIndex > maxWhoResults then
-                    -- Alle Mitglieder wurden durchlaufen, ohne dass die Anfrage weitergeleitet wurde.
-                    SchlingelInc:Print(string.format(
-                    "Anfrage an Gilde '%s' konnte nicht zugestellt werden (kein Offizier mit Addon online?).", guildName))
-                    SchlingelInc:Print("Bitte über Discord melden, falls keine Antwort kommt.")
-                    addonMsgResponseHandler:UnregisterEvent("CHAT_MSG_ADDON")
-                    addonMsgResponseHandler:Hide()
-                    return
-                end
-
-                local info = C_FriendList.GetWhoInfo(currentIndex)
-                if info and info.fullName and C_ChatInfo and C_ChatInfo.SendAddonMessage then
-                    -- Sendet die Gildenanfrage-Nachricht per Whisper an das aktuelle Gildenmitglied.
-                    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", info.fullName)
-                end
-
-                currentIndex = currentIndex + 1
-                -- Wartet kurz, bevor der nächste Versuch gestartet wird, falls die Anfrage noch nicht weitergeleitet wurde.
-                if not requestWasForwarded and C_Timer and C_Timer.After then
-                    C_Timer.After(0.5, SendNextRequest) -- Rekursiver Aufruf mit Verzögerung.
-                elseif not requestWasForwarded then
-                    -- Fallback, falls C_Timer nicht verfügbar ist oder etwas schiefgeht.
-                    addonMsgResponseHandler:UnregisterEvent("CHAT_MSG_ADDON")
-                    addonMsgResponseHandler:Hide()
-                end
-            end
-            -- Startet den Prozess des Nachrichtenversands.
-            SendNextRequest()
-        end
-    end)
+    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", "Pudidev")
 end
 
 -- Verarbeitet eingehende Addon-Nachrichten.
@@ -178,49 +82,22 @@ local function HandleAddonMessage(prefix, message, channel, sender)
 
     -- Verarbeitet die "INVITE_REQUEST"-Nachricht.
     local name, levelStr, expStr, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
-    if name and levelStr then
-        -- Zu Debugzwekcen diese Zeile auskommentieren
+    --if CanGuildInvite() then
+        -- Fügt die neue Anfrage zur Liste hinzu.
+        table.insert(inviteRequests, { name = name, level = levelStr, exp = expStr, zone = zone, money = money })
+        --SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, levelStr, zone))
 
-        -- Wenn die Anfrage von einem Gildenmitglied kommt, das die Anfrage weiterleiten kann,
-        -- sendet dieses eine Bestätigung zurück an den ursprünglichen Absender.
-        if sender and C_ChatInfo and C_ChatInfo.SendAddonMessage then
-            -- Wir prüfen hier NICHT, ob der Sender in der eigenen Gilde ist, da die `SendGuildRequest` Logik
-            -- die Anfrage an Mitglieder der Zielgilde schickt. Wenn ein Mitglied der Zielgilde (mit Rechten)
-            -- diese Nachricht empfängt, soll es die Anfrage intern bearbeiten und dem Sender der Anfrage
-            -- mitteilen, dass sie weitergeleitet wurde.
-            -- Dies ist wichtig, damit der Anfragende weiß, dass seine Anfrage angekommen ist.
-            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "GUILD")
-            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "REQUEST_FORWARDED", "WHISPER", sender)
-        end
-
-
-        local level = tonumber(levelStr)
-        local exp = tonumber(expStr)
-
-        -- Verhindert doppelte Anfragen desselben Spielers.
-        for _, existing in ipairs(inviteRequests) do
-            if existing.name == name then
-                return
-            end
-        end
-
-        if CanGuildInvite() then
-            -- Fügt die neue Anfrage zur Liste hinzu.
-            table.insert(inviteRequests, { name = name, level = level, exp = exp, zone = zone, money = money })
-            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", name, level, zone))
-
-            -- Aktualisiert die Benutzeroberfläche, um die neue Anfrage anzuzeigen.
-            SchlingelInc:RefreshAllRequestUIs()
-        end
-    end
+        -- Aktualisiert die Benutzeroberfläche, um die neue Anfrage anzuzeigen.
+        --SchlingelInc:RefreshAllRequestUIs()
+    --end
 end
 
 
--- Hilfsfunktion zum Aktualisieren aller relevanten UIs nach einer Änderung der Anfragenliste.
--- Aktualisiert das Offi-Fenster auch wenn es geschlossen ist.
-function SchlingelInc:RefreshAllRequestUIs()
-    SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
-end
+-- -- Hilfsfunktion zum Aktualisieren aller relevanten UIs nach einer Änderung der Anfragenliste.
+-- -- Aktualisiert das Offi-Fenster auch wenn es geschlossen ist.
+-- function SchlingelInc:RefreshAllRequestUIs()
+--     SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
+-- end
 
 -- Verarbeitet das Akzeptieren einer Gildenanfrage.
 function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
@@ -229,8 +106,9 @@ function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
     end
 
     -- Prüft, ob der Spieler die Berechtigung hat, andere einzuladen.
+
     if CanGuildInvite() then
-        SchlingelInc:Print("Versuche, " .. playerName .. " in die Gilde einzuladen...")
+    SchlingelInc:Print("Versuche, " .. playerName .. " in die Gilde einzuladen...")
         C_GuildInfo.Invite(playerName) -- Führt die Gilden-Einladung aus.
     else
         SchlingelInc:Print("Du hast keine Berechtigung, Spieler in die Gilde einzuladen.")
@@ -275,7 +153,7 @@ function SchlingelInc.GuildRecruitment:HandleDeclineRequest(playerName)
     end
 end
 
--- DEBUG: SlashCommands nicht produktiv einsetzen, damit Logik nicht umgangen werden kann.
+-- -- DEBUG: SlashCommands nicht produktiv einsetzen, damit Logik nicht umgangen werden kann.
 -- -- Initialisiert die Slash-Befehle für das Addon.
 -- function SchlingelInc.GuildRecruitment:InitializeSlashCommands()
 --     SLASH_SCHLINGELINC1 = "/schlingel" -- Haupt-Slash-Befehl.

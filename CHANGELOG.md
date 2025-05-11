@@ -1,3 +1,11 @@
+# 2.0.13
+
+- Fix grouping-rule
+
+# 2.0.11, 2.0.12
+
+- Removing guild invites, since a broken loop is causing spam and crashes
+
 # 2.0.10
 
 - Play sound when Target is pvp active
