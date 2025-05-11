@@ -43,7 +43,7 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     end)
 
     C_Timer.After(2, function()
-        if GetNumGroupMembers() ~= #groupGuilds then
+        if GetNumGroupMembers() ~= SchlingelInc:CountTable(groupGuilds) then
             SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
             LeaveParty() -- Command to leave the group
         else

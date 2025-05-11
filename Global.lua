@@ -29,6 +29,14 @@ SchlingelInc.allowedGuilds = {
 SchlingelInc.GameTimeTotal = 0
 SchlingelInc.GameTimePerLevel = 0
 
+function SchlingelInc:CountTable(table)
+    local count = 0
+    for _ in pairs(table) do
+        count = count + 1
+    end
+    return count
+end
+
 -- Überprüft Abhängigkeiten und warnt bei Problemen.
 function SchlingelInc:CheckDependencies()
     -- Definition eines Popup-Dialogs für die Warnung vor veralteten Addons.
