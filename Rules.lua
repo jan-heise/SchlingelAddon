@@ -27,35 +27,29 @@ end
 
 -- Regel: Gruppen mit Spielern außerhalb der Gilde verbieten
 function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
-    local groupGuilds = {}
-    local guildName = GetGuildInfo("player")
-    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "SCHLINGEL_GUILD:" .. guildName, "RAID")
-
-    local frame = CreateFrame("Frame")
-    frame:RegisterEvent("CHAT_MSG_ADDON")
-    frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
-        if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
-            local _, _, guildName = string.find(message, "SCHLINGEL_GUILD:(.+)")
-            if guildName and guildName ~= "" then
-                groupGuilds[SchlingelInc:RemoveRealmFromName(sender)] = guildName
-            end
+    -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
+    local guildMembers = {}
+    for i = 1, GetNumGuildMembers() do
+        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+        if online then
+            table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
         end
-    end)
+    end
 
-    C_Timer.After(2, function()
-        if GetNumGroupMembers() ~= SchlingelInc:CountTable(groupGuilds) then
-            SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
-            LeaveParty() -- Command to leave the group
-        else
-            for _, guildName in pairs(groupGuilds) do
-                if not SchlingelInc:IsGuildAllowed(guildName) then
-                    SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
-                    LeaveParty() -- Command to leave the group
+    -- Prüfe ob die Namen in der Gruppe mit den Gildenmitgliedern übereinstimmen
+    for i = 1, GetNumGroupMembers() do
+        local name = UnitName("party" .. i) or UnitName("raid" .. i)
+        if name then
+            -- prüfe ob der Name in der guildMembers Tabelle ist
+            for _, guildMember in ipairs(guildMembers) do
+                if guildMember ~= SchlingelInc:RemoveRealmFromName(name) then
+                    SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
+                    LeaveParty()
+                    break
                 end
             end
         end
-        frame:UnregisterEvent("CHAT_MSG_ADDON")
-    end)
+    end
 end
 
 -- Initialisierung der Regeln
