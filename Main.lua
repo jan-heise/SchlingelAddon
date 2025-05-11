@@ -13,6 +13,9 @@ function SchlingelInc:OnLoad()
     -- Initialisiert die Minimap-Icon-Funktionalität.
     SchlingelInc:InitMinimapIcon()
 
+    -- Initialisiert die Gildenmitglieder.
+    SchlingelInc:UpdateGuildMembers()
+
     -- Gibt eine Bestätigungsnachricht aus, dass das Addon geladen wurde, inklusive Version.
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
@@ -50,8 +53,8 @@ playerEnteringWorldFrame:SetScript("OnEvent", function(self, event, isInitialLog
 
     -- Informiert den Spieler über die Initialisierung des DeathCounters, falls 'CharacterDeaths' nicht definiert ist.
     if CharacterDeaths == nil then
-         SchlingelInc:Print(
-             "Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
+        SchlingelInc:Print(
+            "Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
     end
 end)
 
@@ -68,11 +71,12 @@ timePlayedFrame:SetScript("OnEvent", function(self, event, totalTimeSeconds, lev
     local charTabIndex = 1
     if SchlingelInc.infoWindow and SchlingelInc.infoWindow:IsShown() then
         if SchlingelInc.infoWindow.tabContentFrames and
-           SchlingelInc.infoWindow.tabContentFrames[charTabIndex] and
-           SchlingelInc.infoWindow.tabContentFrames[charTabIndex]:IsShown() and
-           SchlingelInc.infoWindow.tabContentFrames[charTabIndex].Update then
+            SchlingelInc.infoWindow.tabContentFrames[charTabIndex] and
+            SchlingelInc.infoWindow.tabContentFrames[charTabIndex]:IsShown() and
+            SchlingelInc.infoWindow.tabContentFrames[charTabIndex].Update then
             -- Ruft die Update-Funktion des entsprechenden Tab-Inhaltsframes auf.
-            SchlingelInc.infoWindow.tabContentFrames[charTabIndex]:Update(SchlingelInc.infoWindow.tabContentFrames[charTabIndex])
+            SchlingelInc.infoWindow.tabContentFrames[charTabIndex]:Update(SchlingelInc.infoWindow.tabContentFrames
+                [charTabIndex])
         end
     end
 end)
@@ -82,10 +86,20 @@ end)
 -- und die Gesamtspielzeit erneut anzufordern.
 local playerLevelUpFrame = CreateFrame("Frame", "SchlingelIncPlayerLevelUpFrame")
 playerLevelUpFrame:RegisterEvent("PLAYER_LEVEL_UP")
-playerLevelUpFrame:SetScript("OnEvent", function(self, event, newLevel, ...) -- '...' fängt weitere Argumente ab, falls vorhanden.
-    -- Setzt die Spielzeit-Verfolgung für das neue Level zurück.
-    SchlingelInc.CharacterPlaytimeLevel = 0
+playerLevelUpFrame:SetScript("OnEvent",
+    function(self, event, newLevel, ...) -- '...' fängt weitere Argumente ab, falls vorhanden.
+        -- Setzt die Spielzeit-Verfolgung für das neue Level zurück.
+        SchlingelInc.CharacterPlaytimeLevel = 0
 
-    -- Fordert aktualisierte Spielzeitdaten nach dem Levelaufstieg an.
-    RequestTimePlayed()
+        -- Fordert aktualisierte Spielzeitdaten nach dem Levelaufstieg an.
+        RequestTimePlayed()
+    end)
+
+-- 5. GUILD_ROSTER_UPDATE Event-Handler
+-- Dieser Frame lauscht auf GUILD_ROSTER_UPDATE, um die Gildenmitglieder zu aktualisieren.
+local guildRosterUpdateFrame = CreateFrame("Frame", "SchlingelIncGuildRosterUpdateFrame")
+guildRosterUpdateFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
+guildRosterUpdateFrame:SetScript("OnEvent", function(self, event)
+    -- Aktualisiert die Gildenmitgliederliste.
+    SchlingelInc:UpdateGuildMembers()
 end)

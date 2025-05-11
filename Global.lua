@@ -4,6 +4,9 @@ SchlingelInc = {}
 -- Addon-Name
 SchlingelInc.name = "SchlingelInc"
 
+-- Gildenmitglieder
+SchlingelInc.guildMembers = {}
+
 -- Discord Link
 SchlingelInc.discordLink = "https://discord.gg/KXkyUZW"
 
@@ -35,6 +38,18 @@ function SchlingelInc:CountTable(table)
         count = count + 1
     end
     return count
+end
+
+function SchlingelInc:UpdateGuildMembers()
+    -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
+    local guildMembers = {}
+    for i = 1, GetNumGuildMembers() do
+        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+        if online then
+            table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
+        end
+    end
+    SchlingelInc.guildMembers = guildMembers
 end
 
 -- Überprüft Abhängigkeiten und warnt bei Problemen.
@@ -83,9 +98,8 @@ function SchlingelInc:CheckDependencies()
         C_Timer.After(5, function()
             -- Wenn GreenWall nicht gefunden wurde, wird eine Warnung angezeigt.
             if not greenwall_found then
-                SchlingelInc:Print(
-                    "|cffff0000Warnung: Du hast Greenwall nicht aktiv. Bitte aktiviere oder installiere es!|r")
-                StaticPopup_Show("SCHLINGEL_GREENWALL_MISSING") -- Zeigt das Popup an.
+                -- SchlingelInc:Print("|cffff0000Warnung: Du hast Greenwall nicht aktiv. Bitte aktiviere oder installiere es!|r") -- Deaktiviert für den Moment.
+                -- StaticPopup_Show("SCHLINGEL_GREENWALL_MISSING") -- Zeigt das Popup an. -- Deaktiviert für den Moment.
             end
         end)
     end)

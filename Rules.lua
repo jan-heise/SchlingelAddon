@@ -27,21 +27,11 @@ end
 
 -- Regel: Gruppen mit Spielern außerhalb der Gilde verbieten
 function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
-    -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
-    local guildMembers = {}
-    for i = 1, GetNumGuildMembers() do
-        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
-        if online then
-            table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
-        end
-    end
-
-    -- Prüfe ob die Namen in der Gruppe mit den Gildenmitgliedern übereinstimmen
+    -- Prüfe ob die Namen in der Gruppe in der guildMembers Tabelle sind
     for i = 1, GetNumGroupMembers() do
         local name = UnitName("party" .. i) or UnitName("raid" .. i)
         if name then
-            -- prüfe ob der Name in der guildMembers Tabelle ist
-            for _, guildMember in ipairs(guildMembers) do
+            for _, guildMember in ipairs(SchlingelInc.guildMembers) do
                 if guildMember ~= SchlingelInc:RemoveRealmFromName(name) then
                     SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
                     LeaveParty()
