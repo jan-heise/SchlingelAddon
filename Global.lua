@@ -25,6 +25,8 @@ SchlingelInc.allowedGuilds = {
     "Schlingel IInc"
 }
 
+SchlingelInc.guildMembers = {} -- Tabelle für Gildenmitglieder.
+
 -- Initialisierung von Spielzeit-Variablen (derzeit nicht weiter verwendet im Snippet).
 SchlingelInc.GameTimeTotal = 0
 SchlingelInc.GameTimePerLevel = 0
@@ -241,7 +243,68 @@ SchlingelInc.guildMemberVersions = {}
 -- Erstellt einen Frame, um Addon-Nachrichten zu empfangen (speziell für Versionen).
 local addonMessageFrame = CreateFrame("Frame")
 addonMessageFrame:RegisterEvent("CHAT_MSG_ADDON")
+addonMessageFrame:RegisterEvent("CLUB_MEMBER_ADDED")
+addonMessageFrame:RegisterEvent("CLUB_MEMBER_REMOVED")
 C_ChatInfo.RegisterAddonMessagePrefix(SchlingelInc.prefix) -- Wichtig, um Nachrichten zu empfangen.
+
+function SchlingelInc:GetOwnGuildMemberNames()
+    local names = {}
+    local numMembers = GetNumGuildMembers()
+    for i = 1, numMembers do
+        local name = GetGuildRosterInfo(i)
+        if name and name ~= "" then
+            table.insert(names, name)
+        end
+    end
+    return names
+end
+
+function SchlingelInc:ParseGuildMemberNames(serialized)
+    local names = {}
+    for entry in string.gmatch(serialized, "([^;]+)") do
+        local name = strsplit(",", entry)
+        if name and name ~= "" then
+            table.insert(names, name)
+        end
+    end
+    return names
+end
+
+function SchlingelInc:SendGuildMemberNames()
+    local names = self:GetOwnGuildMemberNames()
+    local serialized = table.concat(names, ";")
+    C_ChatInfo.SendAddonMessage(self.prefix, "GUILD_NAMES:" .. serialized, targetChannel) -- DEV: Hier muss noch der Sync gesendet werden
+end
+
+function SchlingelInc:SendGuildMemberNamesOnce()
+    if SchlingelInc.guildNamesSent then return end
+    SchlingelInc:SendGuildMemberNames()
+    -- Nach dem Senden merken und Bestätigung schicken
+    SchlingelInc.guildNamesSent = true
+    C_ChatInfo.SendAddonMessage(self.prefix, "GUILD_NAMES_SENT", "GUILD")
+end
+
+-- Merged-Liste aus eigener Gilde und empfangener Gilde erzeugen
+function SchlingelInc:MergeGuildMemberNames(ownNames, otherNames)
+    local merged = {}
+    local seen = {}
+
+    for _, name in ipairs(ownNames) do
+        if name and name ~= "" then
+            table.insert(merged, name)
+            seen[name] = true
+        end
+    end
+
+    for _, name in ipairs(otherNames) do
+        if name and name ~= "" and not seen[name] then
+            table.insert(merged, name)
+            seen[name] = true
+        end
+    end
+
+    return merged
+end
 
 -- Event-Handler für 'addonMessageFrame'.
 addonMessageFrame:SetScript("OnEvent", function(_, event, prefix, message, _, sender)
@@ -252,6 +315,30 @@ addonMessageFrame:SetScript("OnEvent", function(_, event, prefix, message, _, se
             -- Speichert die Version des Senders.
             SchlingelInc.guildMemberVersions[sender] = receivedVersion
         end
+
+        if message == "GUILD_NAMES_SENT" then
+            -- Jemand anderes hat schon gesendet, also selbst nicht mehr senden
+            SchlingelInc.guildNamesSent = true
+            return
+        end
+
+        local syncRequest = message:match("^GUILD_NAMES:(.+)$")
+        if syncRequest then
+            local otherNames = SchlingelInc:ParseGuildMemberNames(syncRequest)
+            local ownNames = SchlingelInc:GetOwnGuildMemberNames()
+            SchlingelInc.guildMembers = SchlingelInc:MergeGuildMemberNames(ownNames, otherNames)
+            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "GUILD_NAME_SYNC:" .. otherNames, "GUILD")
+        end
+
+        local serialized = message:match("^GUILD_NAME_SYNC:(.+)$")
+        if serialized then
+            local otherNames = SchlingelInc:ParseGuildMemberNames(serialized)
+            local ownNames = SchlingelInc:GetOwnGuildMemberNames()
+            SchlingelInc.guildMembers = SchlingelInc:MergeGuildMemberNames(ownNames, otherNames)
+        end
+    elseif event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" then
+        -- Gildenmitglieder updaten und synchronisieren
+        SchlingelInc:SendGuildMemberNamesOnce()
     end
 end)
 

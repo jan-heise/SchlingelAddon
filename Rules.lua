@@ -27,35 +27,7 @@ end
 
 -- Regel: Gruppen mit Spielern außerhalb der Gilde verbieten
 function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
-    local groupGuilds = {}
-    local guildName = GetGuildInfo("player")
-    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "SCHLINGEL_GUILD:" .. guildName, "RAID")
-
-    local frame = CreateFrame("Frame")
-    frame:RegisterEvent("CHAT_MSG_ADDON")
-    frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
-        if event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix then
-            local _, _, guildName = string.find(message, "SCHLINGEL_GUILD:(.+)")
-            if guildName and guildName ~= "" then
-                groupGuilds[SchlingelInc:RemoveRealmFromName(sender)] = guildName
-            end
-        end
-    end)
-
-    C_Timer.After(2, function()
-        if GetNumGroupMembers() ~= SchlingelInc:CountTable(groupGuilds) then
-            SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
-            LeaveParty() -- Command to leave the group
-        else
-            for _, guildName in pairs(groupGuilds) do
-                if not SchlingelInc:IsGuildAllowed(guildName) then
-                    SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilden sind verboten!")
-                    LeaveParty() -- Command to leave the group
-                end
-            end
-        end
-        frame:UnregisterEvent("CHAT_MSG_ADDON")
-    end)
+    -- Durchsuche SchlingelInc.guildMembers nach Gruppenmitgliedern
 end
 
 -- Initialisierung der Regeln
