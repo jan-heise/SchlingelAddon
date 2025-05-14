@@ -14,7 +14,7 @@ function SchlingelInc:OnLoad()
     SchlingelInc:InitMinimapIcon()
 
     -- Initialisiert die Gildenmitglieder.
-    SchlingelInc:UpdateGuildMembers()
+    -- SchlingelInc:UpdateGuildMembers()
 
     -- Gibt eine Bestätigungsnachricht aus, dass das Addon geladen wurde, inklusive Version.
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
