@@ -1,3 +1,6 @@
+# 2.1.0
+- Rollback to old rule handling for one guild
+
 # 2.0.13
 
 - Fix grouping-rule

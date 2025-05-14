@@ -4,6 +4,9 @@ SchlingelInc = {}
 -- Addon-Name
 SchlingelInc.name = "SchlingelInc"
 
+-- Gildenmitglieder
+SchlingelInc.guildMembers = {}
+
 -- Discord Link
 SchlingelInc.discordLink = "https://discord.gg/KXkyUZW"
 
@@ -37,6 +40,17 @@ function SchlingelInc:CountTable(table)
     return count
 end
 
+function SchlingelInc:UpdateGuildMembers()
+    -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
+    local guildMembers = {}
+    C_GuildInfo.GuildRoster()
+    for i = 1, GetNumGuildMembers() do
+        local name, _, _, _, _, _, _, _, _ = GetGuildRosterInfo(i)
+        table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
+    end
+    SchlingelInc.guildMembers = guildMembers
+end
+
 -- Überprüft Abhängigkeiten und warnt bei Problemen.
 function SchlingelInc:CheckDependencies()
     -- Definition eines Popup-Dialogs für die Warnung vor veralteten Addons.
@@ -48,20 +62,10 @@ function SchlingelInc:CheckDependencies()
         hideOnEscape = true,
         preferredIndex = 3,
     }
-    -- Definition eines Popup-Dialogs für die Warnung, falls GreenWall fehlt.
-    StaticPopupDialogs["SCHLINGEL_GREENWALL_MISSING"] = {
-        text = "Du hast Greenwall nicht aktiv.\nBitte aktiviere oder installiere es!",
-        button1 = "OK",
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        preferredIndex = 3,
-    }
 
     -- Startet eine Überprüfung nach 30 Sekunden.
     C_Timer.After(30, function()
         local numAddons = GetNumAddOns()
-        local greenwall_found = false
 
         -- Durchläuft alle installierten Addons.
         for i = 1, numAddons do
@@ -72,22 +76,7 @@ function SchlingelInc:CheckDependencies()
                     "|cffff0000Warnung: Du hast das veraltete Addon aktiv. Bitte entferne es, da es zu Problemen mit SchlingelInc führt!|r")
                 StaticPopup_Show("SCHLINGEL_HARDCOREUNLOCKED_WARNING") -- Zeigt das Popup an.
             end
-
-            -- Prüft, ob GreenWall geladen und aktiv ist.
-            if name == "GreenWall" and IsAddOnLoaded("GreenWall") then
-                greenwall_found = true
-            end
         end
-
-        -- Startet eine weitere Überprüfung nach 5 Sekunden (nach der ersten Prüfung).
-        C_Timer.After(5, function()
-            -- Wenn GreenWall nicht gefunden wurde, wird eine Warnung angezeigt.
-            if not greenwall_found then
-                SchlingelInc:Print(
-                    "|cffff0000Warnung: Du hast Greenwall nicht aktiv. Bitte aktiviere oder installiere es!|r")
-                StaticPopup_Show("SCHLINGEL_GREENWALL_MISSING") -- Zeigt das Popup an.
-            end
-        end)
     end)
 end
 
@@ -137,21 +126,6 @@ function SchlingelInc:IsInBattleground()
         isInAllowedBattleground = true
     end
     return isInAllowedBattleground
-end
-
--- Überprüft, ob ein GEGEBENER Gildenname zu den erlaubten Gilden gehört.
--- Hinweis: Diese Funktion ist in ihrer Implementierung identisch zu IsGuildAllowed.
--- Sie wird nützlich, wenn man explizit prüfen will, ob der Gildenname des Spielers erlaubt ist.
-function SchlingelInc:IsPlayerInGuild(guildName)
-    if not guildName then
-        return false -- Kein Gildenname angegeben.
-    end
-    for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
-        if guildName == allowedGuild then
-            return true -- Gildenname ist in der Liste der erlaubten Gilden.
-        end
-    end
-    return false -- Gildenname nicht in der Liste.
 end
 
 -- Event-Handler für den 'frame' (lauscht auf CHAT_MSG_ADDON).

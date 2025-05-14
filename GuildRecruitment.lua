@@ -57,7 +57,7 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest(guildName)
     -- Erstellt die Addon-Nachricht mit den Spielerdaten im Format "BEFEHL:Daten1:Daten2:..."
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
-    GuildRoster() -- Aktualisiert einmal die Gilde und cached sie im Client.
+    --GuildRoster() -- Aktualisiert einmal die Gilde und cached sie im Client.
     for i = 1, GetNumGuildMembers() do
         local name, rank, rankIndex, _, _, _, _, _, online, _, _, _, _, _, _, _ = GetGuildRosterInfo(i);
         -- if online and name and (rank == "Oberlootwichtel" or rank == "Lootwichtel" or rank == "GroßSchlingel") then

@@ -46,7 +46,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		local popupMessageFormat = "SCHLINGEL_DEATH:%s:%s:%s:%s"
 		local popupMessageString = popupMessageFormat:format(name, class, level, zone)
 
-		-- Send broadcast text messages to guild and greenwall
+		-- Send broadcast text messages to guild
 		if not SchlingelInc:IsInBattleground() then
 			SendChatMessage(messageString, "GUILD")
 			C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, popupMessageString, "GUILD")
