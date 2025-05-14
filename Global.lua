@@ -42,13 +42,28 @@ end
 
 function SchlingelInc:UpdateGuildMembers()
     -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
-    local guildMembers = {}
+    local guild_members = {}
     C_GuildInfo.GuildRoster()
     for i = 1, GetNumGuildMembers() do
-        local name, _, _, _, _, _, _, _, _ = GetGuildRosterInfo(i)
-        table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
+        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+        if name and online then
+            -- Falls der Name einen Realm enthält (z.B. "Spielername-Realm"), nur den Spielernamen extrahieren
+            local simple_name = strsplit("-", name)
+            guild_members[simple_name] = true
+        end
     end
-    SchlingelInc.guildMembers = guildMembers
+
+    SchlingelInc.guildMembers = guild_members
+    local found = false
+    for _, guildMember in ipairs(SchlingelInc.guildMembers) do
+        print(guildMember) -- debug
+        if guildMember == SchlingelInc:RemoveRealmFromName(UnitName("player")) then
+            print("found") -- debug
+            found = true
+            break
+        end
+    end
+    print("GuildRoster updated") -- debug
 end
 
 -- Überprüft Abhängigkeiten und warnt bei Problemen.
