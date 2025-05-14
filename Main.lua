@@ -98,9 +98,8 @@ playerLevelUpFrame:SetScript("OnEvent",
 -- 5. GUILD_ROSTER_UPDATE Event-Handler
 -- Dieser Frame lauscht auf GUILD_ROSTER_UPDATE, um die Gildenmitglieder zu aktualisieren.
 local guildRosterUpdateFrame = CreateFrame("Frame", "SchlingelIncGuildRosterUpdateFrame")
-guildRosterUpdateFrame:RegisterEvent("CLUB_MEMBER_ADDED")
-guildRosterUpdateFrame:RegisterEvent("CLUB_MEMBER_REMOVED")
+guildRosterUpdateFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
 guildRosterUpdateFrame:SetScript("OnEvent", function(self, event)
     -- Aktualisiert die Gildenmitgliederliste.
-    SchlingelInc:UpdateGuildMembers()
+    -- SchlingelInc:UpdateGuildMembers()
 end)

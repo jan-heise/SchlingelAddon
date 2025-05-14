@@ -27,21 +27,27 @@ end
 
 -- Regel: Gruppen mit Spielern außerhalb der Gilde verbieten
 function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
-    -- Prüfe ob die Namen in der Gruppe in der guildMembers Tabelle sind
-    for i = 1, GetNumGroupMembers() do
-        local name = UnitName("party" .. i) or UnitName("raid" .. i)
-        local found = false
-        if name then
-            for _, guildMember in ipairs(SchlingelInc.guildMembers) do
-                if guildMember == SchlingelInc:RemoveRealmFromName(name) then
-                    found = true
-                    break
-                end
+    local isInBattleground = SchlingelInc:IsInBattleground()
+    if not isInBattleground then
+        C_GuildInfo.GuildRoster()
+        local guildMembers = {}
+        local numTotalGuildMembers = GetNumGuildMembers()
+        for i = 1, numTotalGuildMembers do
+            local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+            if name and online then
+                table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
             end
+        end
 
-            if found == false then
-                SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
-                LeaveParty()
+        local numGroupMembers = GetNumGroupMembers()
+        for i = 1, numGroupMembers do
+            local memberName = UnitName("party" .. i) or UnitName("raid" .. i)
+            if memberName then
+                local isInGuild = tContains(guildMembers, SchlingelInc:RemoveRealmFromName(memberName))
+                if not isInGuild then
+                    SchlingelInc:Print("Gruppierung mit Spielern außerhalb der Gilde ist verboten!")
+                    LeaveParty() -- Verlasse die Gruppe
+                end
             end
         end
     end
@@ -58,6 +64,8 @@ function SchlingelInc.Rules:Initialize()
 
     frame:SetScript("OnEvent", function(_, event, prefix, playerName)
         if event == "MAIL_SHOW" then
+            SchlingelInc:PrintFormattedTable(SchlingelInc.guildMembers)
+            print(#SchlingelInc.guildMembers)
             self:ProhibitMailboxUsage()
         elseif event == "AUCTION_HOUSE_SHOW" then
             self:ProhibitAuctionhouseUsage()
