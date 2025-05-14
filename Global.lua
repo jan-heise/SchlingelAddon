@@ -43,11 +43,10 @@ end
 function SchlingelInc:UpdateGuildMembers()
     -- lade alle Namen von Spielern aus der Gilde in eine Tabelle wenn diese online sind
     local guildMembers = {}
+    C_GuildInfo.GuildRoster()
     for i = 1, GetNumGuildMembers() do
-        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
-        if online then
-            table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
-        end
+        local name, _, _, _, _, _, _, _, _ = GetGuildRosterInfo(i)
+        table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
     end
     SchlingelInc.guildMembers = guildMembers
 end
@@ -151,21 +150,6 @@ function SchlingelInc:IsInBattleground()
         isInAllowedBattleground = true
     end
     return isInAllowedBattleground
-end
-
--- Überprüft, ob ein GEGEBENER Gildenname zu den erlaubten Gilden gehört.
--- Hinweis: Diese Funktion ist in ihrer Implementierung identisch zu IsGuildAllowed.
--- Sie wird nützlich, wenn man explizit prüfen will, ob der Gildenname des Spielers erlaubt ist.
-function SchlingelInc:IsPlayerInGuild(guildName)
-    if not guildName then
-        return false -- Kein Gildenname angegeben.
-    end
-    for _, allowedGuild in ipairs(SchlingelInc.allowedGuilds) do
-        if guildName == allowedGuild then
-            return true -- Gildenname ist in der Liste der erlaubten Gilden.
-        end
-    end
-    return false -- Gildenname nicht in der Liste.
 end
 
 -- Event-Handler für den 'frame' (lauscht auf CHAT_MSG_ADDON).
