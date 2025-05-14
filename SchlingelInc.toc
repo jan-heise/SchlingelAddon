@@ -2,7 +2,7 @@
 ## Title: Schlingel Inc
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
 ## Author: Cricksu, Pudi, Canasterzaster
-## Version: 2.1.2
+## Version: 2.1.3
 ## SavedVariablesPerCharacter: CharacterDeaths
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
