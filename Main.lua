@@ -39,7 +39,7 @@ end)
 local playerEnteringWorldFrame = CreateFrame("Frame", "SchlingelIncPlayerEnteringWorldFrame")
 playerEnteringWorldFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 playerEnteringWorldFrame:SetScript("OnEvent", function(self, event, isInitialLogin, isReloadingUi)
-    -- Überprüft auf benötigte Addon-Abhängigkeiten (z.B. GreenWall, alte Versionen).
+    -- Überprüft auf benötigte Addon-Abhängigkeiten (z.B. alte Versionen).
     SchlingelInc:CheckDependencies()
 
     -- Überprüft die Addon-Version mit anderen Gildenmitgliedern.

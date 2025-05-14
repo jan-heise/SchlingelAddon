@@ -14,7 +14,4 @@ Drücke entweder auf den „Schlingel Inc beitreten“- oder den „Schlingel II
 Wenn du nach einigen Minuten keine Einladung erhältst, melde dich bitte bei einem der Gildenoffiziere.
 Wir sind nicht rund um die Uhr online – es kann also zu Wartezeiten kommen.
 
-Sollte dir der Minimap-Button nicht angezeigt werden, prüfe bitte, ob du auch das Addon Greenwall installiert hast.
-Greenwall synchronisiert die Gildenchats der beiden Gilden miteinander.
-
 Wenn du Probleme mit dem Addon hast, melde dich bitte im Probleme-Channel im Discord.
