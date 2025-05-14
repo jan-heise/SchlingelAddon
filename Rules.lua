@@ -30,13 +30,18 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     -- Prüfe ob die Namen in der Gruppe in der guildMembers Tabelle sind
     for i = 1, GetNumGroupMembers() do
         local name = UnitName("party" .. i) or UnitName("raid" .. i)
+        local found = false
         if name then
             for _, guildMember in ipairs(SchlingelInc.guildMembers) do
-                if guildMember ~= SchlingelInc:RemoveRealmFromName(name) then
-                    SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
-                    LeaveParty()
+                if guildMember == SchlingelInc:RemoveRealmFromName(name) then
+                    found = true            
                     break
                 end
+            end
+
+            if found == false
+                SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
+                LeaveParty()
             end
         end
     end

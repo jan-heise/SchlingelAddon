@@ -1,4 +1,9 @@
+# 2.1.1
+
+- Fix grouping bug
+
 # 2.1.0
+
 - Rollback to old rule handling for one guild
 
 # 2.0.13
