@@ -34,12 +34,12 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
         if name then
             for _, guildMember in ipairs(SchlingelInc.guildMembers) do
                 if guildMember == SchlingelInc:RemoveRealmFromName(name) then
-                    found = true            
+                    found = true
                     break
                 end
             end
 
-            if found == false
+            if found == false then
                 SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
                 LeaveParty()
             end
