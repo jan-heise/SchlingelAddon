@@ -3,7 +3,7 @@
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
 ## Author: Cricksu, Pudi, Canasterzaster
 ## Version: 2.1.5-dev
-## SavedVariablesPerCharacter: CharacterDeaths, SavedAchievements
+## SavedVariablesPerCharacter: CharacterDeaths, SavedAchievements, AchievementPoints
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
 ## OptionalDeps: LibStub, LibDataBroker-1.1, LibDBIcon-1.0
