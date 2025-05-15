@@ -4,6 +4,9 @@ LastChatMessage = ""
 -- Variable zum Speichern des letzten Gegners
 LastAttackSource = ""
 
+-- Initialisiere CharacterDeaths um einen Nil Verweis zu vermeiden
+CharacterDeaths = CharacterDeaths or 0
+
 local DeathFrame = CreateFrame("Frame")
 DeathFrame:RegisterEvent("PLAYER_DEAD")
 DeathFrame:RegisterEvent("PLAYER_UNGHOST")

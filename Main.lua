@@ -50,12 +50,6 @@ playerEnteringWorldFrame:SetScript("OnEvent", function(self, event, isInitialLog
         RequestTimePlayed()
         SchlingelInc.initialPlayTimeRequested = true
     end
-
-    -- Informiert den Spieler über die Initialisierung des DeathCounters, falls 'CharacterDeaths' nicht definiert ist.
-    if CharacterDeaths == nil then
-        SchlingelInc:Print(
-            "Keine Tode gefunden.\nBitte initialisiere deinen DeathCounter einmal mit /deathset <Zahl>. Danke für deine Ehrlichkeit! :)")
-    end
 end)
 
 -- 3. TIME_PLAYED_MSG Event-Handler
