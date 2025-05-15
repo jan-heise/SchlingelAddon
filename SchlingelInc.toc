@@ -2,7 +2,7 @@
 ## Title: Schlingel Inc
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
 ## Author: Cricksu, Pudi, Canasterzaster
-## Version: 2.1.4
+## Version: 2.1.5
 ## SavedVariablesPerCharacter: CharacterDeaths
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
@@ -20,4 +20,5 @@ Death.lua
 interfaces\UIHelpers.lua
 interfaces\OffiInterface.lua
 interfaces\SchlingelInterface.lua
+interfaces\PvPFrame.lua
 Main.lua
