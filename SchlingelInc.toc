@@ -14,7 +14,8 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 # Unsere lua files.
 Global.lua
 Rules.lua
-GuildRecruitment.lua
+guildRecruitment\GuildRecruitmentHelper.lua
+guildRecruitment\GuildRecruitment.lua
 LevelUp.lua
 Death.lua
 interfaces\UIHelpers.lua

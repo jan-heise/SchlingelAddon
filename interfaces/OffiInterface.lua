@@ -820,7 +820,7 @@ StaticPopupDialogs["CONFIRM_GUILD_KICK"] = {
     OnAccept = function(selfDialog, data)
         -- Wird ausgeführt, wenn "Akzeptieren" geklickt wird.
         if data and data.memberName then
-            GuildUninvite(data.memberName) -- Entfernt das Mitglied aus der Gilde.
+            C_GuildInfo.Uninvite(data.memberName) -- Entfernt das Mitglied aus der Gilde.
             if SchlingelInc and SchlingelInc.Print then
                 SchlingelInc:Print(data.memberName .. " wurde aus der Gilde entfernt.")
             end
