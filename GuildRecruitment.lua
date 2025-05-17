@@ -9,10 +9,6 @@ SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inv
 -- Lokale Referenz auf die Anfragenliste für kürzeren und schnelleren Zugriff im Modul.
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
 
--- Globale Variablen für den Debug-Modus
-SchlingelInc.GuildRecruitment.DEBUG_MODE_ENABLED = false -- Standardmäßig deaktiviert
-SchlingelInc.GuildRecruitment.DEBUG_TARGET_USER = nil    -- Kein Standard-Zielbenutzer
-
 -- Gibt die aktuelle Liste der Gildenanfragen zurück.
 -- Diese Funktion dient als Schnittstelle, um von außerhalb des Moduls auf die Anfragen zuzugreifen.
 function SchlingelInc.GuildRecruitment:GetPendingRequests()
@@ -71,7 +67,7 @@ local function HandleAddonMessage(prefix, message)
     end
 
     -- Verarbeitet die "INVITE_REQUEST"-Nachricht.
-    if message == message:find("INVITE_REQUEST:") then
+    if message:find("^INVITE_REQUEST:") then
         local name, levelStr, expStr, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
         if CanGuildInvite() then
             -- Fügt die neue Anfrage zur Liste hinzu.
@@ -84,7 +80,7 @@ local function HandleAddonMessage(prefix, message)
     end
 
     --Verarbeite die Löschrequest
-    if message == message:find("INVITE_SENT:") then
+    if message:find("^INVITE_SENT:") then
         if CanGuildInvite() then
             local playerName = message:match("^INVITE_SENT:([^:]+)$")
             SchlingelInc:RemovePlayerFromListAndUpdateUI(playerName)
