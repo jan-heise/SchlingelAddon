@@ -132,10 +132,3 @@ function SchlingelInc.GuildRecruitment:GetPlayerZone()
     end
     return GetZoneText() or "Unbekannt"
 end
-
-SLASH_SCHLINGELSENDINVITE1 = "/gildenanfrage"
-SLASH_SCHLINGELSENDINVITE2 = "/ga"
-
-SlashCmdList["SCHLINGELSENDINVITE"] = function()
-    SchlingelInc.GuildRecruitment:SendGuildRequest()
-end
