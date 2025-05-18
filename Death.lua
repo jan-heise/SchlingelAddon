@@ -85,9 +85,12 @@ SlashCmdList["DEATHSET"] = function(msg)
 		return
 	end
 
-	if CharacterDeaths >= 0 and inputValue == 0 then
-		SchlingelInc:Print("Ein nachträgliches ändern auf 0 ist nicht erlaubt! SCHANDE!")
-		return
+	local _, _, _, channel = SchlingelInc:ParseVersion(SchlingelInc.version)
+	if channel ~= "dev" then
+		if CharacterDeaths >= 0 and inputValue == 0 then
+			SchlingelInc:Print("Ein nachträgliches ändern auf 0 ist nicht erlaubt! SCHANDE!")
+			return
+		end
 	end
 
 	CharacterDeaths = inputValue
