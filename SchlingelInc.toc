@@ -18,11 +18,11 @@ GuildRecruitment.lua
 LevelUp.lua
 Death.lua
 interfaces\UIHelpers.lua
-interfaces\offiinterface\tabs\GuildInfo.lua
-interfaces\offiinterface\tabs\Recruitment.lua
-interfaces\offiinterface\tabs\Stats.lua
-interfaces\offiinterface\tabs\Inactivity.lua
-interfaces\offiinterface\OffiInterface.lua
+interfaces\offiInterface\tabs\GuildInfo.lua
+interfaces\offiInterface\tabs\Recruitment.lua
+interfaces\offiInterface\tabs\Stats.lua
+interfaces\offiInterface\tabs\Inactivity.lua
+interfaces\offiInterface\OffiInterface.lua
 interfaces\SchlingelInterface.lua
 interfaces\PvPFrame.lua
 Main.lua
