@@ -19,8 +19,8 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
         return
     end
 
-    local zone = Helper:GetPlayerZone()
-    local playerGold = Helper:GetFormattedGold()
+    local zone = SchlingelInc.GuildRecruitment:GetPlayerZone()
+    local playerGold = GetMoneyString(GetMoney(), true)
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
     SchlingelInc:Print("Anfrage gesendet " .. message)
@@ -29,10 +29,17 @@ end
 
 local function HandleAddonMessage(message)
     if message:find("^INVITE_REQUEST:") then
-        local request = Helper:ParseInviteRequestMessage(message)
-        if request then
-            table.insert(inviteRequests, request)
-            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %d) in %s erhalten.", request.name, request.level, request.zone))
+        local name, level, xp, zone, money = message:match("^INVITE_REQUEST:([^:]+):(%d+):(%d+):([^:]+):(.+)$")
+        if name and level and xp and zone and money then
+            local requestData = {
+                name = name,
+                level = level,
+                xp = tonumber(xp),
+                zone = zone,
+                money = money,
+            }
+            table.insert(inviteRequests, requestData)
+            SchlingelInc:Print(string.format("Neue Gildenanfrage von %s (Level %s) in %s erhalten.", name, level, zone))
             SchlingelInc:RefreshAllRequestUIs()
         end
     elseif message:find("^INVITE_SENT:") and CanGuildInvite() then
@@ -41,9 +48,15 @@ local function HandleAddonMessage(message)
     end
 end
 
+
 function SchlingelInc:RefreshAllRequestUIs()
-    SchlingelInc.OffiWindow:UpdateRecruitmentTabData(inviteRequests)
+    if SchlingelInc.Tabs and SchlingelInc.Tabs.Recruitment and SchlingelInc.Tabs.Recruitment.UpdateData then
+        SchlingelInc.Tabs.Recruitment:UpdateData(SchlingelInc.GuildRecruitment:GetPendingRequests())
+    else
+        SchlingelInc:Print("Fehler: Recruitment Tab oder UpdateData Methode nicht gefunden.")
+    end
 end
+
 
 function SchlingelInc.GuildRecruitment:HandleAcceptRequest(playerName)
     if not playerName then return end
@@ -83,6 +96,15 @@ function SchlingelInc:RemovePlayerFromListAndUpdateUI(playerName)
             break
         end
     end
+end
+
+-- Gibt formatierten Zonennamen zurück
+function SchlingelInc.GuildRecruitment:GetPlayerZone()
+    if C_Map and C_Map.GetBestMapForUnit then
+        local mapID = C_Map.GetBestMapForUnit("player")
+        return mapID and C_Map.GetMapInfo(mapID) and C_Map.GetMapInfo(mapID).name or GetZoneText() or "Unbekannt"
+    end
+    return GetZoneText() or "Unbekannt"
 end
 
 SLASH_SCHLINGELSENDINVITE1 = "/gildenanfrage"
