@@ -3,7 +3,6 @@ SchlingelInc.GuildRecruitment = SchlingelInc.GuildRecruitment or {}
 SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests or {}
 
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
-local Helper = SchlingelInc.GuildRecruitmentHelper
 
 function SchlingelInc.GuildRecruitment:GetPendingRequests()
     return inviteRequests
