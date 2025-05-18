@@ -85,7 +85,6 @@ function SchlingelInc.Tabs.Stats:UpdateData()
        not self.levelText or not self.rankText or
        not self.mainScrollChild or not self.leftColumn or
        not self.rightColumn then
-        SchlingelInc:Print("Stats UpdateData: UI Elemente nicht gefunden.")
         return -- Abbruch, wenn wichtige UI-Elemente fehlen.
     end
 

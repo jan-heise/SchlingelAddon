@@ -66,7 +66,6 @@ end
 function SchlingelInc.Tabs.Inactivity:UpdateData()
     -- Überprüfe, ob die benötigten UI-Elemente im Modul gespeichert sind
     if not self.Frame or not self.scrollChild or not self.inactiveListUIElements or not self.scrollFrame then
-        SchlingelInc:Print("Inactivity UpdateData: UI Elemente nicht gefunden.")
         return -- Sicherstellen, dass die UI-Elemente existieren.
     end
 
