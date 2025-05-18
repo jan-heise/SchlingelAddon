@@ -136,8 +136,8 @@ function SchlingelInc:IsInBattleground()
         end
     end
 
-    -- Nur relevant, wenn Spieler in einem Schlachtfeld UND Level 55 oder höher ist.
-    if isInBattleground and level >= 55 then
+    -- Nur relevant, wenn Spieler in einem Schlachtfeld UND Level 60 oder höher ist.
+    if isInBattleground and level >= 60 then
         isInAllowedBattleground = true
     end
     return isInAllowedBattleground
