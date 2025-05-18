@@ -4,6 +4,30 @@ SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inv
 
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
 
+local guildOfficers =
+{
+    "Kurtibrown",
+    "Schlingbank",
+    "Schlinglbank",
+    "Dörtchen",
+    "Schmurt",
+    "Siegdörty",
+    "Syluri",
+    "Totanka",
+    "Syltank",
+    "Heilkrampf",
+    "Fenriic",
+    "Totärztin",
+    "Totemtanz",
+    "Bärmuut",
+    "Mortblanche",
+    "Pfarrer",
+    "Luminette",
+    "Cricksumage",
+    "Devschlingel",
+    "Pudidev"
+}
+
 function SchlingelInc.GuildRecruitment:GetPendingRequests()
     return inviteRequests
 end
@@ -23,7 +47,10 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
     SchlingelInc:Print("Anfrage gesendet " .. message)
-    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", "Pudidev")
+    -- Sendet die Anfrage an alle Officer.
+    for _, name in ipairs(guildOfficers) do
+        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", name)
+    end
 end
 
 local function HandleAddonMessage(message)
