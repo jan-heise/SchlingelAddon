@@ -1,3 +1,6 @@
+# 2.1.6
+- Fixing Guild Invites. Cleaning up Offi Interface
+
 # 2.1.1, 2.1.2, 2.1.3
 
 - Fix grouping bug

@@ -59,18 +59,6 @@ SchlingelInc.FONT_HIGHLIGHT_SMALL = FONT_HIGHLIGHT_SMALL
 SchlingelInc.BACKDROP_SETTINGS = BACKDROP_SETTINGS
 SchlingelInc.INACTIVE_DAYS_THRESHOLD = INACTIVE_DAYS_THRESHOLD -- Auch diese zugänglich machen
 
--- Entfernte Funktionen aus diesem File (jetzt in Tabs/ entsprechenden Modulen):
--- SchlingelInc:_CreateGuildInfoTabContent
--- SchlingelInc:_CreateRecruitmentTabContent
--- SchlingelInc:_CreateStatsTabContent
--- SchlingelInc:_CreateInactivityTabContent
--- SchlingelInc:_CreateRequestRowUI
--- SchlingelInc:UpdateGuildInfo
--- SchlingelInc:UpdateGuildStats
--- SchlingelInc:UpdateInactivityTab
--- Die interne Funktion offiWindowFrame:UpdateRecruitmentTabData wurde ebenfalls verschoben (in Recruitment.lua).
-
-
 --------------------------------------------------------------------------------
 -- Hauptfunktion zur Erstellung des Offi-Fensters
 -- Diese Funktion baut das gesamte Offi-Fenster mit seinen Tabs und
@@ -195,22 +183,12 @@ function SchlingelInc:CreateOffiWindow()
         end
     end
 
-    -- Die spezielle Referenz recruitmentFrame auf dem OffiWindowFrame wird nicht mehr benötigt,
-    -- da das Recruitment Modul seine eigene Referenz hält.
-    -- offiWindowFrame.recruitmentFrame = tabContentFrames[2]
-
     self.OffiWindow = offiWindowFrame -- Speichert den Hauptframe des Fensters.
-
-    -- Die UpdateData Funktionen sind jetzt Methoden der jeweiligen Tab-Module.
 
     -- Wählt den ersten Tab standardmäßig aus, nachdem alle Tabs erstellt wurden.
     -- Dies triggert auch das erste Laden der Daten für Tab 1 über SelectTab.
     SelectTab(1)
 end
-
-
--- Die UpdateData Funktionen sind jetzt Methoden der jeweiligen Tab-Module und werden von SelectTab und ToggleOffiWindow aufgerufen.
-
 
 --------------------------------------------------------------------------------
 -- Funktion zum Umschalten der Sichtbarkeit des Offi-Fensters
