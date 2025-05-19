@@ -61,7 +61,9 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			return -- Abbruch des Eventhandlers
 		end
 
-		CharacterDeaths = CharacterDeaths + 1
+		if not SchlingelInc:IsInBattleground() then
+			CharacterDeaths = CharacterDeaths + 1
+		end
 
 		-- Event für den revive. Ist aktuell allgemein, sollte also zB auch beim rez triggern.
 	else
@@ -84,12 +86,6 @@ SlashCmdList["DEATHSET"] = function(msg)
 		SchlingelInc:Print("Ungültiger Input. Benutze: /deathset <Zahl>")
 		return
 	end
-
-	if CharacterDeaths >= 0 and inputValue == 0 then
-		SchlingelInc:Print("Ein nachträgliches ändern auf 0 ist nicht erlaubt! SCHANDE!")
-		return
-	end
-
 	CharacterDeaths = inputValue
 	SchlingelInc:Print("Tod-Counter wurde auf " .. CharacterDeaths .. " gesetzt.")
 end
