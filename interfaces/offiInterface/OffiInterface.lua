@@ -1,20 +1,6 @@
--- SchlingelInc.lua
--- Hauptdatei für das SchlingelInc Addon.
--- Definiert die Hauptstruktur, Fenster und Konstanten.
--- Lädt andere Module und koordiniert die Tab-Anzeige.
-
 -- Stellt sicher, dass die Haupt-Addon-Tabelle existiert.
 -- Wenn SchlingelInc noch nicht existiert, wird eine neue, leere Tabelle erstellt.
 SchlingelInc = SchlingelInc or {}
-
--- Annahme: SchlingelInc.UIHelpers Namespace und SchlingelInc.Print Funktion
--- werden an anderer Stelle (z.B. in einem separaten UIHelpers.lua File oder
--- direkt in SchlingelInc.lua, falls sie einfach sind) definiert und sind verfügbar.
--- SchlingelInc.UIHelpers Namespace wird als existent vorausgesetzt.
--- Dieser Namespace enthält Hilfsfunktionen zum Erstellen von UI-Elementen.
--- SchlingelInc.Print Funktion wird als existent vorausgesetzt.
--- Annahme: SchlingelInc.RemoveRealmFromName(name) Funktion existiert an anderer Stelle.
-
 -- Erstelle Namespace für Tab-Module
 -- Andere Tab-Dateien (z.B. Tabs/GuildInfo.lua) hängen sich hier an.
 SchlingelInc.Tabs = SchlingelInc.Tabs or {}
