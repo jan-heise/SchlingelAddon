@@ -316,7 +316,7 @@ if LDB then                                                                -- F√
                     SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verf√ºgbar.")
                 end
             elseif button == "RightButton" then
-                if CanGuildInvite("player") then
+                if CanGuildInvite() then
                     if SchlingelInc.ToggleOffiWindow then
                         SchlingelInc:ToggleOffiWindow()
                     else
@@ -334,7 +334,7 @@ if LDB then                                                                -- F√
             GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9)                                -- Addon-Name im Tooltip.
             GameTooltip:AddLine("Version: " .. (SchlingelInc.version or "Unbekannt"), 1, 1, 1) -- Version im Tooltip.
             GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)                          -- Hinweis f√ºr Linksklick.
-            if CanGuildInvite("player") then
+            if CanGuildInvite() then
                 GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8)                -- Hinweis f√ºr Rechtsklick.
             end
             GameTooltip:Show()                                                                 -- Zeigt den Tooltip an.

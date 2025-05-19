@@ -276,16 +276,6 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
         "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinMainGuildBtnFunc)
     currentY_Col1_Buttons = currentY_Col1_Buttons - buttonHeight - buttonSpacingY
 
-    local joinTwinkGuildBtnFunc = function()
-        if SchlingelInc.GuildRecruitment and SchlingelInc.GuildRecruitment.SendGuildRequest then
-            SchlingelInc.GuildRecruitment:SendGuildRequest("Schlingel IInc")
-        else
-            SchlingelInc:Print("Fehler - GuildRecruitment Modul nicht gefunden.")
-        end
-    end
-    self.UIHelpers:CreateStyledButton(tabFrame, "Schlingel IInc beitreten", buttonWidth, buttonHeight, "TOPLEFT",
-        tabFrame, "TOPLEFT", col1X, currentY_Col1_Buttons, "UIPanelButtonTemplate", joinTwinkGuildBtnFunc)
-
     -- --- Spalte 2: Chatkanäle ---
     self.UIHelpers:CreateStyledText(tabFrame, "Chatkanäle:", FONT_NORMAL, "TOPLEFT", tabFrame, "TOPLEFT", col2X,
         currentY_Labels)
