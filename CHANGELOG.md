@@ -1,3 +1,6 @@
+# 2.1.7
+- Group Check now ignores online status
+
 # 2.1.6
 - Fixing Guild Invites. Cleaning up Offi Interface
 

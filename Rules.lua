@@ -31,8 +31,8 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     local guildMembers = {}
     local numTotalGuildMembers = GetNumGuildMembers()
     for i = 1, numTotalGuildMembers do
-        local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
-        if name and online then
+        local name, _, _, _, _, _, _, _, _ = GetGuildRosterInfo(i)
+        if name then
             table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
         end
     end
