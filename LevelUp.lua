@@ -5,9 +5,7 @@ SchlingelInc.LevelUps.Milestones = {
     20,
     30,
     40,
-    45,
     50,
-    55,
     60,
 }
 

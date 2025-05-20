@@ -20,6 +20,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		local _, rank = GetGuildInfo("player")
 		local class = UnitClass("player")
 		local level = UnitLevel("player")
+		local sex = UnitSex("player") -- 2 = male, 3 = female
 		local zone, mapID
 		if IsInInstance() then
 			zone = GetInstanceInfo()
@@ -28,13 +29,18 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			zone = C_Map.GetMapInfo(mapID).name
 		end
 
+		local pronoun = "der"
+		if sex == 3 then
+			pronoun = "die"
+		end
+
 		-- Formatiert die Broadcast Nachricht
-		local messageFormat = "%s der %s ist mit Level %s in %s gestorben. Schande!"
-		local messageFormatWithRank = "Ewiger Schlingel %s, der %s ist mit Level %s in %s gestorben. Schande!"
+		local messageFormat = "%s %s %s ist mit Level %s in %s gestorben. Schande!"
+		local messageFormatWithRank = "Ewiger Schlingel %s, %s %s ist mit Level %s in %s gestorben. Schande!"
 		if (rank ~= nil and rank == "EwigerSchlingel") then
 			messageFormat = messageFormatWithRank
 		end
-		local messageString = messageFormat:format(name, class, level, zone)
+		local messageString = messageFormat:format(name, pronoun, class, level, zone)
 
 		if LastAttackSource and LastAttackSource ~= "" then
 			messageString = string.format("%s Gestorben an %s", messageString, LastAttackSource)
@@ -164,7 +170,7 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 	if (event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix and msg:find("SCHLINGEL_DEATH")) then
 		local name, class, level, zone = msg:match("^SCHLINGEL_DEATH:([^:]+):([^:]+):([^:]+):([^:]+)$")
 		if name and class and level and zone then
-			local messageFormat = "%s der %s ist mit Level %s in %s gestorben. Schande!"
+			local messageFormat = "%s %s %s ist mit Level %s in %s gestorben. Schande!"
 			local messageString = messageFormat:format(name, class, level, zone)
 			-- Zeige die Nachricht im zentralen Frame an
 			ShowDeathMessage(messageString)
