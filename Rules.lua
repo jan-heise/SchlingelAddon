@@ -31,7 +31,7 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     local guildMembers = {}
     local numTotalGuildMembers = GetNumGuildMembers()
     for i = 1, numTotalGuildMembers do
-        local name, _, _, _, _, _, _, _, _ = GetGuildRosterInfo(i)
+        local name = GetGuildRosterInfo(i)
         if name then
             table.insert(guildMembers, SchlingelInc:RemoveRealmFromName(name))
         end
@@ -40,10 +40,11 @@ function SchlingelInc.Rules:ProhibitGroupingWithNonGuildMembers()
     local numGroupMembers = GetNumGroupMembers()
     for i = 1, numGroupMembers do
         local memberName = UnitName("party" .. i) or UnitName("raid" .. i)
-        if memberName then
+        local connected = UnitIsConnected("party" .. i) or UnitIsConnected("raid" .. i)
+        if memberName and connected then
             local isInGuild = tContains(guildMembers, SchlingelInc:RemoveRealmFromName(memberName))
             if not isInGuild then
-                SchlingelInc:Print("Gruppierung mit Spielern außerhalb der Gilde ist verboten!")
+                SchlingelInc:Print("Gruppen mit Spielern außerhalb der Gilde sind verboten!")
                 LeaveParty()     -- Verlasse die Gruppe
             end
         end
