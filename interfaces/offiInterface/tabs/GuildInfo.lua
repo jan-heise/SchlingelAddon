@@ -26,6 +26,7 @@ function SchlingelInc.Tabs.GuildInfo:CreateUI(parentFrame)
     self.Frame = tabFrame
     self.InfoText = infoText
 
+    SchlingelInc.Tabs.GuildInfo:UpdateData()
     -- Rückgabe des erstellten Frames
     return tabFrame
 end
@@ -114,14 +115,3 @@ function SchlingelInc.Tabs.GuildInfo:UpdateData()
     -- Setze den Text des Info-Textfeldes (via self)
     self.InfoText:SetText(infoTextContent)
 end
-
--- Event-Handler: Gildenliste aktualisiert
-local GuildInfoEventsFrame = CreateFrame("Frame")
-GuildInfoEventsFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-GuildInfoEventsFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "GUILD_ROSTER_UPDATE" then
-        if SchlingelInc.Tabs.GuildInfo and SchlingelInc.Tabs.GuildInfo.UpdateData then
-            SchlingelInc.Tabs.GuildInfo:UpdateData()
-        end
-    end
-end)

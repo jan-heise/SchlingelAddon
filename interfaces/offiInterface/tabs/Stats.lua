@@ -72,6 +72,7 @@ function SchlingelInc.Tabs.Stats:CreateUI(parentFrame)
     self.rankText = rankText -- Referenz im Modul speichern
 
     self.Frame = tabFrame -- Speichert eine Referenz auf den Tab-Frame im Modul.
+    SchlingelInc.Tabs.Stats:UpdateData()
     return tabFrame
 end
 
@@ -237,15 +238,3 @@ function SchlingelInc.Tabs.Stats:UpdateData()
     local totalRequiredHeight = math.max(leftHeight, rightHeight) + 20
     mainScrollChild:SetHeight(math.max(mainScrollChild:GetParent():GetHeight(), totalRequiredHeight))
 end
-
--- Event-Handler: Gildenliste aktualisiert
-local StatsEventsFrame = CreateFrame("Frame")
-StatsEventsFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-StatsEventsFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "GUILD_ROSTER_UPDATE" then
-        -- Rufe die UpdateData Funktion des Stats Moduls auf
-        if SchlingelInc.Tabs.Stats and SchlingelInc.Tabs.Stats.UpdateData then
-            SchlingelInc.Tabs.Stats:UpdateData()
-        end
-    end
-end)
