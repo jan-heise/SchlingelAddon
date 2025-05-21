@@ -13,9 +13,6 @@ function SchlingelInc:OnLoad()
     -- Initialisiert die Minimap-Icon-Funktionalität.
     SchlingelInc:InitMinimapIcon()
 
-    -- Initialisiert die Gildenmitglieder.
-    -- SchlingelInc:UpdateGuildMembers()
-
     -- Gibt eine Bestätigungsnachricht aus, dass das Addon geladen wurde, inklusive Version.
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
 end
@@ -88,12 +85,3 @@ playerLevelUpFrame:SetScript("OnEvent",
         -- Fordert aktualisierte Spielzeitdaten nach dem Levelaufstieg an.
         RequestTimePlayed()
     end)
-
--- 5. GUILD_ROSTER_UPDATE Event-Handler
--- Dieser Frame lauscht auf GUILD_ROSTER_UPDATE, um die Gildenmitglieder zu aktualisieren.
-local guildRosterUpdateFrame = CreateFrame("Frame", "SchlingelIncGuildRosterUpdateFrame")
-guildRosterUpdateFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-guildRosterUpdateFrame:SetScript("OnEvent", function(self, event)
-    -- Aktualisiert die Gildenmitgliederliste.
-    -- SchlingelInc:UpdateGuildMembers()
-end)

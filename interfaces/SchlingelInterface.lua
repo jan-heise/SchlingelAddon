@@ -504,29 +504,3 @@ function SchlingelInc:ToggleInfoWindow()
         end
     end
 end
-
--- Registriert Events, um das Info-Fenster bei Bedarf zu aktualisieren
-local function RegisterSchlingelInterfaceEvents()
-    local eventFrameSI = CreateFrame("Frame", "SchlingelInterfaceEventFrame")
-    eventFrameSI:RegisterEvent("PLAYER_LEVEL_UP")
-    eventFrameSI:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    eventFrameSI:RegisterEvent("PLAYER_MONEY")
-    eventFrameSI:RegisterEvent("GUILD_ROSTER_UPDATE")
-    eventFrameSI:RegisterEvent("PLAYER_XP_UPDATE")
-    eventFrameSI:RegisterEvent("VARIABLES_LOADED") -- Wichtig für CharacterDeaths
-
-    eventFrameSI:SetScript("OnEvent", function(selfFrame, event, ...)
-        -- Aktualisiert das Info-Fenster nur, wenn es existiert und sichtbar ist
-        if SchlingelInc and SchlingelInc.infoWindow and SchlingelInc.infoWindow:IsShown() then
-            local activeTabIndex = SchlingelInc.infoWindow.selectedTab or 1
-            local tabToUpdate = SchlingelInc.infoWindow.tabContentFrames and
-                SchlingelInc.infoWindow.tabContentFrames[activeTabIndex]
-
-            if tabToUpdate and tabToUpdate:IsShown() and tabToUpdate.Update then
-                tabToUpdate:Update(tabToUpdate) -- Ruft die Update-Funktion des aktiven Tabs auf
-            end
-        end
-    end)
-end
--- Ruft die Funktion auf, um die Events zu registrieren, sobald die Datei geladen wird
-RegisterSchlingelInterfaceEvents()
