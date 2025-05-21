@@ -1,5 +1,8 @@
 # 2.1.7
 - Group Check now ignores online status
+- Reduced performance impact
+- Correct article for different genders
+- Removed Level up announcement for 45 and 55
 
 # 2.1.6
 - Fixing Guild Invites. Cleaning up Offi Interface
