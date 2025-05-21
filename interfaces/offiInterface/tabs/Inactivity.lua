@@ -56,6 +56,7 @@ function SchlingelInc.Tabs.Inactivity:CreateUI(parentFrame)
 
     self.inactiveListUIElements = {} -- Tabelle zum Speichern der UI-Elemente für die Liste im Modul.
     self.Frame = tabFrame -- Referenz auf den Tab-Frame im Modul speichern.
+    SchlingelInc.Tabs.Inactivity:UpdateData()
     return tabFrame
 end
 
@@ -206,16 +207,3 @@ function SchlingelInc.Tabs.Inactivity:UpdateData()
 
     scrollFrame:SetVerticalScroll(0) -- Scrollt nach ganz oben.
 end
-
--- Event-Handler: Gildenliste aktualisiert
--- Ruft die UpdateData Funktion dieses Moduls auf
-local InactivityEventsFrame = CreateFrame("Frame")
-InactivityEventsFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-InactivityEventsFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "GUILD_ROSTER_UPDATE" then
-        -- Rufe die UpdateData Funktion des Inactivity Moduls auf
-        if SchlingelInc.Tabs.Inactivity and SchlingelInc.Tabs.Inactivity.UpdateData then
-            SchlingelInc.Tabs.Inactivity:UpdateData()
-        end
-    end
-end)
