@@ -120,7 +120,7 @@ function SchlingelInc.Tabs.Stats:UpdateData()
         {minLevel=21, maxLevel=30, count=0, label="21-30"},
         {minLevel=31, maxLevel=40, count=0, label="31-40"},
         {minLevel=41, maxLevel=50, count=0, label="41-50"},
-        {minLevel=51, maxLevel=59, count=0, label="51-59"}
+        {minLevel=51, maxLevel=59, count=0, label="51-59"},
         {minLevel=60, maxLevel=60, count=0, label="60"}
     }
     local rankDistribution = {} -- Verteilung der Ränge.
