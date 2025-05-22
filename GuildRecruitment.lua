@@ -32,15 +32,22 @@ function SchlingelInc.GuildRecruitment:GetPendingRequests()
 end
 
 function SchlingelInc.GuildRecruitment:SendGuildRequest()
-    local playerName = UnitName("player")
-    local playerLevel = UnitLevel("player")
-    local playerExp = UnitXP("player")
+    -- Abruchbedingungen bevor irgendwelche Daten gefetched werden.
+    if IsInGuild() then
+        SchlingelInc:Print("Du bist bereits in einer Gilde!")
+        return
+    end
 
+    -- Player bezogene Daten erfassen.
+    local playerName = UnitName("player")
+    -- PlayerLevel wird hier erst gefetched, deshalb muss der Check erst später passieren.
+    local playerLevel = UnitLevel("player")
     if playerLevel > 1 then
         SchlingelInc:Print("Du darfst nur mit Level 1 eine Gildenanfrage senden.")
         return
     end
 
+    local playerExp = UnitXP("player")
     local zone = SchlingelInc.GuildRecruitment:GetPlayerZone()
     local playerGold = GetMoneyString(GetMoney(), true)
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
