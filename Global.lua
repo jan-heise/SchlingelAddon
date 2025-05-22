@@ -142,7 +142,7 @@ end)
 
 function SchlingelInc:ParseVersion(v)
     local major, minor, patch, channel = string.match(v, "(%d+)%.(%d+)%.?(%d*)%-?(%w*)")
-    return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0), tostring(channel or nil)
+    return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0), tostring(channel or "stable")
 end
 
 -- Überprüft die Addon-Versionen anderer Spieler in der Gilde.
@@ -170,7 +170,7 @@ function SchlingelInc:CheckAddonVersion()
 
     -- Wenn der Spieler in einer Gilde ist, sendet er seine eigene Version an die Gilde.
     local major, minor, patch, channel = SchlingelInc:ParseVersion(SchlingelInc.version)
-    if IsInGuild() and channel == nil then
+    if IsInGuild() and channel == "stable"" then
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
 end
