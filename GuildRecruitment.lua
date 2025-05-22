@@ -4,30 +4,29 @@ SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inv
 
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
 
-local guildOfficers =
-{
-    "Kurtibrown",
-    "Schlingbank",
-    "Schlinglbank",
-    "Dörtchen",
-    "Schmurt",
-    "Siegdörty",
-    "Syluri",
-    "Totanka",
-    "Syltank",
-    "Heilkrampf",
-    "Fenriic",
-    "Totärztin",
-    "Totemtanz",
-    "Bärmuut",
-    "Mortblanche",
-    "Pfarrer",
-    "Luminette",
-    "Cricksumage",
-    "Devschlingel",
-    "Pudidev"
+-- Verwende eine Lookup/Table, da diese die for-Schleife für die Invite Message stark optimiert. siehe Zeile 52
+local guildOfficers = {
+    ["Kurtibrown"] = true,
+    ["Schlingbank"] = true,
+    ["Schlinglbank"] = true,
+    ["Dörtchen"] = true,
+    ["Schmurt"] = true,
+    ["Siegdörty"] = true,
+    ["Syluri"] = true,
+    ["Totanka"] = true,
+    ["Syltank"] = true,
+    ["Heilkrampf"] = true,
+    ["Fenriic"] = true,
+    ["Totärztin"] = true,
+    ["Totemtanz"] = true,
+    ["Bärmuut"] = true,
+    ["Mortblanche"] = true,
+    ["Pfarrer"] = true,
+    ["Luminette"] = true,
+    ["Cricksumage"] = true,
+    ["Devschlingel"] = true,
+    ["Pudidev"] = true,
 }
-
 function SchlingelInc.GuildRecruitment:GetPendingRequests()
     return inviteRequests
 end
@@ -47,8 +46,13 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
     -- Sendet die Anfrage an alle Officer.
-    for _, name in ipairs(guildOfficers) do
-        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", name)
+    for i = 1, GetNumGuildMembers() do
+        local fullName, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+        local shortName = SchlingelInc:RemoveRealmFromName(fullName)
+        -- Dieser Vergleich ist O(1), da nicht jedes Element der Liste durchiteriert wird.
+        if guildOfficers[shortName] and online then
+            C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", shortName)
+        end
     end
 end
 
