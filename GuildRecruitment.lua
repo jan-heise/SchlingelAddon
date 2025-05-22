@@ -4,7 +4,7 @@ SchlingelInc.GuildRecruitment.inviteRequests = SchlingelInc.GuildRecruitment.inv
 
 local inviteRequests = SchlingelInc.GuildRecruitment.inviteRequests
 
--- Verwende eine Lookup/Table, da diese die for-Schleife für die Invite Message stark optimiert. siehe Zeile 52
+-- Verwende eine Lookup/Table, da diese die for-Schleife für die Invite Message stark optimiert.
 local guildOfficers = {
     ["Kurtibrown"] = true,
     ["Schlingbank"] = true,
