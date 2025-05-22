@@ -170,7 +170,7 @@ function SchlingelInc:CheckAddonVersion()
 
     -- Wenn der Spieler in einer Gilde ist, sendet er seine eigene Version an die Gilde.
     local major, minor, patch, channel = SchlingelInc:ParseVersion(SchlingelInc.version)
-    if IsInGuild() and channel == "stable"" then
+    if IsInGuild() and channel == "stable" then
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
 end
