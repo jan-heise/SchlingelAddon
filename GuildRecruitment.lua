@@ -44,7 +44,8 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
     local zone = SchlingelInc.GuildRecruitment:GetPlayerZone()
     local playerGold = GetMoneyString(GetMoney(), true)
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
-
+    -- Counter um Nachzuvollziehen, wieviele InviteRequests versendet wurden.
+    local sentCount = 0
     -- Sendet die Anfrage an alle Officer.
     for i = 1, GetNumGuildMembers() do
         local fullName, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
@@ -52,7 +53,12 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
         -- Dieser Vergleich ist O(1), da nicht jedes Element der Liste durchiteriert wird.
         if guildOfficers[shortName] and online then
             C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", shortName)
+            sentCount = sentCount + 1
         end
+    end
+
+    if sentCount == 0 then
+        SchlingelInc:Print("Aktuell ist kein Offizier online. Versuch es später erneut oder melde dich auf dem Discord.")
     end
 end
 
