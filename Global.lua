@@ -140,6 +140,11 @@ pvpFrame:SetScript("OnEvent", function()
     end
 end)
 
+function SchlingelInc:ParseVersion(v)
+    local major, minor, patch, channel = string.match(v, "(%d+)%.(%d+)%.?(%d*)%-?(%w*)")
+    return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0), tostring(channel or "stable")
+end
+
 -- Überprüft die Addon-Versionen anderer Spieler in der Gilde.
 function SchlingelInc:CheckAddonVersion()
     local highestSeenVersion = SchlingelInc
@@ -164,7 +169,8 @@ function SchlingelInc:CheckAddonVersion()
     end)
 
     -- Wenn der Spieler in einer Gilde ist, sendet er seine eigene Version an die Gilde.
-    if IsInGuild() then
+    local major, minor, patch, channel = SchlingelInc:ParseVersion(SchlingelInc.version)
+    if IsInGuild() and channel == "stable" then
         C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, "VERSION:" .. SchlingelInc.version, "GUILD")
     end
 end
@@ -173,12 +179,8 @@ end
 -- Gibt >0 zurück, wenn v1 > v2; <0 wenn v1 < v2; 0 wenn v1 == v2.
 function SchlingelInc:CompareVersions(v1, v2)
     -- Hilfsfunktion, um einen Versionsstring in Major, Minor, Patch Zahlen zu zerlegen.
-    local function parse(v)
-        local major, minor, patch = string.match(v, "(%d+)%.(%d+)%.?(%d*)")
-        return tonumber(major or 0), tonumber(minor or 0), tonumber(patch or 0)
-    end
-    local a1, a2, a3 = parse(v1)        -- Parsed v1.
-    local b1, b2, b3 = parse(v2)        -- Parsed v2.
+    local a1, a2, a3, channel = SchlingelInc:ParseVersion(v1) -- Parsed v1.
+    local b1, b2, b3, channel = SchlingelInc:ParseVersion(v2) -- Parsed v2.
 
     if a1 ~= b1 then return a1 - b1 end -- Vergleiche Major-Version.
     if a2 ~= b2 then return a2 - b2 end -- Vergleiche Minor-Version.
