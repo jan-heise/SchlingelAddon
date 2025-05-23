@@ -3,7 +3,7 @@
 ## Notes: Visit DerHauges Discord for more information: https://discord.gg/KXkyUZW
 ## Author: Cricksu, Pudi, Canasterzaster
 ## Version: 2.1.7
-## SavedVariablesPerCharacter: CharacterDeaths
+## SavedVariablesPerCharacter: CharacterDeaths, SchlingelOptionsDB
 
 # Notwendiges externe Abhängigkeiten aus dem Lib Folder
 ## OptionalDeps: LibStub, LibDataBroker-1.1, LibDBIcon-1.0
@@ -13,6 +13,7 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 # Unsere lua files.
 Global.lua
+Options.lua
 Rules.lua
 GuildRecruitment.lua
 LevelUp.lua
