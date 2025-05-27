@@ -386,6 +386,102 @@ function SchlingelInc:_CreateCommunityTabContent_SchlingelInterface(parentFrame)
     return tabFrame
 end
 
+-- Tab 4: Todeslog (mit ScrollFrame)
+function SchlingelInc:_CreateDeathlogTabContent_SchlingelInterface(parentFrame)
+    local tabFrame = CreateFrame("Frame", ADDON_NAME .. "DeathlogTab", parentFrame)
+    tabFrame:SetAllPoints(true)
+
+    local headerFont = FONT_NORMAL
+    local contentFont = FONT_SMALL
+    local leftPadding, topPadding = 10, -10
+    local rowHeight = 18
+    local visibleRows = 10
+    local headers = { "Name", "Klasse", "Level", "Zone", "Todesursache" }
+    local columnWidths = { 120, 80, 40, 110, 180 }
+
+    -- Überschriften
+    for i, text in ipairs(headers) do
+        local xOffset = leftPadding
+        for j = 1, i - 1 do
+            xOffset = xOffset + columnWidths[j] + 10
+        end
+        SchlingelInc.UIHelpers:CreateStyledText(tabFrame, text, headerFont, "TOPLEFT", tabFrame, "TOPLEFT", xOffset,
+            topPadding)
+    end
+
+    -- ScrollFrame + ContentFrame
+    local scrollFrame = CreateFrame("ScrollFrame", ADDON_NAME .. "DeathlogScrollFrame", tabFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", tabFrame, "TOPLEFT", leftPadding, topPadding - 20)
+    scrollFrame:SetPoint("BOTTOMRIGHT", tabFrame, "BOTTOMRIGHT", -30, 20)
+
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetSize(1, 1)
+    scrollFrame:SetScrollChild(content)
+
+    tabFrame.rows = {}
+
+    for i = 1, 100 do
+        local row = {}
+        local yOffset = -((i - 1) * rowHeight)
+        local xOffset = leftPadding
+
+        for j = 1, #headers do
+            local cell = SchlingelInc.UIHelpers:CreateStyledText(content, "", contentFont, "TOPLEFT", content, "TOPLEFT",
+                xOffset, yOffset)
+            table.insert(row, cell)
+            xOffset = xOffset + columnWidths[j] + 10
+        end
+        table.insert(tabFrame.rows, row)
+    end
+
+    -- Update-Funktion
+    tabFrame.Update = function(selfTab)
+        local data = SchlingelInc.DeathLogData or {}
+
+        -- Lokalisierter Name -> Token-Mapping vorbereiten (z. B. "Hexenmeister" → "WARLOCK")
+        local localizedToToken = {}
+        for token, name in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+            localizedToToken[name] = token
+        end
+        for token, name in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
+            localizedToToken[name] = token -- sicherstellen, dass auch weibliche Namen korrekt erkannt werden
+        end
+
+        for i, row in ipairs(selfTab.rows) do
+            local entry = data[i]
+            if entry then
+                row[1]:SetText(entry.name)
+                -- Klassenfarbe
+                local classToken = localizedToToken[entry.class]
+                local color = classToken and RAID_CLASS_COLORS[classToken]
+
+                if color then
+                    row[2]:SetText(string.format("|cff%02x%02x%02x%s|r", color.r * 255, color.g * 255, color.b * 255, entry.class))
+                else
+                    row[2]:SetText(entry.class)
+                end
+
+                row[3]:SetText(tostring(entry.level))
+                row[4]:SetText(entry.zone)
+                row[5]:SetText(entry.cause or "Unbekannt")
+                for _, cell in ipairs(row) do cell:Show() end
+            else
+                for _, cell in ipairs(row) do
+                    cell:SetText("")
+                    cell:Hide()
+                end
+            end
+        end
+
+        -- Höhe dynamisch anpassen
+        content:SetHeight(math.max(#data * rowHeight, visibleRows * rowHeight))
+    end
+
+    return tabFrame
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Hauptfunktion zur Erstellung des SchlingelInterface-Fensters
 --------------------------------------------------------------------------------
@@ -451,7 +547,8 @@ function SchlingelInc:CreateInfoWindow()
     local tabDefinitions = {
         { name = "Charakter", CreateFunc = self._CreateCharacterTabContent_SchlingelInterface },
         { name = "Info",      CreateFunc = self._CreateInfoTabContent_SchlingelInterface },
-        { name = "Community", CreateFunc = self._CreateCommunityTabContent_SchlingelInterface }
+        { name = "Community", CreateFunc = self._CreateCommunityTabContent_SchlingelInterface },
+        { name = "Todeslog", CreateFunc = self._CreateDeathlogTabContent_SchlingelInterface }
     }
 
     -- Erstellt die Tab-Buttons und die zugehörigen Inhaltsframes
