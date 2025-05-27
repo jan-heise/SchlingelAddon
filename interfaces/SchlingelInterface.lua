@@ -394,7 +394,7 @@ function SchlingelInc:_CreateDeathlogTabContent_SchlingelInterface(parentFrame)
     local headerFont = FONT_NORMAL
     local contentFont = FONT_SMALL
     local leftPadding, topPadding = 10, -10
-    local rowHeight = 18
+    local rowHeight = 20
     local visibleRows = 10
     local headers = { "Name", "Klasse", "Level", "Zone", "Todesursache" }
     local columnWidths = { 120, 80, 40, 110, 180 }
@@ -411,7 +411,7 @@ function SchlingelInc:_CreateDeathlogTabContent_SchlingelInterface(parentFrame)
 
     -- ScrollFrame + ContentFrame
     local scrollFrame = CreateFrame("ScrollFrame", ADDON_NAME .. "DeathlogScrollFrame", tabFrame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", tabFrame, "TOPLEFT", leftPadding, topPadding - 20)
+    scrollFrame:SetPoint("TOPLEFT", tabFrame, "TOPLEFT", leftPadding, topPadding - 30)
     scrollFrame:SetPoint("BOTTOMRIGHT", tabFrame, "BOTTOMRIGHT", -30, 20)
 
     local content = CreateFrame("Frame", nil, scrollFrame)
@@ -423,7 +423,7 @@ function SchlingelInc:_CreateDeathlogTabContent_SchlingelInterface(parentFrame)
     for i = 1, 100 do
         local row = {}
         local yOffset = -((i - 1) * rowHeight)
-        local xOffset = leftPadding
+        local xOffset = 0
 
         for j = 1, #headers do
             local cell = SchlingelInc.UIHelpers:CreateStyledText(content, "", contentFont, "TOPLEFT", content, "TOPLEFT",
@@ -479,8 +479,6 @@ function SchlingelInc:_CreateDeathlogTabContent_SchlingelInterface(parentFrame)
 
     return tabFrame
 end
-
-
 
 --------------------------------------------------------------------------------
 -- Hauptfunktion zur Erstellung des SchlingelInterface-Fensters
