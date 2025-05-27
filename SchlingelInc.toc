@@ -16,7 +16,7 @@ Global.lua
 Rules.lua
 GuildRecruitment.lua
 LevelUp.lua
-Death.lua
+interfaces\DeathAnnouncement.lua
 interfaces\UIHelpers.lua
 interfaces\offiInterface\tabs\GuildInfo.lua
 interfaces\offiInterface\tabs\Recruitment.lua
@@ -25,4 +25,5 @@ interfaces\offiInterface\tabs\Inactivity.lua
 interfaces\offiInterface\OffiInterface.lua
 interfaces\SchlingelInterface.lua
 interfaces\PvPFrame.lua
+Death.lua
 Main.lua
