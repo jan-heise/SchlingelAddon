@@ -135,20 +135,47 @@ CombatLogFrame:SetScript("OnEvent", function()
 end)
 
 -- Frame für die zentrale Bildschirmnachricht
-local DeathMessageFrame = CreateFrame("Frame", "DeathMessageFrame", UIParent)
-DeathMessageFrame:SetSize(400, 100)                              -- Breite und Höhe des Frames
-DeathMessageFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 400) -- Position in der Mitte des Bildschirms
-DeathMessageFrame:Hide()                                         -- Standardmäßig versteckt
+local DeathMessageFrame = CreateFrame("Frame", "DeathMessageFrame", UIParent, "BackdropTemplate")
+DeathMessageFrame:SetSize(400, 150)
+DeathMessageFrame:SetPoint("CENTER", UIParent, "TOP", 0, -200)
+DeathMessageFrame:SetFrameStrata("FULLSCREEN_DIALOG")  -- sehr hohe Schicht
+DeathMessageFrame:SetFrameLevel(1000)                  -- sehr hoher Level innerhalb der Schicht
+DeathMessageFrame:Hide()
+DeathMessageFrame:SetAlpha(1)
 
--- Hintergrund und Text
--- DeathMessageFrame.bg = DeathMessageFrame:CreateTexture(nil, "BACKGROUND")
--- DeathMessageFrame.bg:SetAllPoints(true)
--- DeathMessageFrame.bg:SetColorTexture(0, 0, 0, 0.5) -- Halbtransparenter schwarzer Hintergrund
+-- Moderner Tooltip-Style-Hintergrund
+DeathMessageFrame:SetBackdrop({
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true, tileSize = 16, edgeSize = 16,
+	insets = { left = 4, right = 4, top = 4, bottom = 4 }
+})
+DeathMessageFrame:SetBackdropColor(0, 0, 0, 0.85)
 
-DeathMessageFrame.text = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightHuge")
-DeathMessageFrame.text:SetPoint("CENTER", DeathMessageFrame, "CENTER")
-DeathMessageFrame.text:SetTextColor(1, 1, 1, 1) -- Weiße Schrift
-DeathMessageFrame.text:SetText("")              -- Standardmäßig leer
+-- Icon oben zentriert
+local icon = DeathMessageFrame:CreateTexture(nil, "ARTWORK")
+icon:SetSize(48, 48)
+icon:SetPoint("TOP", DeathMessageFrame, "TOP", 0, -12)
+icon:SetTexture("Interface\\Icons\\Ability_Rogue_FeignDeath")
+
+-- Header "Schande!" zentriert unter dem Icon
+local header = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+header:SetPoint("TOP", icon, "BOTTOM", 0, -8)
+header:SetText("Schande!")
+header:SetTextColor(1, 0.2, 0.2, 1)
+header:SetShadowColor(0, 0, 0, 1)
+header:SetShadowOffset(1, -1)
+
+-- Nachricht unter dem Header, zentriert, volle Breite
+DeathMessageFrame.text = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+DeathMessageFrame.text:SetPoint("TOP", header, "BOTTOM", 0, -8)
+DeathMessageFrame.text:SetWidth(360)
+DeathMessageFrame.text:SetJustifyH("CENTER")
+DeathMessageFrame.text:SetJustifyV("TOP")
+DeathMessageFrame.text:SetTextColor(1, 0.1, 0.1, 1)
+DeathMessageFrame.text:SetShadowColor(0, 0, 0, 1)
+DeathMessageFrame.text:SetShadowOffset(1, -1)
+DeathMessageFrame.text:SetText("")
 
 -- Funktion zum Anzeigen der Nachricht
 local function ShowDeathMessage(message)
@@ -159,8 +186,8 @@ local function ShowDeathMessage(message)
 	PlaySound(8192) -- Horde-Flagge zurückgebracht
 
 	-- Nachricht nach 5 Sekunden ausblenden
-	C_Timer.After(5, function()
-		DeathMessageFrame:Hide()
+	C_Timer.After(3, function()
+		UIFrameFadeOut(DeathMessageFrame, 1, 1, 0) -- Dauer, StartAlpha, EndAlpha
 	end)
 end
 
