@@ -16,7 +16,7 @@ DeathMessageFrame:SetBackdrop({
 	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 4, right = 4, top = 4, bottom = 4 }
 })
-DeathMessageFrame:SetBackdropColor(0, 0, 0, 0.85)
+DeathMessageFrame:SetBackdropColor(0, 0, 0, 1)
 
 -- Icon oben zentriert
 local icon = DeathMessageFrame:CreateTexture(nil, "ARTWORK")
