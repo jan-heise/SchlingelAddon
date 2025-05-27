@@ -43,16 +43,20 @@ DeathMessageFrame.text:SetShadowColor(0, 0, 0, 1)
 DeathMessageFrame.text:SetShadowOffset(1, -1)
 DeathMessageFrame.text:SetText("")
 
--- Funktion zum Anzeigen der Nachricht
 function SchlingelInc.DeathAnnouncement:ShowDeathMessage(message)
-	DeathMessageFrame.text:SetText(message)
-	DeathMessageFrame:Show()
+    DeathMessageFrame.text:SetText(message)
 
+    -- Sofort volle Sichtbarkeit & Frame zeigen
+    DeathMessageFrame:SetAlpha(1)
+    DeathMessageFrame:Show()
 
-	PlaySound(8192) -- Horde-Flagge zurückgebracht
-
-	-- Nachricht nach 5 Sekunden ausblenden
-	C_Timer.After(3, function()
-		UIFrameFadeOut(DeathMessageFrame, 1, 1, 0) -- Dauer, StartAlpha, EndAlpha
-	end)
+    -- Sound abspielen
+    PlaySound(8192) -- Horde-Flagge zurückgebracht
+    -- Nachricht nach 3 Sekunden ausblenden mit Fade-Out
+    C_Timer.After(3, function()
+        UIFrameFadeOut(DeathMessageFrame, 1, 1, 0) --Dauer, StartAlpha, EndAlpha
+        C_Timer.After(1, function()
+            DeathMessageFrame:Hide()
+        end)
+    end)
 end
