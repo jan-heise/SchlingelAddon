@@ -138,7 +138,7 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 	if (event == "CHAT_MSG_ADDON" and prefix == SchlingelInc.prefix and msg:find("SCHLINGEL_DEATH")) then
 		local name, class, level, zone = msg:match("^SCHLINGEL_DEATH:([^:]+):([^:]+):([^:]+):([^:]+)$")
 		if name and class and level and zone then
-			local messageFormat = "%s der %s ist mit Level %s in %s gestorben. Schande!"
+			local messageFormat = "%s der %s ist mit Level %s in %s gestorben."
 			local messageString = messageFormat:format(name, class, level, zone)
 			-- Zeige die Nachricht im zentralen Frame an
 			SchlingelInc.DeathAnnouncement:ShowDeathMessage(messageString)
