@@ -98,6 +98,18 @@ function SchlingelInc:UpdateMiniDeathLog()
     frame:Show()
 end
 
+-- Funktion zum Anzeigen/Verstecken des Info-Fensters
+function SchlingelInc:ToggleDeathLogWindow()
+    if not self.MiniDeathLogFrame then
+        self:CreateMiniDeathLog() -- Erstellt das Fenster, falls es noch nicht existiert
+        self:UpdateMiniDeathLog()
+    elseif self.MiniDeathLogFrame:IsShown() then
+        self.MiniDeathLogFrame:Hide()
+    else
+        self:UpdateMiniDeathLog()
+    end
+end
+
 function SchlingelInc:ShowStandaloneDeathLog()
     if self.StandaloneDeathLogFrame then
         self.StandaloneDeathLogFrame:Show()
