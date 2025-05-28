@@ -145,3 +145,9 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 		end
 	end
 end)
+
+-- -- Slash-Befehl definieren zu Deugzwecken
+-- SLASH_DEATHFRAME1 = '/deathframe'
+-- SlashCmdList["DEATHFRAME"] = function()
+-- 	SchlingelInc.DeathAnnouncement:ShowDeathMessage("Pudidev ist mit Level 100 in Mordor gestorben!")
+-- end
