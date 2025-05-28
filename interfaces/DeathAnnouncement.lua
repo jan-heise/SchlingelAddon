@@ -1,62 +1,79 @@
 SchlingelInc.DeathAnnouncement = {}
 
--- Frame für die zentrale Bildschirmnachricht
+-- Frame für die Nachricht unten rechts
 local DeathMessageFrame = CreateFrame("Frame", "DeathMessageFrame", UIParent, "BackdropTemplate")
-DeathMessageFrame:SetSize(400, 150)
-DeathMessageFrame:SetPoint("CENTER", UIParent, "TOP", 0, -200)
-DeathMessageFrame:SetFrameStrata("FULLSCREEN_DIALOG")  -- sehr hohe Schicht
-DeathMessageFrame:SetFrameLevel(1000)                  -- sehr hoher Level innerhalb der Schicht
+DeathMessageFrame:SetSize(300, 75)
+DeathMessageFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -50, 100)
+DeathMessageFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+DeathMessageFrame:SetFrameLevel(1000)
 DeathMessageFrame:Hide()
-DeathMessageFrame:SetAlpha(1)
+DeathMessageFrame:SetAlpha(0)
 
--- Moderner Tooltip-Style-Hintergrund
+-- Hintergrund
 DeathMessageFrame:SetBackdrop({
 	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 4, right = 4, top = 4, bottom = 4 }
 })
-DeathMessageFrame:SetBackdropColor(0, 0, 0, 1)
+DeathMessageFrame:SetBackdropColor(0, 0, 0, 0.8)
 
--- Icon oben zentriert
+-- Icon
 local icon = DeathMessageFrame:CreateTexture(nil, "ARTWORK")
-icon:SetSize(48, 48)
-icon:SetPoint("TOP", DeathMessageFrame, "TOP", 0, -12)
+icon:SetSize(32, 32)
+icon:SetPoint("TOPLEFT", DeathMessageFrame, "TOPLEFT", 10, -10)
 icon:SetTexture("Interface\\Icons\\Ability_Rogue_FeignDeath")
 
--- Header "Schande!" zentriert unter dem Icon
-local header = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-header:SetPoint("TOP", icon, "BOTTOM", 0, -8)
+-- Header
+local header = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+header:SetPoint("TOPLEFT", icon, "TOPRIGHT", 10, -2)
 header:SetText("Schande!")
 header:SetTextColor(1, 0.2, 0.2, 1)
-header:SetShadowColor(0, 0, 0, 1)
-header:SetShadowOffset(1, -1)
 
--- Nachricht unter dem Header, zentriert, volle Breite
-DeathMessageFrame.text = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-DeathMessageFrame.text:SetPoint("TOP", header, "BOTTOM", 0, -8)
-DeathMessageFrame.text:SetWidth(360)
-DeathMessageFrame.text:SetJustifyH("CENTER")
+-- Text
+DeathMessageFrame.text = DeathMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+DeathMessageFrame.text:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)
+DeathMessageFrame.text:SetPoint("RIGHT", DeathMessageFrame, -10, 0)
+DeathMessageFrame.text:SetJustifyH("LEFT")
 DeathMessageFrame.text:SetJustifyV("TOP")
 DeathMessageFrame.text:SetTextColor(1, 0.1, 0.1, 1)
 DeathMessageFrame.text:SetShadowColor(0, 0, 0, 1)
 DeathMessageFrame.text:SetShadowOffset(1, -1)
 DeathMessageFrame.text:SetText("")
 
+-- Animation vorbereiten
+local animGroup = DeathMessageFrame:CreateAnimationGroup()
+local moveUp = animGroup:CreateAnimation("Translation")
+moveUp:SetDuration(0.6)
+moveUp:SetOffset(0, 50)
+moveUp:SetSmoothing("OUT")
+
+local fadeIn = animGroup:CreateAnimation("Alpha")
+fadeIn:SetDuration(0.3)
+fadeIn:SetFromAlpha(0)
+fadeIn:SetToAlpha(1)
+fadeIn:SetSmoothing("IN")
+
+local fadeOut = animGroup:CreateAnimation("Alpha")
+fadeOut:SetStartDelay(3)
+fadeOut:SetDuration(1)
+fadeOut:SetFromAlpha(1)
+fadeOut:SetToAlpha(0)
+fadeOut:SetSmoothing("OUT")
+
+-- Nach Animation Frame verstecken
+animGroup:SetScript("OnFinished", function()
+    DeathMessageFrame:Hide()
+end)
+
+-- Nachricht anzeigen
 function SchlingelInc.DeathAnnouncement:ShowDeathMessage(message)
     DeathMessageFrame.text:SetText(message)
-
-    -- Sofort volle Sichtbarkeit & Frame zeigen
-    DeathMessageFrame:SetAlpha(1)
+    DeathMessageFrame:SetAlpha(0)
+    DeathMessageFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -50, 100)
     DeathMessageFrame:Show()
+    animGroup:Stop()
+    animGroup:Play()
 
-    -- Sound abspielen
     PlaySound(8192) -- Horde-Flagge zurückgebracht
-    -- Nachricht nach 3 Sekunden ausblenden mit Fade-Out
-    C_Timer.After(3, function()
-        UIFrameFadeOut(DeathMessageFrame, 1, 1, 0) --Dauer, StartAlpha, EndAlpha
-        C_Timer.After(1, function()
-            DeathMessageFrame:Hide()
-        end)
-    end)
 end

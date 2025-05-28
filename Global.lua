@@ -286,8 +286,13 @@ if LDB then                                                                -- F�
         icon = "Interface\\AddOns\\SchlingelInc\\media\\icon-minimap.tga", -- Pfad zum Icon.
         OnClick = function(clickedFrame, button)
             if button == "LeftButton" then
+                if IsShiftKeyDown() then
+                    SchlingelInc:ToggleDeathLogWindow()
+                    return
+                end
                 if SchlingelInc.ToggleInfoWindow then
                     SchlingelInc:ToggleInfoWindow()
+                    return
                 else
                     SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.")
                 end
@@ -310,6 +315,7 @@ if LDB then                                                                -- F�
             GameTooltip:AddLine(SchlingelInc.name, 1, 0.7, 0.9)                                -- Addon-Name im Tooltip.
             GameTooltip:AddLine("Version: " .. (SchlingelInc.version or "Unbekannt"), 1, 1, 1) -- Version im Tooltip.
             GameTooltip:AddLine("Linksklick: Info anzeigen", 1, 1, 1)                          -- Hinweis für Linksklick.
+            GameTooltip:AddLine("Shift + Linksklick: Deathlog", 1, 1, 1)                       -- Hinweis für Shift + Linksklick.
             if CanGuildInvite() then
                 GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8)                -- Hinweis für Rechtsklick.
             end
