@@ -153,7 +153,6 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 			zone = zone,
 			cause = cause
 			})
-			SchlingelInc:UpdateMiniDeathLog()
 		end
 	end
 end)
