@@ -12,6 +12,9 @@ function SchlingelInc:OnLoad()
 
     -- Initialisiert die Minimap-Icon-Funktionalität.
     SchlingelInc:InitMinimapIcon()
+    SchlingelInc:CreateMiniDeathLog()
+    SchlingelInc:UpdateMiniDeathLog()
+
 
     -- Gibt eine Bestätigungsnachricht aus, dass das Addon geladen wurde, inklusive Version.
     SchlingelInc:Print("Addon version " .. SchlingelInc.version .. " geladen")
