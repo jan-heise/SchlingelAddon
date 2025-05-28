@@ -95,7 +95,6 @@ function SchlingelInc:UpdateMiniDeathLog()
             for _, cell in ipairs(row) do cell:SetText(""); cell:Hide() end
         end
     end
-    frame:Show()
 end
 
 -- Funktion zum Anzeigen/Verstecken des Info-Fensters
@@ -103,10 +102,12 @@ function SchlingelInc:ToggleDeathLogWindow()
     if not self.MiniDeathLogFrame then
         self:CreateMiniDeathLog() -- Erstellt das Fenster, falls es noch nicht existiert
         self:UpdateMiniDeathLog()
+        self.MiniDeathLogFrame:Show()
     elseif self.MiniDeathLogFrame:IsShown() then
         self.MiniDeathLogFrame:Hide()
     else
         self:UpdateMiniDeathLog()
+        self.MiniDeathLogFrame:Show()
     end
 end
 
