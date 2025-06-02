@@ -1,83 +1,61 @@
-local SchlingelInc = ...
+SchlingelOptions = {}
+local defaultSettings = {
+    {
+        label = "PVP Warnung",
+        description = "Aktiviert die PVP Warnung",
+        variable = "pvp_alert",
+        value = true,
+    },
+    {
+        label = "PVP Warnung Ton",
+        description = "Aktiviert den Ton für die PVP Warnung",
+        variable = "pvp_alert_sound",
+        value = true,
+    },
+    {
+        label = "Todesmeldungen",
+        description = "Aktiviert die Todesmeldungen",
+        variable = "deathmessages",
+        value = true,
+    },
+    {
+        label = "Todesmeldungen Ton",
+        description = "Aktiviert den Ton für die Todesmeldungen",
+        variable = "deathmessages_sound",
+        value = true,
+    },
+    {
+        label = "Todeslog",
+        description = "Aktiviert den Todeslog",
+        variable = "deathlog",
+        value = false,
+    },
+}
 
--- Frame für das Optionsmenü erstellen
-local panel = CreateFrame("Frame", "SchlingelIncOptionsPanel", InterfaceOptionsFramePanelContainer)
-panel.name = "Schlingel Inc"
+local category = Settings.RegisterVerticalLayoutCategory("Schlingel Inc")
 
--- Titel hinzufügen
-local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-title:SetPoint("TOPLEFT", 16, -16)
-title:SetText("Schlingel Inc Einstellungen")
+local function OnSettingChanged(setting, value)
+    -- This callback will be invoked whenever a setting is modified.
+    print("Setting changed:", setting:GetVariable(), value)
+end
 
--- Toggle PVP Warning
--- Checkbox hinzufügen
-local checkboxPvpWarning = CreateFrame("CheckButton", "SchlingelIncCheckbox", panel, "UICheckButtonTemplate")
-checkboxPvpWarning:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-checkboxPvpWarning.text = _G[checkboxPvpWarning:GetName() .. "PVP Warnung"]
-checkboxPvpWarning.text:SetText("Option aktivieren")
+for _, setting in ipairs(defaultSettings) do
+    local name = setting.label
+    local variable = "SchlingelOptionsDB_" .. setting.variable -- eindeutiger Variablenname!
+    local variableKey = setting.variable
+    local variableTbl = SchlingelOptions
+    local defaultValue = setting.value
 
--- Checkbox-Verhalten definieren
-checkboxPvpWarning:SetScript("OnClick", function(self)
-    local isChecked = self:GetChecked()
-    SchlingelOptionsDB = SchlingelOptionsDB or {}
-    SchlingelOptionsDB.pvpWarning = isChecked
-end)
+    -- Register the setting with the Settings API.
+    local settingObj = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue),
+        name,
+        defaultValue)
 
--- Toggle PVP Warning Sound
--- Checkbox hinzufügen
-local checkboxPvpWarningSound = CreateFrame("CheckButton", "SchlingelIncCheckbox", panel, "UICheckButtonTemplate")
-checkboxPvpWarningSound:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-checkboxPvpWarningSound.text = _G[checkboxPvpWarningSound:GetName() .. "PVP Warnung Ton"]
-checkboxPvpWarningSound.text:SetText("Option aktivieren")
+    -- Set a callback for when the setting changes.
+    settingObj:SetValueChangedCallback(OnSettingChanged)
 
--- Checkbox-Verhalten definieren
-checkboxPvpWarningSound:SetScript("OnClick", function(self)
-    local isChecked = self:GetChecked()
-    SchlingelOptionsDB = SchlingelOptionsDB or {}
-    SchlingelOptionsDB.pvpWarningSound = isChecked
-end)
+    -- Create a checkbox for the setting.
+    Settings.CreateCheckbox(category, settingObj, setting.description)
+end
 
--- Toggle Death Announcement
--- Checkbox hinzufügen
-local checkboxDeathAnnouncement = CreateFrame("CheckButton", "SchlingelIncCheckbox", panel, "UICheckButtonTemplate")
-checkboxDeathAnnouncement:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-checkboxDeathAnnouncement.text = _G[checkboxDeathAnnouncement:GetName() .. "PVP Warnung"]
-checkboxDeathAnnouncement.text:SetText("Option aktivieren")
-
--- Checkbox-Verhalten definieren
-checkboxDeathAnnouncement:SetScript("OnClick", function(self)
-    local isChecked = self:GetChecked()
-    SchlingelOptionsDB = SchlingelOptionsDB or {}
-    SchlingelOptionsDB.deathAnnouncement = isChecked
-end)
-
--- Toggle Death Announcement Sound
--- Checkbox hinzufügen
-local checkboxDeathAnnouncementSound = CreateFrame("CheckButton", "SchlingelIncCheckbox", panel, "UICheckButtonTemplate")
-checkboxDeathAnnouncementSound:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-checkboxDeathAnnouncementSound.text = _G[checkboxDeathAnnouncementSound:GetName() .. "PVP Warnung Ton"]
-checkboxDeathAnnouncementSound.text:SetText("Option aktivieren")
-
--- Checkbox-Verhalten definieren
-checkboxDeathAnnouncementSound:SetScript("OnClick", function(self)
-    local isChecked = self:GetChecked()
-    SchlingelOptionsDB = SchlingelOptionsDB or {}
-    SchlingelOptionsDB.deathAnnouncementSound = isChecked
-end)
-
--- Toggle Version print in chat
--- Checkbox hinzufügen
-local checkboxVersionPrint = CreateFrame("CheckButton", "SchlingelIncCheckbox", panel, "UICheckButtonTemplate")
-checkboxVersionPrint:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
-checkboxVersionPrint.text = _G[checkboxVersionPrint:GetName() .. "PVP Warnung Ton"]
-checkboxVersionPrint.text:SetText("Option aktivieren")
-
--- Checkbox-Verhalten definieren
-checkboxVersionPrint:SetScript("OnClick", function(self)
-    local isChecked = self:GetChecked()
-    SchlingelOptionsDB = SchlingelOptionsDB or {}
-    SchlingelOptionsDB.versionPrint = isChecked
-end)
-
--- Optionen in das Interface-Menü einfügen
-InterfaceOptions_AddCategory(panel)
+Settings.RegisterAddOnCategory(category)
