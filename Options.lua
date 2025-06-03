@@ -30,6 +30,12 @@ local defaultSettings = {
         variable = "deathlog",
         value = false,
     },
+    {
+        label = "Version anzeigen",
+        description = "Zeigt die Versionen der Spieler:innen im Gildenchat an",
+        variable = "show_version",
+        value = false,
+    },
 }
 
 local category = Settings.RegisterVerticalLayoutCategory("Schlingel Inc")
