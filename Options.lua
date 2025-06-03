@@ -1,43 +1,3 @@
-SchlingelOptionsDB = SchlingelOptionsDB or {}
-local defaultSettings = {
-    {
-        label = "PVP Warnung",
-        description = "Aktiviert die PVP Warnung",
-        variable = "pvp_alert",
-        value = true,
-    },
-    {
-        label = "PVP Warnung Ton",
-        description = "Aktiviert den Ton für die PVP Warnung",
-        variable = "pvp_alert_sound",
-        value = true,
-    },
-    {
-        label = "Todesmeldungen",
-        description = "Aktiviert die Todesmeldungen",
-        variable = "deathmessages",
-        value = true,
-    },
-    {
-        label = "Todesmeldungen Ton",
-        description = "Aktiviert den Ton für die Todesmeldungen",
-        variable = "deathmessages_sound",
-        value = true,
-    },
-    {
-        label = "Todeslog",
-        description = "Aktiviert den Todeslog",
-        variable = "deathlog",
-        value = false,
-    },
-    {
-        label = "Version anzeigen",
-        description = "Zeigt die Versionen der Spieler:innen im Gildenchat an",
-        variable = "show_version",
-        value = false,
-    },
-}
-
 local category = Settings.RegisterVerticalLayoutCategory("Schlingel Inc")
 
 local function OnSettingChanged(setting, value)
@@ -46,7 +6,7 @@ local function OnSettingChanged(setting, value)
     print("Setting changed:", key, value)
 end
 
-for _, setting in ipairs(defaultSettings) do
+for _, setting in ipairs(SchlingelOptionsDB) do
     local name = setting.label
     local variable = "SchlingelOptions_" .. setting.variable -- Eindeutiger Variablenname
     local variableKey = setting.variable
