@@ -1,3 +1,6 @@
+# 2.1.8
+- Death Announcement improvement and new Deathlog in basic interface Tab 
+
 # 2.1.7
 - Group Check now ignores online status
 - Reduced performance impact
