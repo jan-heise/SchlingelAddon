@@ -46,7 +46,7 @@ for _, setting in ipairs(defaultSettings) do
     local name = setting.label
     local variable = "SchlingelOptionsDB_" .. setting.variable -- eindeutiger Variablenname!
     local variableKey = setting.variable
-    local variableTbl = SchlingelOptions
+    local variableTbl = SchlingelOptionsDB
     local defaultValue = setting.value
 
     -- Register the setting with the Settings API.
