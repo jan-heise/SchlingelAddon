@@ -1,4 +1,5 @@
 SchlingelOptions = {}
+SchlingelOptionsDB = SchlingelOptionsDB or {}
 local defaultSettings = {
     {
         label = "PVP Warnung",
@@ -36,7 +37,9 @@ local category = Settings.RegisterVerticalLayoutCategory("Schlingel Inc")
 
 local function OnSettingChanged(setting, value)
     -- This callback will be invoked whenever a setting is modified.
-    print("Setting changed:", setting:GetVariable(), value)
+    local key = setting:GetVariable()
+    SchlingelOptionsDB[key] = value
+    print("Setting changed:", key, value)
 end
 
 for _, setting in ipairs(defaultSettings) do
