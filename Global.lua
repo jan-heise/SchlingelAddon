@@ -134,6 +134,10 @@ end)
 
 -- Event-Handler für den 'pvpFrame' (lauscht auf PLAYER_TARGET_CHANGED).
 pvpFrame:SetScript("OnEvent", function()
+    if SchlingelOptionsDB["pvp_alert"] == false then
+        --SchlingelInc:Print("Skip PvP Frame")
+        return
+    end
     -- Führt die PvP-Zielüberprüfung nur aus, wenn der Spieler NICHT in einem Schlachtfeld ist.
     if not SchlingelInc:IsInBattleground() then
         SchlingelInc:CheckTargetPvP()

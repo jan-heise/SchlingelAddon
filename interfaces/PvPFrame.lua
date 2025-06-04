@@ -6,7 +6,7 @@ function SchlingelInc:CheckTargetPvP()
 
     local targetFaction = UnitFactionGroup(unit) -- Fraktion des Ziels.
     -- Warnung bei feindlichen Allianz-NPCs, die PvP-markiert sind.
-    if targetFaction == "Alliance" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
+    if targetFaction == "Allianz" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
         local name = UnitName(unit) or "Unbekannt"
         SchlingelInc:ShowPvPWarning(name .. " (Allianz-NPC)")
         return
