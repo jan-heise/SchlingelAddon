@@ -68,6 +68,10 @@ end)
 
 -- Nachricht anzeigen
 function SchlingelInc.DeathAnnouncement:ShowDeathMessage(message)
+    if SchlingelOptionsDB["deathmessages"] == false then
+        --SchlingelInc:Print("Skip DeathAnnouncement")
+        return
+    end
     DeathMessageFrame.text:SetText(message)
     DeathMessageFrame:SetAlpha(0)
     DeathMessageFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -50, 100)
@@ -75,5 +79,9 @@ function SchlingelInc.DeathAnnouncement:ShowDeathMessage(message)
     animGroup:Stop()
     animGroup:Play()
 
-    PlaySound(8192) -- Horde-Flagge zurückgebracht
+    if SchlingelOptionsDB["deathmessages_sound"] == true then
+        PlaySound(8192) -- Horde-Flagge zurückgebracht
+    -- else
+    --     SchlingelInc:Print("Skip DeathSound")
+    end
 end

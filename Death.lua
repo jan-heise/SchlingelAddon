@@ -142,7 +142,6 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 			local messageString = messageFormat:format(name, class, level, zone)
 			-- Zeige die Nachricht im zentralen Frame an
 			SchlingelInc.DeathAnnouncement:ShowDeathMessage(messageString)
-			
 			-- Speichere den Tod im Log
 			SchlingelInc.DeathLogData = SchlingelInc.DeathLogData or {}
 			local cause = LastAttackSource or "Unbekannt"
@@ -158,17 +157,17 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 	end
 end)
 
--- -- Slash-Befehl definieren zu Deugzwecken
--- SLASH_DEATHFRAME1 = '/deathframe'
--- SlashCmdList["DEATHFRAME"] = function()
--- 	SchlingelInc.DeathAnnouncement:ShowDeathMessage("Pudidev ist mit Level 100 in Mordor gestorben!")
--- 			SchlingelInc.DeathLogData = SchlingelInc.DeathLogData or {}
--- 			table.insert(SchlingelInc.DeathLogData, {
--- 			name = "Pudidev",
--- 			class = "Krieger",
--- 			level = math.random(60),
--- 			zone = "Durotar",
--- 			cause = "Eber"
--- 			})
--- 			SchlingelInc:UpdateMiniDeathLog()
--- end
+-- Slash-Befehl definieren zu Deugzwecken
+SLASH_DEATHFRAME1 = '/deathframe'
+SlashCmdList["DEATHFRAME"] = function()
+	SchlingelInc.DeathAnnouncement:ShowDeathMessage("Pudidev ist mit Level 100 in Mordor gestorben!")
+			SchlingelInc.DeathLogData = SchlingelInc.DeathLogData or {}
+			table.insert(SchlingelInc.DeathLogData, {
+			name = "Pudidev",
+			class = "Krieger",
+			level = math.random(60),
+			zone = "Durotar",
+			cause = "Eber"
+			})
+			SchlingelInc:UpdateMiniDeathLog()
+end
