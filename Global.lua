@@ -231,7 +231,7 @@ guildChatFrame:RegisterEvent("CHAT_MSG_GUILD") -- Registriert das Event für Gil
 -- Fügt einen Filter für Gilden-Chat-Nachrichten hinzu.
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sender, ...)
     -- Funktion wird nur ausgeführt, wenn der Spieler Gildenmitglieder einladen darf (eine Art Berechtigungsprüfung).
-    if not CanGuildInvite() then
+    if SchlingelOptionsDB["show_version"] == false then
         return false, msg, sender, ... -- Nachricht unverändert durchlassen.
     end
 
