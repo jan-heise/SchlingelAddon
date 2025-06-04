@@ -1,46 +1,6 @@
 -- Globale Tabelle für das Addon
 SchlingelInc = {}
 
-SchlingelOptionsDB = SchlingelOptionsDB or
- {
-    {
-        label = "PVP Warnung",
-        description = "Aktiviert die PVP Warnung",
-        variable = "pvp_alert",
-        value = true,
-    },
-    {
-        label = "PVP Warnung Ton",
-        description = "Aktiviert den Ton für die PVP Warnung",
-        variable = "pvp_alert_sound",
-        value = true,
-    },
-    {
-        label = "Todesmeldungen",
-        description = "Aktiviert die Todesmeldungen",
-        variable = "deathmessages",
-        value = true,
-    },
-    {
-        label = "Todesmeldungen Ton",
-        description = "Aktiviert den Ton für die Todesmeldungen",
-        variable = "deathmessages_sound",
-        value = true,
-    },
-    {
-        label = "Todeslog",
-        description = "Aktiviert den Todeslog",
-        variable = "deathlog",
-        value = false,
-    },
-    {
-        label = "Version anzeigen",
-        description = "Zeigt die Versionen der Spieler:innen im Gildenchat an",
-        variable = "show_version",
-        value = false,
-    },
-}
-
 -- Addon-Name
 SchlingelInc.name = "SchlingelInc"
 
