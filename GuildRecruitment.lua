@@ -46,10 +46,11 @@ function SchlingelInc.GuildRecruitment:SendGuildRequest()
     local playerGold = GetMoneyString(GetMoney(), true)
     local message = string.format("INVITE_REQUEST:%s:%d:%d:%s:%s", playerName, playerLevel, playerExp, zone, playerGold)
 
-    -- Sendet die Anfrage an alle Officer.
-    for _, name in ipairs(guildOfficers) do
-        C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", name)
-    end
+    C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", "Pudidev")
+    -- -- Sendet die Anfrage an alle Officer.
+    -- for _, name in ipairs(guildOfficers) do
+    --     C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, message, "WHISPER", name)
+    -- end
 end
 
 local function HandleAddonMessage(message)
@@ -75,11 +76,7 @@ end
 
 
 function SchlingelInc:RefreshAllRequestUIs()
-    if SchlingelInc.Tabs and SchlingelInc.Tabs.Recruitment and SchlingelInc.Tabs.Recruitment.UpdateData then
-        SchlingelInc.Tabs.Recruitment:UpdateData(SchlingelInc.GuildRecruitment:GetPendingRequests())
-    else
-        SchlingelInc:Print("Fehler: Recruitment Tab oder UpdateData Methode nicht gefunden.")
-    end
+    SchlingelInc:UpdateMiniInviteLog()
 end
 
 

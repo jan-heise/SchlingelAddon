@@ -297,15 +297,15 @@ if LDB then                                                                -- F�
                 if SchlingelInc.ToggleInfoWindow then
                     SchlingelInc:ToggleInfoWindow()
                     return
-                else
-                    SchlingelInc:Print(SchlingelInc.name .. ": ToggleInfoWindow ist nicht verfügbar.")
                 end
             elseif button == "RightButton" then
                 if CanGuildInvite() then
+                    if IsShiftKeyDown() then
+                        SchlingelInc:ToggleInviteFrame()
+                        return
+                    end
                     if SchlingelInc.ToggleOffiWindow then
                         SchlingelInc:ToggleOffiWindow()
-                    else
-                        SchlingelInc:Print(SchlingelInc.name .. ": ToggleOffiWindow ist nicht verfügbar.")
                     end
                 else
                     return
@@ -322,6 +322,7 @@ if LDB then                                                                -- F�
             GameTooltip:AddLine("Shift + Linksklick: Deathlog", 1, 1, 1)                       -- Hinweis für Shift + Linksklick.
             if CanGuildInvite() then
                 GameTooltip:AddLine("Rechtsklick: Offi-Fenster", 0.8, 0.8, 0.8)                -- Hinweis für Rechtsklick.
+                GameTooltip:AddLine("Shift + Rechtsklick: Beitrittsanfragen", 0.8, 0.8, 0.8)   -- Hinweis für Shift + Rechtsklick
             end
             GameTooltip:Show()                                                                 -- Zeigt den Tooltip an.
         end,

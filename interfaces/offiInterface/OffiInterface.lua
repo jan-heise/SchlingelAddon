@@ -144,17 +144,15 @@ function SchlingelInc:CreateOffiWindow()
     -- Erstellt die Tab-Buttons. Die Reihenfolge hier definiert die Tab-Indexe (1, 2, 3, 4).
     -- Gibt den Modulnamen mit, der für CreateUI und UpdateData verwendet wird.
     CreateTabButton(1, "Gildeninfo", "GuildInfo")
-    CreateTabButton(2, "Anfragen", "Recruitment")
-    CreateTabButton(3, "Statistik", "Stats")
-    CreateTabButton(4, "Inaktiv", "Inactivity")
+    CreateTabButton(2, "Statistik", "Stats")
+    CreateTabButton(3, "Inaktiv", "Inactivity")
 
     -- Erstellt die Inhaltsframes für jeden Tab und speichert sie.
     -- Rufe die CreateUI Methode des jeweiligen Moduls auf.
     local tabModules = {
         [1] = "GuildInfo",
-        [2] = "Recruitment",
-        [3] = "Stats",
-        [4] = "Inactivity",
+        [2] = "Stats",
+        [3] = "Inactivity",
     }
 
     for index, moduleName in ipairs(tabModules) do
@@ -202,12 +200,6 @@ function SchlingelInc:ToggleOffiWindow()
         if Tabs.GuildInfo and Tabs.GuildInfo.UpdateData then
             Tabs.GuildInfo:UpdateData()
         end
-        -- Recruitment braucht ggf. Daten vom GuildRecruitment Modul
-        if Tabs.Recruitment and Tabs.Recruitment.UpdateData and SchlingelInc.GuildRecruitment and SchlingelInc.GuildRecruitment.GetPendingRequests then
-             Tabs.Recruitment:UpdateData(SchlingelInc.GuildRecruitment.GetPendingRequests())
-        elseif Tabs.Recruitment and Tabs.Recruitment.UpdateData then -- Fallback, falls GuildRecruitment fehlt
-             Tabs.Recruitment:UpdateData({}) -- Leere Liste übergeben oder ohne Argumente, je nach Modul-Logik
-        end
         if Tabs.Stats and Tabs.Stats.UpdateData then
             Tabs.Stats:UpdateData()
         end
@@ -216,56 +208,3 @@ function SchlingelInc:ToggleOffiWindow()
         end
     end
 end
-
---------------------------------------------------------------------------------
--- Bestätigungsdialog für Gilden-Kick
--- Definiert einen Standard-Dialog, der vor dem Entfernen eines Mitglieds
--- aus der Gilde angezeigt wird. Bleibt vorerst hier, kann aber in Dialogs.lua verschoben werden.
---------------------------------------------------------------------------------
-StaticPopupDialogs["CONFIRM_GUILD_KICK"] = {
-    text = "Möchtest du %s wirklich aus der Gilde entfernen?", -- %s wird durch den Spielernamen ersetzt.
-    button1 = ACCEPT, -- "Akzeptieren"
-    button2 = CANCEL, -- "Abbrechen"
-    OnAccept = function(selfDialog, data)
-        -- Wird ausgeführt, wenn "Akzeptieren" geklickt wird.
-        if data and data.memberName then
-            C_GuildInfo.Uninvite(data.memberName) -- Entfernt das Mitglied aus der Gilde.
-            if SchlingelInc and SchlingelInc.Print then
-                SchlingelInc:Print(data.memberName .. " wurde aus der Gilde entfernt.")
-            end
-            -- Kurze Verzögerung, um sicherzustellen, dass die Gildenliste serverseitig aktualisiert wurde,
-            -- bevor die UI neu geladen wird.
-            if SchlingelInc then
-                C_Timer.After(0.7, function()
-                    if SchlingelInc.OffiWindow and SchlingelInc.OffiWindow:IsShown() then
-                         -- Lokale Referenz auf die Tabs
-                        local Tabs = SchlingelInc.Tabs
-                        -- Aktualisiert alle relevanten Tabs nach dem Kick.
-                        -- Rufe die UpdateData Methode der Module auf
-                        if Tabs.GuildInfo and Tabs.GuildInfo.UpdateData then
-                             Tabs.GuildInfo:UpdateData()
-                        end
-                         if Tabs.Recruitment and Tabs.Recruitment.UpdateData and SchlingelInc.GuildRecruitment and SchlingelInc.GuildRecruitment.GetPendingRequests then
-                             Tabs.Recruitment:UpdateData(SchlingelInc.GuildRecruitment.GetPendingRequests())
-                        elseif Tabs.Recruitment and Tabs.Recruitment.UpdateData then -- Fallback
-                             Tabs.Recruitment:UpdateData({})
-                        end
-                        if Tabs.Stats and Tabs.Stats.UpdateData then
-                            Tabs.Stats:UpdateData()
-                        end
-                        if Tabs.Inactivity and Tabs.Inactivity.UpdateData then
-                            Tabs.Inactivity:UpdateData()
-                        end
-                    end
-                end)
-            end
-        end
-    end,
-    OnCancel = function(selfDialog, data)
-        -- Wird ausgeführt, wenn "Abbrechen" geklickt wird (tut nichts).
-    end,
-    timeout = 0, -- Kein automatisches Schließen.
-    whileDead = 1, -- Kann auch angezeigt werden, wenn der Spieler tot ist.
-    hideOnEscape = 1, -- Schließt bei Drücken von Escape.
-    preferredIndex = 3, -- Standard-Popup-Index.
-}

@@ -19,9 +19,9 @@ GuildRecruitment.lua
 LevelUp.lua
 interfaces\DeathAnnouncement.lua
 interfaces\Deathlog.lua
+interfaces\GuildInvites.lua
 interfaces\UIHelpers.lua
 interfaces\offiInterface\tabs\GuildInfo.lua
-interfaces\offiInterface\tabs\Recruitment.lua
 interfaces\offiInterface\tabs\Stats.lua
 interfaces\offiInterface\tabs\Inactivity.lua
 interfaces\offiInterface\OffiInterface.lua
