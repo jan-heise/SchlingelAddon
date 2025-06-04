@@ -1,9 +1,9 @@
 SchlingelInc.DeathAnnouncement = {}
 
--- Frame für die Nachricht unten rechts
+-- Frame für die Nachricht
 local DeathMessageFrame = CreateFrame("Frame", "DeathMessageFrame", UIParent, "BackdropTemplate")
 DeathMessageFrame:SetSize(300, 75)
-DeathMessageFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -50, 100)
+DeathMessageFrame:SetPoint("TOP", UIParent, "TOP", 0, 0)
 DeathMessageFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 DeathMessageFrame:SetFrameLevel(1000)
 DeathMessageFrame:Hide()
@@ -43,10 +43,16 @@ DeathMessageFrame.text:SetText("")
 
 -- Animation vorbereiten
 local animGroup = DeathMessageFrame:CreateAnimationGroup()
-local moveUp = animGroup:CreateAnimation("Translation")
-moveUp:SetDuration(0.6)
-moveUp:SetOffset(0, 50)
-moveUp:SetSmoothing("OUT")
+local moveDown = animGroup:CreateAnimation("Translation")
+moveDown:SetDuration(0.6)
+moveDown:SetOffset(0, -50)
+moveDown:SetSmoothing("OUT")
+
+local moveDownAgain = animGroup:CreateAnimation("Translation")
+moveDownAgain:SetStartDelay(2)
+moveDownAgain:SetDuration(0.6)
+moveDownAgain:SetOffset(0, -50)
+moveDownAgain:SetSmoothing("OUT")
 
 local fadeIn = animGroup:CreateAnimation("Alpha")
 fadeIn:SetDuration(0.3)
@@ -55,7 +61,7 @@ fadeIn:SetToAlpha(1)
 fadeIn:SetSmoothing("IN")
 
 local fadeOut = animGroup:CreateAnimation("Alpha")
-fadeOut:SetStartDelay(3)
+fadeOut:SetStartDelay(2)
 fadeOut:SetDuration(1)
 fadeOut:SetFromAlpha(1)
 fadeOut:SetToAlpha(0)
@@ -74,7 +80,7 @@ function SchlingelInc.DeathAnnouncement:ShowDeathMessage(message)
     end
     DeathMessageFrame.text:SetText(message)
     DeathMessageFrame:SetAlpha(0)
-    DeathMessageFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -50, 100)
+    DeathMessageFrame:SetPoint("TOP", UIParent, "TOP", 0, 0)
     DeathMessageFrame:Show()
     animGroup:Stop()
     animGroup:Play()
