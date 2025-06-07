@@ -6,7 +6,7 @@ function SchlingelInc:CheckTargetPvP()
 
     local targetFaction = UnitFactionGroup(unit) -- Fraktion des Ziels.
     -- Warnung bei feindlichen Allianz-NPCs, die PvP-markiert sind.
-    if targetFaction == "Alliance" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
+    if targetFaction == "Allianz" and UnitIsPVP(unit) and not UnitIsPlayer(unit) then
         local name = UnitName(unit) or "Unbekannt"
         SchlingelInc:ShowPvPWarning(name .. " (Allianz-NPC)")
         return
@@ -41,7 +41,11 @@ function SchlingelInc:ShowPvPWarning(text)
     SchlingelInc.pvpWarningFrame:Show()                      -- Zeigt das Fenster an.
     SchlingelInc:RumbleFrame(SchlingelInc.pvpWarningFrame)   -- Startet den "Rumble"-Effekt.
 
-    PlaySound(8174)                                          -- Horde-Flagge aufgenommen
+    if SchlingelOptionsDB["pvp_alert_sound"] == true then
+        PlaySound(8174) -- Horde-Flagge aufgenommen
+    -- else
+    --     SchlingelInc:Print("Skip PvP Sound")
+    end
 
     -- Blendet das Fenster nach 1 Sekunde langsam aus.
     C_Timer.After(1, function()

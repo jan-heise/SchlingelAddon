@@ -4,6 +4,8 @@ function SchlingelInc:OnLoad()
     SchlingelInc.Rules:Initialize()
     SchlingelInc.LevelUps:Initialize()
 
+    SchlingelInc:InitializeOptionsDB()
+
     -- Slash-Befehle für Gildenrekrutierung (derzeit für Produktion auskommentiert).
     --SchlingelInc.GuildRecruitment:InitializeSlashCommands()
 

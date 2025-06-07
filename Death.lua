@@ -142,7 +142,6 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 			local messageString = messageFormat:format(name, class, level, zone)
 			-- Zeige die Nachricht im zentralen Frame an
 			SchlingelInc.DeathAnnouncement:ShowDeathMessage(messageString)
-			
 			-- Speichere den Tod im Log
 			SchlingelInc.DeathLogData = SchlingelInc.DeathLogData or {}
 			local cause = LastAttackSource or "Unbekannt"

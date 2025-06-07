@@ -134,6 +134,10 @@ end)
 
 -- Event-Handler für den 'pvpFrame' (lauscht auf PLAYER_TARGET_CHANGED).
 pvpFrame:SetScript("OnEvent", function()
+    if SchlingelOptionsDB["pvp_alert"] == false then
+        --SchlingelInc:Print("Skip PvP Frame")
+        return
+    end
     -- Führt die PvP-Zielüberprüfung nur aus, wenn der Spieler NICHT in einem Schlachtfeld ist.
     if not SchlingelInc:IsInBattleground() then
         SchlingelInc:CheckTargetPvP()
@@ -227,7 +231,7 @@ guildChatFrame:RegisterEvent("CHAT_MSG_GUILD") -- Registriert das Event für Gil
 -- Fügt einen Filter für Gilden-Chat-Nachrichten hinzu.
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(self, event, msg, sender, ...)
     -- Funktion wird nur ausgeführt, wenn der Spieler Gildenmitglieder einladen darf (eine Art Berechtigungsprüfung).
-    if not CanGuildInvite() then
+    if SchlingelOptionsDB["show_version"] == false then
         return false, msg, sender, ... -- Nachricht unverändert durchlassen.
     end
 
