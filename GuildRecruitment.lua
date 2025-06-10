@@ -22,6 +22,7 @@ local guildOfficers =
     "Bärmuut",
     "Mortblanche",
     "Pfarrer",
+    "Onymaholy",
     "Luminette",
     "Cricksumage",
     "Devschlingel",
