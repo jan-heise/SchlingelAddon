@@ -119,16 +119,13 @@ end
 
 function SchlingelInc:IsInRaid()
     local isInRaid = false
-    local zone = GetInstanceInfo()
+    local _, _, _, _, _, _, _, zoneId = GetInstanceInfo()
     local raids = {
-        "Molten Core",
-        "Geschmolzener Kern",
-        "Onyxias Hort",
-        "Onyxia's Lair",
-
+        2717,
+        2159,
     }
     for _, raid in ipairs(raids) do
-        if zone == raid then
+        if zoneId == raid then
             isInRaid = true -- Spieler ist in einem der definierten Raids.
             break
         end
