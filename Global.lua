@@ -117,6 +117,25 @@ function SchlingelInc:IsInBattleground()
     return isInAllowedBattleground
 end
 
+function SchlingelInc:IsInRaid()
+    local isInRaid = false
+    local zone = GetInstanceInfo()
+    local raids = {
+        "Molten Core",
+        "Geschmolzener Kern",
+        "Onyxias Hort",
+        "Onyxia's Lair",
+
+    }
+    for _, raid in ipairs(raids) do
+        if zone == raid then
+            isInRaid = true -- Spieler ist in einem der definierten Raids.
+            break
+        end
+    end
+    return isInRaid
+end
+
 -- Event-Handler für den 'frame' (lauscht auf CHAT_MSG_ADDON).
 frame:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
     -- Verarbeitet nur Addon-Nachrichten mit dem korrekten Prefix.
@@ -186,9 +205,9 @@ function SchlingelInc:CompareVersions(v1, v2)
     local a1, a2, a3, channel = SchlingelInc:ParseVersion(v1) -- Parsed v1.
     local b1, b2, b3, channel = SchlingelInc:ParseVersion(v2) -- Parsed v2.
 
-    if a1 ~= b1 then return a1 - b1 end -- Vergleiche Major-Version.
-    if a2 ~= b2 then return a2 - b2 end -- Vergleiche Minor-Version.
-    return a3 - b3                      -- Vergleiche Patch-Version.
+    if a1 ~= b1 then return a1 - b1 end                       -- Vergleiche Major-Version.
+    if a2 ~= b2 then return a2 - b2 end                       -- Vergleiche Minor-Version.
+    return a3 - b3                                            -- Vergleiche Patch-Version.
 end
 
 -- Speichert die originale SendChatMessage Funktion, um sie später aufrufen zu können.

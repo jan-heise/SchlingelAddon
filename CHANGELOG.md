@@ -1,13 +1,20 @@
+# 2.2.2
+
+- No death announcements in allowed raids (Molten Core, Onyxias Lair)
+
 # 2.1.8
-- Death Announcement improvement and new Deathlog in basic interface Tab 
+
+- Death Announcement improvement and new Deathlog in basic interface Tab
 
 # 2.1.7
+
 - Group Check now ignores online status
 - Reduced performance impact
 - Correct article for different genders
 - Removed Level up announcement for 45 and 55
 
 # 2.1.6
+
 - Fixing Guild Invites. Cleaning up Offi Interface
 
 # 2.1.1, 2.1.2, 2.1.3

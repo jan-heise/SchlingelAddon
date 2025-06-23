@@ -56,7 +56,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 		local popupMessageString = popupMessageFormat:format(name, class, level, zone)
 
 		-- Send broadcast text messages to guild
-		if not SchlingelInc:IsInBattleground() then
+		if not SchlingelInc:IsInBattleground() and not SchlingelInc:IsInRaid() then
 			SendChatMessage(messageString, "GUILD")
 			C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, popupMessageString, "GUILD")
 		end
@@ -67,7 +67,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			return -- Abbruch des Eventhandlers
 		end
 
-		if not SchlingelInc:IsInBattleground() then
+		if not SchlingelInc:IsInBattleground() and not SchlingelInc:IsInRaid() then
 			CharacterDeaths = CharacterDeaths + 1
 		end
 
@@ -75,7 +75,7 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 	else
 		if event == "PLAYER_UNGHOST" then
 			local name = UnitName("player")
-			if not SchlingelInc:IsInBattleground() then
+			if not SchlingelInc:IsInBattleground() and not SchlingelInc:IsInRaid() then
 				SendChatMessage(name .. " wurde wiederbelebt!", "GUILD")
 			end
 		end
@@ -146,11 +146,11 @@ PopupTracker:SetScript("OnEvent", function(self, event, prefix, msg, sender, ...
 			SchlingelInc.DeathLogData = SchlingelInc.DeathLogData or {}
 			local cause = LastAttackSource or "Unbekannt"
 			table.insert(SchlingelInc.DeathLogData, {
-			name = name,
-			class = class,
-			level = tonumber(level),
-			zone = zone,
-			cause = cause
+				name = name,
+				class = class,
+				level = tonumber(level),
+				zone = zone,
+				cause = cause
 			})
 			SchlingelInc:UpdateMiniDeathLog()
 		end
