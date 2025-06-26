@@ -66,15 +66,6 @@ DeathFrame:SetScript("OnEvent", function(self, event, ...)
 			C_ChatInfo.SendAddonMessage(SchlingelInc.prefix, popupMessageString, "GUILD")
 			CharacterDeaths = CharacterDeaths + 1
 		end
-
-	-- Event für den revive. Ist aktuell allgemein, sollte also zB auch beim rez triggern.
-	else
-		if event == "PLAYER_UNGHOST" then
-			local name = UnitName("player")
-			if not SchlingelInc:IsInBattleground() and not SchlingelInc:IsInRaid() then
-				SendChatMessage(name .. " wurde wiederbelebt!", "GUILD")
-			end
-		end
 	end
 end)
 
