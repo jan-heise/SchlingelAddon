@@ -1,3 +1,8 @@
+# 2.2.3
+
+- Revive Announcement ausgebaut
+- Battleground und Raid Check nun per Blizzard API
+
 # 2.2.2
 
 - No death announcements in allowed raids (Molten Core, Onyxias Lair)

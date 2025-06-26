@@ -97,40 +97,21 @@ end
 
 -- Überprüft, ob sich der Spieler in einem relevanten Schlachtfeld befindet.
 function SchlingelInc:IsInBattleground()
-    local isInBattleground = false
-    local level = UnitLevel("player")
-    local isInAllowedBattleground = false
-
-    -- Durchläuft alle möglichen Schlachtfeld-IDs.
-    for i = 1, GetMaxBattlefieldID() do
-        local battleFieldStatus = GetBattlefieldStatus(i)
-        if battleFieldStatus == "active" then
-            isInBattleground = true -- Spieler ist in irgendeinem Schlachtfeld.
-            break
-        end
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and instanceType == "pvp"then
+        return true
+    else
+        return false
     end
-
-    -- Nur relevant, wenn Spieler in einem Schlachtfeld UND Level 60 oder höher ist.
-    if isInBattleground and level >= 60 then
-        isInAllowedBattleground = true
-    end
-    return isInAllowedBattleground
 end
 
 function SchlingelInc:IsInRaid()
-    local isInRaid = false
-    local _, _, _, _, _, _, _, zoneId = GetInstanceInfo()
-    local raids = {
-        2717,
-        2159,
-    }
-    for _, raid in ipairs(raids) do
-        if zoneId == raid then
-            isInRaid = true -- Spieler ist in einem der definierten Raids.
-            break
-        end
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and instanceType == "raid" then
+        return true
+    else 
+        return false
     end
-    return isInRaid
 end
 
 -- Event-Handler für den 'frame' (lauscht auf CHAT_MSG_ADDON).
