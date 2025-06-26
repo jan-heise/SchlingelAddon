@@ -351,18 +351,3 @@ function SchlingelInc:InitMinimapIcon()
         SchlingelInc:Print("Minimap-Icon registriert.")
     end
 end
-
--- -- Slash-Befehl definieren zu Deugzwecken
--- SLASH_INICHECK1 = '/inicheck'
--- SlashCmdList["INICHECK"] = function()
--- 	if SchlingelInc:IsInRaid() then
---         SchlingelInc:Print("Spieler befindet sich in einem Raid.")
---     else
---         SchlingelInc:Print("Spieler befindet sich nicht in einem Raid.")
---     end
---     if SchlingelInc:IsInBattleground() then
---         SchlingelInc:Print("Spieler befindet sich in einem Battleground.")
---     else
---         SchlingelInc:Print("Spieler befindet sich nicht in einem Battleground.")
---     end
--- end
