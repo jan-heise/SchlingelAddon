@@ -118,19 +118,25 @@ function SchlingelInc:IsInBattleground()
 end
 
 function SchlingelInc:IsInRaid()
-    local isInRaid = false
-    local _, _, _, _, _, _, _, zoneId = GetInstanceInfo()
-    local raids = {
-        2717,
-        2159,
-    }
-    for _, raid in ipairs(raids) do
-        if zoneId == raid then
-            isInRaid = true -- Spieler ist in einem der definierten Raids.
-            break
-        end
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and instanceType == "raid" then
+        return true
+    else 
+        return false
     end
-    return isInRaid
+    -- local isInRaid = false
+    -- local _, _, _, _, _, _, _, zoneId = GetInstanceInfo()
+    -- local raids = {
+    --     2717,
+    --     2159,
+    -- }
+    -- for _, raid in ipairs(raids) do
+    --     if zoneId == raid then
+    --         isInRaid = true -- Spieler ist in einem der definierten Raids.
+    --         break
+    --     end
+    -- end
+    -- return isInRaid
 end
 
 -- Event-Handler für den 'frame' (lauscht auf CHAT_MSG_ADDON).
